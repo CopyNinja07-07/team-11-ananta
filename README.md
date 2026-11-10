@@ -1,8 +1,7 @@
-# Team 11 · Ananta: The Invisible Building
+# Team 11 Ananta
 
-Research white paper for the Ananta project (energy and water waste detection for buildings, Jammu & Kashmir).
+Team 11, Project Ananta: research white paper for an intelligent energy and water waste detector for buildings (Jammu and Kashmir).
 
-- `index.html` is the final white paper. Open it in any browser.
-- `extended.html` is the extended version, with extra diagrams and a 60-second summary.
-
-Live site: https://copyninja07-07.github.io/team-11-ananta/
+- Live site: https://copyninja07-07.github.io/team-11-ananta/
+- `index.html` is the main white paper, with tabs for research, solution, presentation and prototype.
+- `extended.html` is an extended draft with extra diagrams.
