@@ -14,7 +14,7 @@ const outDir = path.resolve(process.env.DATA_DIR || '../data');
 fs.mkdirSync(outDir, { recursive: true });
 
 const sim = new Campus({ seed, start: istDate(2025, 7, 1) });
-const zoneRows = ['ts,zone,occ,occ_plan,temp,temp_norm,kwh,vdb,vroom,amps,leak_ma,cut'];
+const zoneRows = ['ts,zone,occ,occ_plan,temp,temp_norm,kwh,vdb,vroom,amps,leak_ma,t_in,rh,ac_kw,cut'];
 const waterRows = ['ts,temp,f0_l,f1_l,f2_l,pump_on,pump_l,pump_kwh,tank_pct,sump_pct,overflow_l,supply_on,cut'];
 const truthRows = ['ts,fault_id,type,target'];
 const steps = days * 96;
@@ -22,7 +22,7 @@ for (let i = 0; i < steps; i++) {
   const r = sim.step();
   const ts = fmtIst(r.ts);
   const tn = normalTempAt(r.ts).toFixed(2);
-  for (const z of r.zones) zoneRows.push([ts, z.id, z.occ, plannedOccupancy(ZONES.find((q) => q.id === z.id), r.ts), r.temp, tn, z.kwh, z.vdb, z.vroom, z.amps, z.leakMa, r.cut ? 1 : 0].join(','));
+  for (const z of r.zones) zoneRows.push([ts, z.id, z.occ, plannedOccupancy(ZONES.find((q) => q.id === z.id), r.ts), r.temp, tn, z.kwh, z.vdb, z.vroom, z.amps, z.leakMa, z.tin, z.rh, z.acKw, r.cut ? 1 : 0].join(','));
   const w = r.water;
   waterRows.push([ts, r.temp, ...w.floorL, w.pumpOn ? 1 : 0, w.pumpL, w.pumpKWh, w.tankPct, w.sumpPct, w.overflowL, w.supplyOn ? 1 : 0, r.cut ? 1 : 0].join(','));
   for (const a of r.active) truthRows.push([ts, a.id, a.type, a.target].join(','));

@@ -20,7 +20,8 @@ from app.detector import Detector  # noqa: E402
 
 MATCH = {
     "lights_left_on": ["empty_room"], "ac_left_on": ["empty_room"], "pcs_left_on": ["empty_room"],
-    "heater_left_on": ["empty_room"], "comeback": ["empty_room"], "overcool": ["over_use"],
+    "heater_left_on": ["empty_room"], "comeback": ["empty_room"], "overcool": ["overcool", "over_use"],
+    "door_open": ["door_open", "over_use"],
     "loose_joint": ["wall_heat"], "leak": ["night_flow", "earth_leak"], "cistern": ["night_flow"],
     "float_fail": ["overflow"], "dry_run": ["dry_run"],
 }
@@ -43,7 +44,8 @@ def replay(data: Path) -> Detector:
         det.update({
             "ts": int(row.ms), "temp_c": float(row.temp), "grid_on": row.cut == 0,
             "nodes": [{"zone": n.zone, "people": int(n.occ), "kw": n.kwh * 4, "v_board": n.vdb, "v_room": n.vroom,
-                       "amps": n.amps, "leak_ma": n.leak_ma} for n in g.itertuples(index=False)],
+                       "amps": n.amps, "leak_ma": n.leak_ma, "t_in": n.t_in, "rh": n.rh, "ac_kw": n.ac_kw}
+                      for n in g.itertuples(index=False)],
             "water": {"floor_l": [row.f0_l, row.f1_l, row.f2_l], "pump_on": bool(row.pump_on), "pump_l": row.pump_l,
                       "pump_kwh": row.pump_kwh, "tank_pct": row.tank_pct, "overflow_l": row.overflow_l},
         })
@@ -102,7 +104,8 @@ def main(data: Path = ROOT / "data") -> dict:
 
 
 if __name__ == "__main__":
-    r = main()
+    import sys
+    r = main(Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "data" / "test")
     print(f"recall {r['recall']}  precision {r['precision']}  ({r['faults_with_waste']} faults, {r['alerts']} alerts)")
     for k, v in r["by_fault"].items():
         print(f"  {k:15s} {v['caught']:3d}/{v['n']:<3d} delay {v['median_delay_h']}h")

@@ -22,7 +22,7 @@ export class Campus {
     this.t = start;
     this.autoFaults = autoFaults;
     this.faultRate = faultRate;
-    this.zones = ZONES.map((z) => ({ ...z, occ: 0, prevOcc: 0, loadsOnAtCut: false, relayOffUntilOcc: false }));
+    this.zones = ZONES.map((z) => ({ ...z, occ: 0, prevOcc: 0, loadsOnAtCut: false, relayOffUntilOcc: false, tin: 24, rh: 55 }));
     this.water = { tank: WATER.tankL * 0.7, sump: WATER.sumpL * 0.6, pumpOn: false, supplyOffToday: false, day: null };
     this.cut = null;             // { until } when grid power is off
     this.battery = {};           // inverter energy debt per zone (Wh) to be recharged after a cut
@@ -53,6 +53,12 @@ export class Campus {
     return n;
   }
   // Maintenance fix (plumber / electrician), or closing a floor isolation valve.
+  // Smart AC controller (IR blaster / AC with Wi-Fi): reset the setpoint to the BEE default of 24 C.
+  setAcSetpoint(zoneId) {
+    let n = 0;
+    for (const f of this.faults) if (f.target === zoneId && f.type === 'overcool') { this.endFault(f, 'setpoint reset to 24 C'); n++; }
+    return n;
+  }
   fix(faultId, how = 'repaired') {
     const f = this.faults.find((x) => x.id === faultId);
     if (f) this.endFault(f, how);
@@ -173,6 +179,7 @@ export class Campus {
         this.battery[z.id] -= recharge * HOURS;
       }
       const loadW = p.total + recharge;
+      this.thermal(z, temp, p, flags, rng);
 
       // wiring: current, voltage drop, I^2R heat inside walls
       let rJoint = 0, leakMa = 2 + rng.next() * 3;
@@ -201,7 +208,7 @@ export class Campus {
         kwh: +kwh.toFixed(4), vdb: +vdb.toFixed(2), vroom: +(vroom + rng.normal(0, 0.15)).toFixed(2),
         amps: +amps.toFixed(3), leakMa: +leakMa.toFixed(1), lossW: +lossW.toFixed(1), inverterW: Math.round(onInverter),
         parts: { light: p.light, fan: p.fan, ac: Math.round(p.ac), heat: p.heat, plug: Math.round(p.plug), standby: p.standby, recharge: Math.round(recharge) },
-        relayOff: z.relayOffUntilOcc,
+        relayOff: z.relayOffUntilOcc, tin: +z.tin.toFixed(2), rh: Math.round(z.rh), acKw: +(p.ac / 1000).toFixed(3),
       });
     }
 
@@ -330,6 +337,7 @@ export class Campus {
         if (z.heaterW && temp < 13 && evening && rng.chance(0.1 * k)) add('heater_left_on', z.id);
       }
       if (z.acUnits && z.occ > 0 && temp > 31 && rng.chance(0.0025 * k)) add('overcool', z.id);
+      if (z.acUnits && z.occ > 0 && temp > 32 && z.kind !== 'office' && rng.chance(0.002 * k)) add('door_open', z.id);
       // comeback waste: power returns, room was in use when the cut started, now empty
       if (restoredNow && z.loadsOnAtCut && z.occ === 0 && !z.inverter && rng.chance(0.6)) add('comeback', z.id);
     }
@@ -345,6 +353,27 @@ export class Campus {
 
 // Power drawn by one room (W), split by end use.
 // flags (from faults) can force things on; relayOff forces everything off.
+// Indoor climate of one room (what a temperature/humidity sensor on the wall reads).
+// A first-order model: the room drifts towards outside plus the heat of people and
+// equipment; a running AC pulls it towards its setpoint; an open door lets heat in
+// faster than the AC can remove it.
+Campus.prototype.thermal = function thermal(z, temp, p, flags, rng) {
+  const gainC = (z.occ * 100 + p.light + p.plug + p.fan) / (z.cap * 40);   // degrees above outside from internal heat
+  const free = temp + 1.5 + gainC;
+  let target = free, tau = 5;                                           // hours (brick walls are slow)
+  if (p.ac > 0) {
+    const sp = flags.overcool ? 17.5 : 24;
+    target = flags.door ? Math.max(sp, temp - 3) : sp;
+    tau = flags.door ? 1.2 : 0.6;
+  } else if (p.heat > 0) {
+    target = Math.min(23, temp + 12);
+    tau = 1;
+  }
+  z.tin += (target - z.tin) * (1 - Math.exp(-HOURS / tau)) + rng.normal(0, 0.08);
+  const rhOut = 45 + 25 * Math.cos(((ist(this.t).m - 8) / 12) * 2 * Math.PI);  // monsoon humid, spring dry
+  z.rh = Math.max(25, Math.min(85, rhOut + (p.ac > 0 ? -12 : 0) + z.occ * 0.08 + rng.normal(0, 1.5)));
+};
+
 export function roomLoad(z, temp, t, flags, relayOff) {
   const occ = z.occ;
   const on = occ > 0;
@@ -354,7 +383,9 @@ export function roomLoad(z, temp, t, flags, relayOff) {
   if (on || flags.lights) p.light = Math.round(z.lightW * (daylit ? 0.7 : 1));
   if ((on && temp >= 25) || flags.fans) p.fan = Math.round(z.fans * 60 * Math.min(1, Math.max(0.5, (temp - 22) / 6)));
   const acNeed = Math.min(1, Math.max(0.4, (temp - 24) / 14));
-  if (z.acUnits && ((on && temp >= 30) || flags.ac)) p.ac = z.acUnits * z.acKW * 1000 * (flags.overcool ? 1.0 : acNeed) * (flags.overcool ? 1.25 : 1);
+  // compressor load: part load for a normal 24 C setpoint; flat out (and more) when set too cold or fighting an open door
+  const full = flags.overcool || flags.door;
+  if (z.acUnits && ((on && temp >= 30) || flags.ac)) p.ac = z.acUnits * z.acKW * 1000 * (full ? 1.0 : acNeed) * (flags.overcool ? 1.25 : flags.door ? 1.15 : 1);
   if (z.heaterW && ((on && temp < 13) || flags.heater)) p.heat = z.heaterW;
   if (z.kind === 'lab') p.plug = on ? Math.min(occ, z.pcs) * 95 : (flags.pcs ? z.pcs * 62 : 0);
   else if (z.kind === 'office') p.plug = on ? occ * 70 + 60 : (flags.pcs ? z.pcs * 45 : 0);

@@ -10,7 +10,8 @@ export const FAULT_TYPES = {
   ac_left_on:     { label: 'AC left running after class', kind: 'energy', scope: 'zone' },
   pcs_left_on:    { label: 'Lab PCs left on overnight', kind: 'energy', scope: 'zone' },
   heater_left_on: { label: 'Room heater left on', kind: 'energy', scope: 'zone' },
-  overcool:       { label: 'AC overcooling (door open / 16 deg setpoint)', kind: 'energy', scope: 'zone' },
+  overcool:       { label: 'AC set too cold (16-18 deg setpoint)', kind: 'energy', scope: 'zone' },
+  door_open:      { label: 'AC fighting an open door or window', kind: 'energy', scope: 'zone' },
   comeback:       { label: 'Loads restarted in empty room after power cut', kind: 'energy', scope: 'zone' },
   loose_joint:    { label: 'Heat in the wall: loose joint / failing wire', kind: 'hidden', scope: 'zone' },
   leak:           { label: 'Pipe leak (possibly inside wall)', kind: 'water', scope: 'floor' },
@@ -51,6 +52,9 @@ export function makeFault(type, target, sim, rng) {
       return { ...base, switchable: true, endWhenOccupied: true, until: nextMorning(now), flags: () => ({ heater: true }) };
     case 'overcool':
       return { ...base, switchable: false, until: now + rng.int(4, 10) * H, flags: (s, z) => (z.occ > 0 ? { overcool: true } : {}) };
+    case 'door_open':
+      // door propped open in a hot class: the AC runs flat out and the room still does not cool
+      return { ...base, switchable: false, until: now + rng.int(2, 6) * H, flags: (s, z) => (z.occ > 0 ? { door: true } : {}) };
     case 'comeback':
       return { ...base, switchable: true, endWhenOccupied: true, until: guardRound(now), flags: () => ({ lights: true, fans: true, ac: true }) };
     case 'loose_joint': {

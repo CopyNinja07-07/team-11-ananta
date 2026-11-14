@@ -1,39 +1,47 @@
 {
- "faults_with_waste": 549,
- "alerts": 1175,
- "recall": 0.918,
- "precision": 0.991,
+ "faults_with_waste": 558,
+ "alerts": 1205,
+ "recall": 0.952,
+ "precision": 0.992,
  "by_fault": {
   "ac_left_on": {
-   "n": 66,
-   "caught": 65,
+   "n": 64,
+   "caught": 63,
    "recall": 0.98,
    "median_delay_h": 0.25,
-   "waste_kwh": 1287,
+   "waste_kwh": 1174,
    "waste_l": 0
   },
   "cistern": {
-   "n": 22,
-   "caught": 22,
+   "n": 21,
+   "caught": 21,
    "recall": 1.0,
    "median_delay_h": 2.75,
    "waste_kwh": 0,
-   "waste_l": 39134
+   "waste_l": 36732
   },
   "comeback": {
-   "n": 123,
-   "caught": 121,
+   "n": 122,
+   "caught": 120,
    "recall": 0.98,
    "median_delay_h": 0.25,
-   "waste_kwh": 625,
+   "waste_kwh": 622,
+   "waste_l": 0
+  },
+  "door_open": {
+   "n": 5,
+   "caught": 4,
+   "recall": 0.8,
+   "median_delay_h": 0.75,
+   "waste_kwh": 6,
    "waste_l": 0
   },
   "dry_run": {
-   "n": 5,
-   "caught": 5,
+   "n": 6,
+   "caught": 6,
    "recall": 1.0,
-   "median_delay_h": 15.0,
-   "waste_kwh": 199,
+   "median_delay_h": 11.88,
+   "waste_kwh": 224,
    "waste_l": 0
   },
   "float_fail": {
@@ -42,37 +50,37 @@
    "recall": 1.0,
    "median_delay_h": 0.0,
    "waste_kwh": 23,
-   "waste_l": 130456
+   "waste_l": 134036
   },
   "leak": {
-   "n": 15,
-   "caught": 15,
+   "n": 16,
+   "caught": 16,
    "recall": 1.0,
-   "median_delay_h": 2.75,
+   "median_delay_h": 3.0,
    "waste_kwh": 0,
-   "waste_l": 432225
+   "waste_l": 488367
   },
   "lights_left_on": {
-   "n": 239,
-   "caught": 218,
+   "n": 245,
+   "caught": 224,
    "recall": 0.91,
    "median_delay_h": 0.25,
-   "waste_kwh": 1812,
+   "waste_kwh": 1843,
    "waste_l": 0
   },
   "loose_joint": {
    "n": 8,
    "caught": 8,
    "recall": 1.0,
-   "median_delay_h": 206.75,
+   "median_delay_h": 206.5,
    "waste_kwh": 63,
    "waste_l": 0
   },
   "overcool": {
    "n": 31,
-   "caught": 10,
-   "recall": 0.32,
-   "median_delay_h": 0.75,
+   "caught": 29,
+   "recall": 0.94,
+   "median_delay_h": 0.5,
    "waste_kwh": 141,
    "waste_l": 0
   },
@@ -81,44 +89,54 @@
    "caught": 31,
    "recall": 1.0,
    "median_delay_h": 0.25,
-   "waste_kwh": 1895,
+   "waste_kwh": 1894,
    "waste_l": 0
   }
  },
  "by_rule": {
+  "door_open": {
+   "alerts": 4,
+   "correct": 4,
+   "precision": 1.0
+  },
   "dry_run": {
-   "alerts": 17,
-   "correct": 17,
+   "alerts": 18,
+   "correct": 18,
    "precision": 1.0
   },
   "earth_leak": {
-   "alerts": 12,
-   "correct": 12,
+   "alerts": 14,
+   "correct": 14,
    "precision": 1.0
   },
   "empty_room": {
-   "alerts": 590,
-   "correct": 590,
+   "alerts": 587,
+   "correct": 587,
    "precision": 1.0
   },
   "night_flow": {
-   "alerts": 235,
-   "correct": 235,
+   "alerts": 239,
+   "correct": 239,
    "precision": 1.0
   },
   "over_use": {
-   "alerts": 12,
-   "correct": 10,
-   "precision": 0.83
+   "alerts": 2,
+   "correct": 0,
+   "precision": 0.0
+  },
+  "overcool": {
+   "alerts": 31,
+   "correct": 31,
+   "precision": 1.0
   },
   "overflow": {
-   "alerts": 20,
-   "correct": 20,
+   "alerts": 18,
+   "correct": 18,
    "precision": 1.0
   },
   "wall_heat": {
-   "alerts": 289,
-   "correct": 281,
+   "alerts": 292,
+   "correct": 284,
    "precision": 0.97
   }
  }
