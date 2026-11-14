@@ -1,0 +1,15 @@
+{
+ "buildings": 582,
+ "train_windows": 201488,
+ "test_days": 207323,
+ "epochs": 4,
+ "parameters": 295320,
+ "device": "cpu",
+ "train_seconds": 1913,
+ "median_cvrmse": {
+  "model": 14.1,
+  "yesterday": 22.0,
+  "last_week": 19.5
+ },
+ "model_beats_both_pct": 92.3
+}
