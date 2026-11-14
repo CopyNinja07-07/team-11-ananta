@@ -99,7 +99,7 @@ export default function RealBuilding() {
               {closedRuns.map(([a, b]) => <ReferenceArea key={a} x1={rows[a].ts} x2={rows[Math.min(b, rows.length - 1)].ts} fill="#f1f5f9" fillOpacity={0.9} ifOverflow="hidden" />)}
               {weekEvents.map((e) => <ReferenceArea key={e.i} x1={t0 + e.i * 3600000} x2={t0 + (e.i + e.hours) * 3600000} fill="#fee2e2" fillOpacity={0.8} ifOverflow="hidden" />)}
               <XAxis dataKey="ts" type="number" domain={['dataMin', 'dataMax']} tickFormatter={tick} ticks={rows.filter((r) => r.i % 24 === 0).map((r) => r.ts)} fontSize={11} />
-              <YAxis fontSize={11} width={56} tickFormatter={(v) => `${num(v, 0)} kW`} />
+              <YAxis fontSize={11} width={66} tickFormatter={(v) => `${num(v, 0)} kW`} />
               <Tooltip labelFormatter={(v) => new Date(v).toUTCString().slice(0, 22)} formatter={(v, n) => [`${num(v, 1)} kW`, n]} />
               <Legend />
               <Area dataKey="actual" name="Actual" stroke="#d97706" fill="#fde68a" fillOpacity={0.5} isAnimationActive={false} />
@@ -151,7 +151,7 @@ export default function RealBuilding() {
                     <CartesianGrid stroke="#e2e8f0" vertical={false} />
                     {closedRuns.map(([a, b]) => <ReferenceArea key={a} x1={rows[a].ts} x2={rows[Math.min(b, rows.length - 1)].ts} fill="#f1f5f9" ifOverflow="hidden" />)}
                     <XAxis dataKey="ts" type="number" domain={['dataMin', 'dataMax']} tickFormatter={tick} ticks={rows.filter((r) => r.i % 24 === 0).map((r) => r.ts)} fontSize={11} />
-                    <YAxis yAxisId="c" fontSize={11} width={56} tickFormatter={(v) => `${num(v, 0)} kW`} />
+                    <YAxis yAxisId="c" fontSize={11} width={66} tickFormatter={(v) => `${num(v, 0)} kW`} />
                     <YAxis yAxisId="t" orientation="right" fontSize={11} width={36} unit="°" />
                     <Tooltip labelFormatter={(v) => new Date(v).toUTCString().slice(0, 22)} />
                     <Legend />
@@ -230,7 +230,7 @@ function YearHeatmap({ d }) {
   }, [d]);
   return (
     <div className="mt-3 overflow-x-auto">
-      <canvas ref={ref} className="h-36 w-full min-w-[520px] rounded-md" style={{ imageRendering: 'pixelated' }} role="img" aria-label="Heatmap of use above expected, by day and hour, for 2017" />
+      <canvas ref={ref} className="h-36 w-full min-w-[520px] lg:h-64 rounded-md" style={{ imageRendering: 'pixelated' }} role="img" aria-label="Heatmap of use above expected, by day and hour, for 2017" />
       <div className="mt-1 flex justify-between text-[11px] text-ink-500"><span>January</span><span>midnight at top, 11 pm at bottom</span><span>December</span></div>
     </div>
   );
