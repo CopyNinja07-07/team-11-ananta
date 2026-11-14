@@ -42,6 +42,14 @@ class Pipeline:
 
     # ------------------------------------------------------------------ setup
     def seed(self, db: Session) -> None:
+        # The detector starts empty after a restart, so an alert left open in the
+        # database would never close. End it at its last reading; it re-opens on
+        # the next reading if the problem is still there.
+        for row in db.scalars(select(Alert).where(Alert.end.is_(None))):
+            row.end = row.last
+            if row.status == "open":
+                row.status = "resolved"
+        db.commit()
         if db.get(Building, BUILDING["id"]):
             return
         db.add(Building(id=BUILDING["id"], name=BUILDING["name"], city=BUILDING["city"], floors=len(BUILDING["floors"])))
