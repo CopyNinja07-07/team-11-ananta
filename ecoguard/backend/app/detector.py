@@ -110,6 +110,10 @@ class Detector:
                 exp = self.baseline.expected_kw(zid, n["people"], temp, hour)
                 sigma = self.baseline.sigma(zid)
                 extra = n["kw"] - exp
+                # after a power cut, inverter rooms recharge their battery (~0.6 kW for a few hours).
+                # That is the cost of the outage, not someone leaving things on, so don't blame the room.
+                if cfg["inverter"] and (ts - self.last_restore) < 8 * 3600_000:
+                    extra -= 0.65
 
                 empty_waste = n["people"] == 0 and extra > max(0.2, 4 * sigma)
                 if self._streak(f"e:{zid}", empty_waste, 2):

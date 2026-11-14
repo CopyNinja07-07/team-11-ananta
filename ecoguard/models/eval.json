@@ -1,14 +1,14 @@
 {
  "faults_with_waste": 549,
- "alerts": 70,
- "recall": 0.993,
- "precision": 0.971,
+ "alerts": 1175,
+ "recall": 0.918,
+ "precision": 0.991,
  "by_fault": {
   "ac_left_on": {
    "n": 66,
-   "caught": 66,
-   "recall": 1.0,
-   "median_delay_h": 0.0,
+   "caught": 65,
+   "recall": 0.98,
+   "median_delay_h": 0.25,
    "waste_kwh": 1287,
    "waste_l": 0
   },
@@ -16,15 +16,15 @@
    "n": 22,
    "caught": 22,
    "recall": 1.0,
-   "median_delay_h": 0.0,
+   "median_delay_h": 2.75,
    "waste_kwh": 0,
    "waste_l": 39134
   },
   "comeback": {
    "n": 123,
-   "caught": 123,
-   "recall": 1.0,
-   "median_delay_h": 0.0,
+   "caught": 121,
+   "recall": 0.98,
+   "median_delay_h": 0.25,
    "waste_kwh": 625,
    "waste_l": 0
   },
@@ -32,7 +32,7 @@
    "n": 5,
    "caught": 5,
    "recall": 1.0,
-   "median_delay_h": 0.01,
+   "median_delay_h": 15.0,
    "waste_kwh": 199,
    "waste_l": 0
   },
@@ -48,15 +48,15 @@
    "n": 15,
    "caught": 15,
    "recall": 1.0,
-   "median_delay_h": 0.0,
+   "median_delay_h": 2.75,
    "waste_kwh": 0,
    "waste_l": 432225
   },
   "lights_left_on": {
    "n": 239,
-   "caught": 239,
-   "recall": 1.0,
-   "median_delay_h": 0.0,
+   "caught": 218,
+   "recall": 0.91,
+   "median_delay_h": 0.25,
    "waste_kwh": 1812,
    "waste_l": 0
   },
@@ -64,15 +64,15 @@
    "n": 8,
    "caught": 8,
    "recall": 1.0,
-   "median_delay_h": 0.21,
+   "median_delay_h": 206.75,
    "waste_kwh": 63,
    "waste_l": 0
   },
   "overcool": {
    "n": 31,
-   "caught": 27,
-   "recall": 0.87,
-   "median_delay_h": 0.0,
+   "caught": 10,
+   "recall": 0.32,
+   "median_delay_h": 0.75,
    "waste_kwh": 141,
    "waste_l": 0
   },
@@ -80,46 +80,46 @@
    "n": 31,
    "caught": 31,
    "recall": 1.0,
-   "median_delay_h": 0.0,
+   "median_delay_h": 0.25,
    "waste_kwh": 1895,
    "waste_l": 0
   }
  },
  "by_rule": {
   "dry_run": {
-   "alerts": 4,
-   "correct": 4,
+   "alerts": 17,
+   "correct": 17,
    "precision": 1.0
   },
   "earth_leak": {
-   "alerts": 10,
-   "correct": 10,
+   "alerts": 12,
+   "correct": 12,
    "precision": 1.0
   },
   "empty_room": {
-   "alerts": 15,
-   "correct": 15,
+   "alerts": 590,
+   "correct": 590,
    "precision": 1.0
   },
   "night_flow": {
-   "alerts": 15,
-   "correct": 15,
+   "alerts": 235,
+   "correct": 235,
    "precision": 1.0
   },
   "over_use": {
-   "alerts": 14,
-   "correct": 12,
-   "precision": 0.86
+   "alerts": 12,
+   "correct": 10,
+   "precision": 0.83
   },
   "overflow": {
-   "alerts": 4,
-   "correct": 4,
+   "alerts": 20,
+   "correct": 20,
    "precision": 1.0
   },
   "wall_heat": {
-   "alerts": 8,
-   "correct": 8,
-   "precision": 1.0
+   "alerts": 289,
+   "correct": 281,
+   "precision": 0.97
   }
  }
 }

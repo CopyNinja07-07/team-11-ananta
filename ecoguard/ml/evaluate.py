@@ -27,7 +27,8 @@ MATCH = {
 
 
 def to_ms(s: pd.Series) -> pd.Series:
-    return (pd.to_datetime(s).dt.tz_localize(IST).astype("int64") // 10**6).astype("int64")
+    # pandas may store datetimes in s, ms, us or ns depending on version, so pin the unit first
+    return pd.to_datetime(s).dt.tz_localize(IST).dt.as_unit("ms").astype("int64")
 
 
 def replay(data: Path) -> Detector:
