@@ -1,0 +1,640 @@
+<!doctype html><html><head><meta charset="utf-8"><title>ECOGUARD AI: Round 2 UI/UX Design Pack</title><style>@page { size: A4; margin: 16mm 15mm 18mm; }
+* { box-sizing: border-box; }
+body { font-family: Inter, "Helvetica Neue", Arial, sans-serif; color: #0f172a; font-size: 10.5pt; line-height: 1.5; margin: 0; }
+h1 { font-size: 24pt; margin: 0 0 4mm; letter-spacing: -0.3px; }
+h2 { font-size: 15pt; margin: 9mm 0 3mm; color: #064e3b; border-bottom: 2px solid #d1fae5; padding-bottom: 1.5mm; }
+h3 { font-size: 11.5pt; margin: 5mm 0 1.5mm; }
+p { margin: 0 0 2.5mm; }
+.page { page-break-after: always; }
+.page:last-child { page-break-after: auto; }
+.muted { color: #64748b; }
+.small { font-size: 9pt; }
+table { width: 100%; border-collapse: collapse; margin: 2mm 0 4mm; font-size: 9.5pt; }
+th, td { border-bottom: 1px solid #e2e8f0; padding: 1.6mm 2mm; text-align: left; vertical-align: top; }
+th { background: #f1f5f9; font-weight: 600; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4mm; }
+.card { border: 1px solid #cbd5e1; border-radius: 3mm; padding: 4mm; break-inside: avoid; }
+.tag { display: inline-block; font-size: 8pt; padding: 0.5mm 2mm; border-radius: 10mm; background: #ecfdf5; color: #047857; font-weight: 600; }
+.cover { height: 250mm; display: flex; flex-direction: column; justify-content: center; }
+.cover .brand { font-size: 11pt; color: #047857; font-weight: 700; letter-spacing: 1px; }
+.cover h1 { font-size: 30pt; }
+.kv { display: grid; grid-template-columns: 38mm 1fr; gap: 1mm 4mm; font-size: 10pt; }
+.kv b { color: #334155; }
+svg text { font-family: Inter, "Helvetica Neue", Arial, sans-serif; }
+img.shot { width: 100%; border: 1px solid #cbd5e1; border-radius: 2mm; }
+.swatch { display: flex; align-items: center; gap: 3mm; margin-bottom: 2mm; }
+.swatch i { width: 12mm; height: 8mm; border-radius: 1.5mm; display: inline-block; border: 1px solid #e2e8f0; }
+ul { margin: 0 0 3mm; padding-left: 5mm; }
+li { margin-bottom: 1mm; }
+.callout { background: #ecfdf5; border-left: 3px solid #059669; padding: 3mm 4mm; margin: 3mm 0; break-inside: avoid; }
+.warn { background: #fffbeb; border-left-color: #d97706; }
+code { background: #f1f5f9; padding: 0 1mm; border-radius: 1mm; font-size: 9pt; }
+</style></head><body>
+<div class="page cover">
+  <div class="brand">ANANTA HACKATHON 2026 · SANGAM · ROUND 2</div>
+  <h1>ECOGUARD AI<br>UI/UX Design Pack</h1>
+  <p style="font-size:13pt">Energy and water waste detector for an academic block: classrooms, a computer lab and offices.</p>
+  <div class="kv" style="margin-top:10mm">
+    <b>Team</b><span>Team 11, Viltrumites</span>
+    <b>Problem statement</b><span>PS 11: Intelligent Energy and Water Waste Detector for Buildings</span>
+    <b>Contents</b><span>Design goals and rationale · Personas · Sitemap · User flows · DFD Level 0 and 1 · Wireframes (10 screens) · High-fidelity screens · Style guide · States and accessibility · Tool workflow</span>
+    <b>Live prototype</b><span>React dashboard connected to the simulated building (see README in the ecoguard folder of our repository)</span>
+  </div>
+</div>
+
+<div class="page">
+<h2>1. Design goals and rationale</h2>
+<p>Our Round 1 plan covered every kind of building and every kind of waste. The jury's main feedback was that it was too broad. For Round 2 we fixed one setting that everyone can picture, <b>one academic block with five classrooms, a computer lab and two offices</b>, and designed for every connected energy and water waste inside it.</p>
+<table><tr><th style="width:32%">Decision</th><th>Why</th></tr>
+<tr><td>Building map is the first thing on the home screen</td><td>A facility manager thinks in rooms and floors, not in meter IDs. Colour shows what is happening in each room (in use, empty, wasting, wiring risk), so the problem is found in one look.</td></tr>
+<tr><td>Every alert says what, where, since when, what it costs in rupees, and what to do</td><td>Studies of feedback systems show that people act on money and clear next steps, not on kWh charts. The rupee figure is computed in code, never guessed by a language model.</td></tr>
+<tr><td>Advice in English and Hindi, one tap to switch</td><td>Facility and maintenance staff on Indian campuses are often more comfortable in Hindi.</td></tr>
+<tr><td>Two buttons on every alert: "Correct" and "Not waste"</td><td>Each answer becomes a label that retrains the model for this building. "Not waste" also stops any automatic action, so people stay in control.</td></tr>
+<tr><td>Automatic mode with a 15-minute grace period</td><td>Fast enough to stop most waste, slow enough for a manager to stop a wrong action. It never switches off a room with people in it.</td></tr>
+<tr><td>A separate "Heat in Walls" screen</td><td>This is our novel module. Waste that no normal meter shows (hot wiring joints, current leaking into damp walls) needs its own explanation, with a picture of how it is measured.</td></tr>
+<tr><td>Energy and water on the same screens, with the pump in the middle</td><td>The pump is where energy and water meet. An overflowing tank wastes both, so we show them together instead of in two separate apps.</td></tr>
+<tr><td>Savings page with a full-year before vs after</td><td>Answers the estate officer's real question: did it work, and how much did it save?</td></tr>
+</table>
+</div>
+
+<div class="page">
+<h3>Round 1 plan → Round 2 screens (consistency check)</h3>
+<table><tr><th style="width:42%">Module in our Round 1 PPT</th><th>Where it lives now</th></tr><tr><td>Data collection: IoT sensors, meters, CCTV</td><td>Simulator (virtual ESP32 + occupancy) · Rooms · Water & Pump</td></tr><tr><td>Intelligence engine: anomaly detection</td><td>Alerts · Overview map · Room detail chart (actual vs expected)</td></tr><tr><td>Intelligence engine: forecasting</td><td>Forecast</td></tr><tr><td>Intelligence engine: cross-utility (energy + water)</td><td>Water & Pump (pump links both) · Heat in Walls (damp wall + leak)</td></tr><tr><td>Decision & control automation (HVAC, lighting, water)</td><td>Alert actions · Settings (auto mode, grace period, tickets)</td></tr><tr><td>User interface: portal, reports, AI insights</td><td>All screens · advice in English/Hindi · labelled CSV export</td></tr><tr><td>Savings & carbon (ER entity)</td><td>Savings & Carbon (live + full-year before vs after)</td></tr><tr><td>Fail-safe: manual override, safe rules</td><td>Settings toggles · 'Not waste' stops auto action · relays never cut occupied rooms</td></tr></table>
+</div>
+
+<div class="page">
+<h2>2. Personas</h2>
+<p class="muted small">Proto-personas built from our literature review of campus energy and water studies and the roles that run our own university blocks.</p>
+<div class="grid2"><div class="card"><span class="tag">Persona</span><h3>Facility Manager</h3><p class="muted small">Runs the block day to day; looks at the phone between rounds.</p><b class="small">Goals</b><ul class="small"><li>Know which room is wasting right now, without walking every floor</li><li>Act in one tap, and not be blamed for switching off a class</li></ul><b class="small">Pain points</b><ul class="small"><li>Finds out about leaks from the electricity/water bill a month later</li><li>Guard rounds catch lights at 10 pm, too late</li></ul><b class="small">Served by:</b> <span class="small">Overview, Alerts, one-tap Switch off, Hindi advice</span></div><div class="card"><span class="tag">Persona</span><h3>Estate Officer / Admin</h3><p class="muted small">Owns the budget and the green-campus report.</p><b class="small">Goals</b><ul class="small"><li>Show money and CO₂ saved with numbers that hold up</li><li>Decide where to spend on repairs</li></ul><b class="small">Pain points</b><ul class="small"><li>No sub-metering: one bill for the whole block</li><li>Cannot prove that an intervention worked</li></ul><b class="small">Served by:</b> <span class="small">Savings & Carbon (before vs after), Forecast</span></div><div class="card"><span class="tag">Persona</span><h3>Electrician / Plumber</h3><p class="muted small">Gets called after something breaks.</p><b class="small">Goals</b><ul class="small"><li>Get told before it breaks, with the exact room or floor</li><li>Fewer emergency calls</li></ul><b class="small">Pain points</b><ul class="small"><li>Loose joints are found only after a burn smell or a trip</li><li>Leaks inside walls are found only when paint peels</li></ul><b class="small">Served by:</b> <span class="small">Heat in Walls, work-order tickets</span></div><div class="card"><span class="tag">Persona</span><h3>Faculty / Students (occupants)</h3><p class="muted small">Use the rooms; not dashboard users.</p><b class="small">Goals</b><ul class="small"><li>Room is ready and comfortable when class starts</li><li>Never lose power mid-class</li></ul><b class="small">Pain points</b><ul class="small"><li>AC set to 16 °C, doors open</li><li>Lights left on by the previous class</li></ul><b class="small">Served by:</b> <span class="small">Nothing to learn: ECOGUARD never switches off an occupied room</span></div></div>
+</div>
+
+<div class="page">
+<h2>3. Sitemap</h2>
+<svg viewBox="0 0 900 330" width="680" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker></defs>
+<path d="M380.0,50.4 Q252.0,84.0 100.0,123.9" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M387.2,54.0 Q301.5,84.0 199.0,119.9" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M408.1,54.0 Q351.0,84.0 298.0,111.8" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M429.1,54.0 Q400.5,84.0 375.8,110.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M450.0,54.0 Q450.0,84.0 450.0,110.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M470.9,54.0 Q499.5,84.0 524.2,110.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M491.9,54.0 Q549.0,84.0 602.0,111.8" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M512.8,54.0 Q598.5,84.0 701.0,119.9" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M520.0,50.4 Q648.0,84.0 800.0,123.9" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M151.3,162.0 Q149.0,195.5 146.7,230.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M73.9,162.0 Q99.5,195.5 125.9,230.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="99.5" y="191.5" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">map tile</text>
+<path d="M281.1,162.0 Q318.5,195.5 357.1,230.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M298.0,152.0 Q423.5,195.5 522.9,230.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="380" y="10" width="140" height="44" rx="22.0" fill="#047857" stroke="#047857" stroke-width="1.8"/>
+<text x="450.0" y="29.0" font-size="12" font-weight="600" text-anchor="middle" fill="#ffffff">ECOGUARD AI</text>
+<text x="450.0" y="43.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#ffffff">dashboard</text>
+<rect x="8" y="110" width="92" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="54.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Overview</text>
+<text x="54.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">KPIs · map · alerts</text>
+<rect x="107" y="110" width="92" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="153.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Rooms</text>
+<text x="153.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">table of 8 rooms</text>
+<rect x="206" y="110" width="92" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="252.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Alerts</text>
+<text x="252.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">open · history · all</text>
+<rect x="305" y="110" width="92" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="351.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Water &amp; Pump</text>
+<text x="351.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">tank · sump · flows</text>
+<rect x="404" y="110" width="92" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="450.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Heat in Walls</text>
+<text x="450.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">circuits · leakage</text>
+<rect x="503" y="110" width="92" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="549.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Forecast</text>
+<text x="549.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">next 24 h</text>
+<rect x="602" y="110" width="92" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="648.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Savings &amp; Carbon</text>
+<text x="648.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">before vs after</text>
+<rect x="701" y="110" width="92" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="747.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Simulator</text>
+<text x="747.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">demo control</text>
+<rect x="800" y="110" width="92" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="846.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Settings</text>
+<text x="846.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">automation rules</text>
+<rect x="70" y="230" width="150" height="50" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="145.0" y="252.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Room detail</text>
+<text x="145.0" y="266.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(one per room, /rooms/:id)</text>
+<rect x="300" y="230" width="170" height="50" rx="6" fill="#fafafa" stroke="#94a3b8" stroke-width="1.8"/>
+<text x="385.0" y="252.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Alert actions</text>
+<text x="385.0" y="266.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">switch off · confirm · dismiss</text>
+<rect x="520" y="230" width="150" height="50" rx="6" fill="#fafafa" stroke="#94a3b8" stroke-width="1.8"/>
+<text x="595.0" y="252.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Labelled alerts CSV</text>
+<text x="595.0" y="266.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(download)</text>
+</svg>
+<p class="small muted">Nine top-level screens in a fixed sidebar (a drawer on phones). Room detail opens from the Rooms table or from any tile on the building map. Every screen is at most two clicks from Overview.</p>
+<h2>4. User flows</h2>
+<h3>Flow A: respond to waste (facility manager), 2 taps</h3><svg viewBox="0 0 880 90" width="680" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker></defs>
+<path d="M138.3,45.0 Q147.3,45.0 156.3,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M284.7,45.0 Q293.7,45.0 302.7,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M431.0,45.0 Q440.0,45.0 449.0,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M577.3,45.0 Q586.3,45.0 595.3,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M723.7,45.0 Q732.7,45.0 741.7,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="10.0" y="15" width="128.33333333333334" height="60" rx="30" fill="#047857" stroke="#047857" stroke-width="1.8"/>
+<text x="74.16666666666667" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#ffffff">Phone buzz /</text>
+<text x="74.16666666666667" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#ffffff">dashboard badge</text>
+<rect x="156.33333333333334" y="15" width="128.33333333333334" height="60" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="220.5" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Overview:</text>
+<text x="220.5" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">alert card</text>
+<rect x="302.6666666666667" y="15" width="128.33333333333334" height="60" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="366.83333333333337" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Read advice</text>
+<text x="366.83333333333337" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(EN / हिन्दी)</text>
+<polygon points="513.1666666666666,15 577.3333333333334,45.0 513.1666666666666,75 449.0,45.0" fill="#fffbeb" stroke="#d97706" stroke-width="1.8"/>
+<text x="513.1666666666666" y="49.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Real waste?</text>
+<rect x="595.3333333333334" y="15" width="128.33333333333334" height="60" rx="30.0" fill="#ecfdf5" stroke="#047857" stroke-width="1.8"/>
+<text x="659.5" y="35.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Switch room off</text>
+<text x="659.5" y="49.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(or wait 15 min:</text>
+<text x="659.5" y="63.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">auto)</text>
+<rect x="741.6666666666667" y="15" width="128.33333333333334" height="60" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="805.8333333333334" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Savings updated</text>
+<text x="805.8333333333334" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">label saved</text>
+</svg>
+<h3>Flow B: catch a hot wiring joint before it fails (electrician)</h3><svg viewBox="0 0 880 90" width="680" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker></defs>
+<path d="M138.3,45.0 Q147.3,45.0 156.3,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M284.7,45.0 Q293.7,45.0 302.7,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M431.0,45.0 Q440.0,45.0 449.0,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M577.3,45.0 Q586.3,45.0 595.3,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M723.7,45.0 Q732.7,45.0 741.7,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="10.0" y="15" width="128.33333333333334" height="60" rx="30" fill="#047857" stroke="#047857" stroke-width="1.8"/>
+<text x="74.16666666666667" y="49.0" font-size="12" font-weight="600" text-anchor="middle" fill="#ffffff">Heat in Walls</text>
+<rect x="156.33333333333334" y="15" width="128.33333333333334" height="60" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="220.5" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Circuit shows</text>
+<text x="220.5" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">&#x27;Hot joint&#x27;</text>
+<rect x="302.6666666666667" y="15" width="128.33333333333334" height="60" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="366.83333333333337" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Open room</text>
+<text x="366.83333333333337" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">detail</text>
+<rect x="449.0" y="15" width="128.33333333333334" height="60" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="513.1666666666666" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">See R rising</text>
+<text x="513.1666666666666" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">over days</text>
+<rect x="595.3333333333334" y="15" width="128.33333333333334" height="60" rx="30.0" fill="#ecfdf5" stroke="#047857" stroke-width="1.8"/>
+<text x="659.5" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Ticket to</text>
+<text x="659.5" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">electrician</text>
+<rect x="741.6666666666667" y="15" width="128.33333333333334" height="60" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="805.8333333333334" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">R back to</text>
+<text x="805.8333333333334" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">normal</text>
+</svg>
+<h3>Flow C: find a leak hidden inside a wall (plumber)</h3><svg viewBox="0 0 880 90" width="680" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker></defs>
+<path d="M138.3,45.0 Q147.3,45.0 156.3,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M284.7,45.0 Q293.7,45.0 302.7,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M431.0,45.0 Q440.0,45.0 449.0,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M577.3,45.0 Q586.3,45.0 595.3,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M723.7,45.0 Q732.7,45.0 741.7,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="10.0" y="15" width="128.33333333333334" height="60" rx="30" fill="#047857" stroke="#047857" stroke-width="1.8"/>
+<text x="74.16666666666667" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#ffffff">Night water</text>
+<text x="74.16666666666667" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#ffffff">alert on F1</text>
+<rect x="156.33333333333334" y="15" width="128.33333333333334" height="60" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="220.5" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Water &amp; Pump:</text>
+<text x="220.5" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">flow never 0</text>
+<polygon points="366.83333333333337,15 431.0,45.0 366.83333333333337,75 302.6666666666667,45.0" fill="#fffbeb" stroke="#d97706" stroke-width="1.8"/>
+<text x="366.83333333333337" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Same floor:</text>
+<text x="366.83333333333337" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">earth leakage up?</text>
+<rect x="449.0" y="15" width="128.33333333333334" height="60" rx="30.0" fill="#ecfdf5" stroke="#047857" stroke-width="1.8"/>
+<text x="513.1666666666666" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Leak inside wall</text>
+<text x="513.1666666666666" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">→ close valve</text>
+<rect x="595.3333333333334" y="15" width="128.33333333333334" height="60" rx="30.0" fill="#ecfdf5" stroke="#047857" stroke-width="1.8"/>
+<text x="659.5" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Ticket to</text>
+<text x="659.5" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">plumber</text>
+<rect x="741.6666666666667" y="15" width="128.33333333333334" height="60" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="805.8333333333334" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Litres saved</text>
+<text x="805.8333333333334" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">on Savings</text>
+</svg>
+<h3>Flow D: report savings (estate officer)</h3><svg viewBox="0 0 880 90" width="680" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker></defs>
+<path d="M167.6,45.0 Q176.6,45.0 185.6,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M343.2,45.0 Q352.2,45.0 361.2,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M518.8,45.0 Q527.8,45.0 536.8,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M694.4,45.0 Q703.4,45.0 712.4,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="10.0" y="15" width="157.6" height="60" rx="30" fill="#047857" stroke="#047857" stroke-width="1.8"/>
+<text x="88.8" y="49.0" font-size="12" font-weight="600" text-anchor="middle" fill="#ffffff">Estate officer</text>
+<rect x="185.6" y="15" width="157.6" height="60" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="264.4" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Savings &amp;</text>
+<text x="264.4" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">Carbon</text>
+<rect x="361.2" y="15" width="157.6" height="60" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="440.0" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Before vs after</text>
+<text x="440.0" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(full year)</text>
+<rect x="536.8" y="15" width="157.6" height="60" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="615.5999999999999" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Waste-type</text>
+<text x="615.5999999999999" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">table</text>
+<rect x="712.4" y="15" width="157.6" height="60" rx="30.0" fill="#ecfdf5" stroke="#047857" stroke-width="1.8"/>
+<text x="791.1999999999999" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Export /</text>
+<text x="791.1999999999999" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">present</text>
+</svg>
+</div>
+
+<div class="page">
+<h2>5. Data flow diagram: Level 0 (context)</h2>
+<svg viewBox="0 0 900 360" width="680" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker></defs>
+<path d="M187.8,80.0 Q277.5,112.5 330.0,131.5" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="277.5" y="108.5" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">energy &amp; voltage readings</text>
+<path d="M200.0,178.6 Q277.5,177.5 330.0,176.7" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="277.5" y="173.5" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">flow &amp; level readings</text>
+<path d="M181.7,280.0 Q277.5,242.5 330.0,222.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="277.5" y="238.5" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">headcount</text>
+<path d="M570.0,122.4 Q618.4,101.2 700.0,77.6" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="618.4" y="97.2" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">alerts, advice, savings</text>
+<path d="M726.5,80.0 Q626.6,123.8 570.0,140.2" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="626.6" y="113.8" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">confirm / dismiss,</text>
+<text x="626.6" y="125.8" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">manual actions, settings</text>
+<path d="M570.0,176.7 Q622.5,177.5 700.0,178.6" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="622.5" y="173.5" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">work orders</text>
+<path d="M570.0,222.0 Q622.5,242.5 718.3,280.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="622.5" y="232.5" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">switch off, pump off,</text>
+<text x="622.5" y="244.5" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">close valve</text>
+<rect x="330" y="120" width="240" height="110" rx="40" fill="#ecfdf5" stroke="#047857" stroke-width="1.8"/>
+<text x="450.0" y="172.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">0. ECOGUARD AI</text>
+<text x="450.0" y="186.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">waste detection &amp; control</text>
+<rect x="10" y="20" width="190" height="60" rx="0" fill="#f1f5f9" stroke="#475569" stroke-width="1.8"/>
+<text x="105.0" y="47.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Room sensor nodes</text>
+<text x="105.0" y="61.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(ESP32: V, I, kWh, people)</text>
+<rect x="10" y="150" width="190" height="60" rx="0" fill="#f1f5f9" stroke="#475569" stroke-width="1.8"/>
+<text x="105.0" y="177.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Water node</text>
+<text x="105.0" y="191.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(flow, tank, sump, pump)</text>
+<rect x="10" y="280" width="190" height="60" rx="0" fill="#f1f5f9" stroke="#475569" stroke-width="1.8"/>
+<text x="105.0" y="307.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Cameras / timetable</text>
+<text x="105.0" y="321.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(occupancy)</text>
+<rect x="700" y="20" width="190" height="60" rx="0" fill="#f1f5f9" stroke="#475569" stroke-width="1.8"/>
+<text x="795.0" y="47.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Facility manager</text>
+<text x="795.0" y="61.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(dashboard)</text>
+<rect x="700" y="150" width="190" height="60" rx="0" fill="#f1f5f9" stroke="#475569" stroke-width="1.8"/>
+<text x="795.0" y="177.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Electrician / plumber</text>
+<text x="795.0" y="191.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(tickets)</text>
+<rect x="700" y="280" width="190" height="60" rx="0" fill="#f1f5f9" stroke="#475569" stroke-width="1.8"/>
+<text x="795.0" y="307.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Relays, pump, valves</text>
+<text x="795.0" y="321.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(actuators)</text>
+</svg>
+<p class="small muted">The whole system as one process. Three kinds of sensors feed it; it talks to people (the facility manager and maintenance staff) and to actuators (relays, pump, valves).</p>
+<h2>6. Data flow diagram: Level 1</h2>
+<svg viewBox="0 0 940 560" width="680" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker></defs>
+<path d="M180.0,58.0 Q205.0,58.0 230.0,58.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="205.0" y="54.0" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">readings</text>
+<path d="M400.0,55.9 Q437.5,55.0 460.0,54.4" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="437.5" y="51.0" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">stored</text>
+<path d="M315.0,86.0 Q315.0,118.0 315.0,150.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="315.0" y="114.0" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">live reading</text>
+<path d="M180.0,174.3 Q205.0,175.0 230.0,175.7" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="205.0" y="171.0" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">coefficients</text>
+<path d="M315.0,206.0 Q315.0,240.0 315.0,270.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="315.0" y="236.0" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">expected kW</text>
+<path d="M400.0,302.0 Q437.5,302.0 460.0,302.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="437.5" y="298.0" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">alerts</text>
+<path d="M557.4,324.0 Q552.5,365.0 548.3,400.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M400.0,302.0 Q550.0,302.0 700.0,302.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="550.0" y="298.0" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">open alerts</text>
+<path d="M789.0,270.0 Q792.5,242.0 797.2,204.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M790.9,270.0 Q807.5,180.0 824.8,86.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="807.5" y="176.0" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">commands</text>
+<path d="M539.3,74.0 Q404.0,218.2 326.9,400.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="404.0" y="214.2" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">history</text>
+<path d="M785.0,334.0 Q785.0,365.0 785.0,400.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="785.0" y="361.0" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">avoided kWh / L</text>
+<path d="M789.5,456.0 Q792.5,475.0 796.5,500.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M460.3,456.0 Q426.1,467.3 363.1,500.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="426.1" y="463.3" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">advice</text>
+<path d="M315.0,456.0 Q315.0,476.5 315.0,500.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="315.0" y="472.5" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">forecast</text>
+<path d="M328.2,500.0 Q397.1,369.1 506.6,324.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="397.1" y="365.1" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">confirm / dismiss</text>
+<path d="M700.0,295.6 Q424.2,274.9 149.8,400.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="424.2" y="270.9" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">tickets</text>
+<rect x="10" y="30" width="170" height="56" rx="0" fill="#f1f5f9" stroke="#475569" stroke-width="1.8"/>
+<text x="95.0" y="55.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Sensor nodes</text>
+<text x="95.0" y="69.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(rooms + water)</text>
+<rect x="230" y="30" width="170" height="56" rx="28.0" fill="#ecfdf5" stroke="#047857" stroke-width="1.8"/>
+<text x="315.0" y="55.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">1.0 Ingest &amp;</text>
+<text x="315.0" y="69.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">validate readings</text>
+<rect x="460" y="30" width="200" height="44" fill="#eff6ff" stroke="none"/>
+<path d="M660,30 L460,30 L460,74 L660,74" fill="none" stroke="#0369a1" stroke-width="1.8"/>
+<line x1="490" y1="30" x2="490" y2="74" stroke="#0369a1" stroke-width="1.2"/>
+<text x="575.0" y="49.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">D1 Readings</text>
+<text x="575.0" y="63.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(energy, water, occupancy)</text>
+<rect x="230" y="150" width="170" height="56" rx="28.0" fill="#ecfdf5" stroke="#047857" stroke-width="1.8"/>
+<text x="315.0" y="175.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">2.0 Predict normal use</text>
+<text x="315.0" y="189.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(trained baseline)</text>
+<rect x="10" y="150" width="170" height="44" fill="#eff6ff" stroke="none"/>
+<path d="M180,150 L10,150 L10,194 L180,194" fill="none" stroke="#0369a1" stroke-width="1.8"/>
+<line x1="40" y1="150" x2="40" y2="194" stroke="#0369a1" stroke-width="1.2"/>
+<text x="110.0" y="169.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">D5 Model</text>
+<text x="110.0" y="183.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(baseline.json)</text>
+<rect x="230" y="270" width="170" height="64" rx="32.0" fill="#ecfdf5" stroke="#047857" stroke-width="1.8"/>
+<text x="315.0" y="292.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">3.0 Detect waste</text>
+<text x="315.0" y="306.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(rules + hidden heat</text>
+<text x="315.0" y="320.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">+ water checks)</text>
+<rect x="460" y="280" width="200" height="44" fill="#eff6ff" stroke="none"/>
+<path d="M660,280 L460,280 L460,324 L660,324" fill="none" stroke="#0369a1" stroke-width="1.8"/>
+<line x1="490" y1="280" x2="490" y2="324" stroke="#0369a1" stroke-width="1.2"/>
+<text x="575.0" y="299.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">D2 Alerts</text>
+<text x="575.0" y="313.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(+ manager labels)</text>
+<rect x="460" y="400" width="170" height="56" rx="28.0" fill="#ecfdf5" stroke="#047857" stroke-width="1.8"/>
+<text x="545.0" y="425.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">4.0 Advise</text>
+<text x="545.0" y="439.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(EN / Hindi, ₹, kg CO₂)</text>
+<rect x="700" y="270" width="170" height="64" rx="32.0" fill="#ecfdf5" stroke="#047857" stroke-width="1.8"/>
+<text x="785.0" y="292.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">5.0 Decide &amp; control</text>
+<text x="785.0" y="306.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(auto after grace,</text>
+<text x="785.0" y="320.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">tickets)</text>
+<rect x="700" y="160" width="200" height="44" fill="#eff6ff" stroke="none"/>
+<path d="M900,160 L700,160 L700,204 L900,204" fill="none" stroke="#0369a1" stroke-width="1.8"/>
+<line x1="730" y1="160" x2="730" y2="204" stroke="#0369a1" stroke-width="1.2"/>
+<text x="815.0" y="186.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">D3 Control actions</text>
+<rect x="740" y="30" width="180" height="56" rx="0" fill="#f1f5f9" stroke="#475569" stroke-width="1.8"/>
+<text x="830.0" y="55.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Relays / pump /</text>
+<text x="830.0" y="69.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">valves</text>
+<rect x="230" y="400" width="170" height="56" rx="28.0" fill="#ecfdf5" stroke="#047857" stroke-width="1.8"/>
+<text x="315.0" y="425.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">6.0 Forecast</text>
+<text x="315.0" y="439.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">next 24 h</text>
+<rect x="700" y="400" width="170" height="56" rx="28.0" fill="#ecfdf5" stroke="#047857" stroke-width="1.8"/>
+<text x="785.0" y="425.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">7.0 Track savings</text>
+<text x="785.0" y="439.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">&amp; carbon</text>
+<rect x="700" y="500" width="200" height="44" fill="#eff6ff" stroke="none"/>
+<path d="M900,500 L700,500 L700,544 L900,544" fill="none" stroke="#0369a1" stroke-width="1.8"/>
+<line x1="730" y1="500" x2="730" y2="544" stroke="#0369a1" stroke-width="1.2"/>
+<text x="815.0" y="526.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">D4 Savings daily</text>
+<rect x="230" y="500" width="170" height="50" rx="0" fill="#f1f5f9" stroke="#475569" stroke-width="1.8"/>
+<text x="315.0" y="529.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Facility manager</text>
+<rect x="10" y="400" width="170" height="50" rx="0" fill="#f1f5f9" stroke="#475569" stroke-width="1.8"/>
+<text x="95.0" y="429.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Maintenance staff</text>
+</svg>
+<p class="small muted">D1 to D4 are tables in our database (energy_readings, water_readings, occupancy_records → D1; alerts → D2; control_actions → D3; savings_daily → D4). D5 is the trained model file.</p>
+</div>
+
+<div class="page">
+<h2>7. Wireframes (low fidelity)</h2>
+<p class="small muted">Desktop frame 1440 × 900. The grey sidebar and header are shared by every screen. Dashed boxes are charts.</p>
+<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W1. Overview</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="1440" height="900" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
+<rect x="0" y="0" width="240" height="900" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 9</text>
+<text x="120.0" y="86.4" font-size="22" text-anchor="middle" fill="#475569">nav items</text>
+<rect x="240" y="0" width="1200" height="50" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · language</text>
+<rect x="264" y="70" width="700" height="50" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="614.0" y="95.0" font-size="26" text-anchor="middle" fill="#475569">Title + one-line purpose</text>
+<rect x="264" y="135" width="220" height="100" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="374.0" y="185.0" font-size="26" text-anchor="middle" fill="#475569">Power now</text>
+<rect x="497" y="135" width="220" height="100" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="607.0" y="185.0" font-size="26" text-anchor="middle" fill="#475569">Energy today</text>
+<rect x="730" y="135" width="220" height="100" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="185.0" font-size="26" text-anchor="middle" fill="#475569">Water today</text>
+<rect x="963" y="135" width="220" height="100" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="1073.0" y="185.0" font-size="26" text-anchor="middle" fill="#475569">Saved today</text>
+<rect x="1196" y="135" width="220" height="100" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="1306.0" y="185.0" font-size="26" text-anchor="middle" fill="#475569">CO2 avoided</text>
+<rect x="264" y="255" width="660" height="420" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="594.0" y="449.4" font-size="26" text-anchor="middle" fill="#475569">Building map: 3 floors x rooms, colour = in</text>
+<text x="594.0" y="480.59999999999997" font-size="26" text-anchor="middle" fill="#475569">use / empty / wasting / wiring risk</text>
+<rect x="264" y="690" width="660" height="70" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="594.0" y="725.0" font-size="26" text-anchor="middle" fill="#475569">Tank % · Sump % · Pump state</text>
+<rect x="944" y="255" width="472" height="30" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="1180.0" y="270.0" font-size="26" text-anchor="middle" fill="#475569">Open alerts + See all</text>
+<rect x="944" y="295" width="472" height="220" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="1180.0" y="389.4" font-size="26" text-anchor="middle" fill="#475569">Alert card: what, where, since,</text>
+<text x="1180.0" y="420.59999999999997" font-size="26" text-anchor="middle" fill="#475569">advice, Rs, actions</text>
+<rect x="944" y="525" width="472" height="220" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="1180.0" y="635.0" font-size="26" text-anchor="middle" fill="#475569">Alert card</text>
+</svg></div>
+<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W2. Rooms</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="1440" height="900" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
+<rect x="0" y="0" width="240" height="900" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 9</text>
+<text x="120.0" y="86.4" font-size="22" text-anchor="middle" fill="#475569">nav items</text>
+<rect x="240" y="0" width="1200" height="50" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · language</text>
+<rect x="264" y="70" width="700" height="50" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="614.0" y="95.0" font-size="26" text-anchor="middle" fill="#475569">Title + purpose</text>
+<rect x="264" y="135" width="1152" height="520" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="379.4" font-size="26" text-anchor="middle" fill="#475569">Table: room · floor · people · using · should use · difference · status (row</text>
+<text x="840.0" y="410.59999999999997" font-size="26" text-anchor="middle" fill="#475569">click -> room)</text>
+</svg></div>
+<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W3. Room detail</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="1440" height="900" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
+<rect x="0" y="0" width="240" height="900" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 9</text>
+<text x="120.0" y="86.4" font-size="22" text-anchor="middle" fill="#475569">nav items</text>
+<rect x="240" y="0" width="1200" height="50" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · language</text>
+<rect x="264" y="65" width="120" height="20" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="324.0" y="59.4" font-size="26" text-anchor="middle" fill="#475569">< All</text>
+<text x="324.0" y="90.6" font-size="26" text-anchor="middle" fill="#475569">rooms</text>
+<rect x="264" y="95" width="600" height="45" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="564.0" y="117.5" font-size="26" text-anchor="middle" fill="#475569">Room name, floor, seats</text>
+<rect x="1250" y="95" width="166" height="40" rx="10" fill="#cbd5e1" stroke="#94a3b8" stroke-width="2"/>
+<text x="1333.0" y="99.4" font-size="26" text-anchor="middle" fill="#475569">Switch off</text>
+<text x="1333.0" y="130.6" font-size="26" text-anchor="middle" fill="#475569">now</text>
+<rect x="264" y="160" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="403.0" y="207.5" font-size="26" text-anchor="middle" fill="#475569">People</text>
+<rect x="554" y="160" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="693.0" y="207.5" font-size="26" text-anchor="middle" fill="#475569">Using vs should</text>
+<rect x="844" y="160" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="983.0" y="207.5" font-size="26" text-anchor="middle" fill="#475569">Wiring resistance</text>
+<rect x="1134" y="160" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="1273.0" y="207.5" font-size="26" text-anchor="middle" fill="#475569">Earth leakage</text>
+<rect x="264" y="275" width="1152" height="330" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2" stroke-dasharray="10 6"/>
+<polyline points="284,575 609.5999999999999,456.5 897.6,506.0 1185.6,390.5 1396,440.0" fill="none" stroke="#94a3b8" stroke-width="3"/>
+<text x="840.0" y="440.0" font-size="26" text-anchor="middle" fill="#475569">Chart: actual vs expected kW + people (24h / 72h / 7d)</text>
+<rect x="264" y="625" width="1152" height="180" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="715.0" font-size="26" text-anchor="middle" fill="#475569">Alerts for this room</text>
+</svg></div>
+<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W4. Alerts</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="1440" height="900" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
+<rect x="0" y="0" width="240" height="900" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 9</text>
+<text x="120.0" y="86.4" font-size="22" text-anchor="middle" fill="#475569">nav items</text>
+<rect x="240" y="0" width="1200" height="50" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · language</text>
+<rect x="264" y="70" width="800" height="50" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="664.0" y="95.0" font-size="26" text-anchor="middle" fill="#475569">Title + 'your answers train the model'</text>
+<rect x="1230" y="75" width="186" height="40" rx="10" fill="#cbd5e1" stroke="#94a3b8" stroke-width="2"/>
+<text x="1323.0" y="79.4" font-size="26" text-anchor="middle" fill="#475569">Download</text>
+<text x="1323.0" y="110.60000000000001" font-size="26" text-anchor="middle" fill="#475569">labels CSV</text>
+<rect x="264" y="135" width="400" height="40" rx="10" fill="#cbd5e1" stroke="#94a3b8" stroke-width="2"/>
+<text x="464.0" y="139.4" font-size="26" text-anchor="middle" fill="#475569">Tabs: Open | History | All</text>
+<text x="464.0" y="170.6" font-size="26" text-anchor="middle" fill="#475569">+ type filter</text>
+<rect x="264" y="190" width="566" height="215" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="547.0" y="281.9" font-size="26" text-anchor="middle" fill="#475569">Alert card: advice EN/HI, Rs, kWh/L,</text>
+<text x="547.0" y="313.09999999999997" font-size="26" text-anchor="middle" fill="#475569">Switch off / Correct / Not waste</text>
+<rect x="850" y="190" width="566" height="215" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="1133.0" y="281.9" font-size="26" text-anchor="middle" fill="#475569">Alert card: advice EN/HI, Rs, kWh/L,</text>
+<text x="1133.0" y="313.09999999999997" font-size="26" text-anchor="middle" fill="#475569">Switch off / Correct / Not waste</text>
+<rect x="264" y="420" width="566" height="215" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="547.0" y="511.9" font-size="26" text-anchor="middle" fill="#475569">Alert card: advice EN/HI, Rs, kWh/L,</text>
+<text x="547.0" y="543.1" font-size="26" text-anchor="middle" fill="#475569">Switch off / Correct / Not waste</text>
+<rect x="850" y="420" width="566" height="215" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="1133.0" y="511.9" font-size="26" text-anchor="middle" fill="#475569">Alert card: advice EN/HI, Rs, kWh/L,</text>
+<text x="1133.0" y="543.1" font-size="26" text-anchor="middle" fill="#475569">Switch off / Correct / Not waste</text>
+<rect x="264" y="650" width="566" height="215" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="547.0" y="741.9" font-size="26" text-anchor="middle" fill="#475569">Alert card: advice EN/HI, Rs, kWh/L,</text>
+<text x="547.0" y="773.1" font-size="26" text-anchor="middle" fill="#475569">Switch off / Correct / Not waste</text>
+<rect x="850" y="650" width="566" height="215" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="1133.0" y="741.9" font-size="26" text-anchor="middle" fill="#475569">Alert card: advice EN/HI, Rs, kWh/L,</text>
+<text x="1133.0" y="773.1" font-size="26" text-anchor="middle" fill="#475569">Switch off / Correct / Not waste</text>
+</svg></div>
+<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W5. Water & Pump</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="1440" height="900" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
+<rect x="0" y="0" width="240" height="900" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 9</text>
+<text x="120.0" y="86.4" font-size="22" text-anchor="middle" fill="#475569">nav items</text>
+<rect x="240" y="0" width="1200" height="50" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · language</text>
+<rect x="264" y="70" width="900" height="50" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="714.0" y="95.0" font-size="26" text-anchor="middle" fill="#475569">Title + energy-water link line</text>
+<rect x="264" y="135" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="403.0" y="182.5" font-size="26" text-anchor="middle" fill="#475569">Overhead tank %</text>
+<rect x="554" y="135" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="693.0" y="182.5" font-size="26" text-anchor="middle" fill="#475569">Sump %</text>
+<rect x="844" y="135" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="983.0" y="182.5" font-size="26" text-anchor="middle" fill="#475569">Pump state</text>
+<rect x="1134" y="135" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="1273.0" y="182.5" font-size="26" text-anchor="middle" fill="#475569">Lowest night flow</text>
+<rect x="264" y="250" width="1152" height="300" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2" stroke-dasharray="10 6"/>
+<polyline points="284,520 609.5999999999999,415.0 897.6,460.0 1185.6,355.0 1396,400.0" fill="none" stroke="#94a3b8" stroke-width="3"/>
+<text x="840.0" y="400.0" font-size="26" text-anchor="middle" fill="#475569">Chart: tank level, sump level, pump on (48 h)</text>
+<rect x="264" y="570" width="1152" height="260" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2" stroke-dasharray="10 6"/>
+<polyline points="284,800 609.5999999999999,713.0 897.6,752.0 1185.6,661.0 1396,700.0" fill="none" stroke="#94a3b8" stroke-width="3"/>
+<text x="840.0" y="700.0" font-size="26" text-anchor="middle" fill="#475569">Chart: flow per floor, stacked (leaks never reach zero)</text>
+</svg></div>
+<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W6. Heat in Walls</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="1440" height="900" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
+<rect x="0" y="0" width="240" height="900" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 9</text>
+<text x="120.0" y="86.4" font-size="22" text-anchor="middle" fill="#475569">nav items</text>
+<rect x="240" y="0" width="1200" height="50" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · language</text>
+<rect x="264" y="70" width="900" height="50" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="714.0" y="95.0" font-size="26" text-anchor="middle" fill="#475569">Title + 'waste no meter can see'</text>
+<rect x="264" y="135" width="1152" height="210" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="240.0" font-size="26" text-anchor="middle" fill="#475569">How we measure: board V1 -> wall wire (hot joint) -> room V2 + 3 formulas</text>
+<rect x="264" y="365" width="1152" height="330" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="530.0" font-size="26" text-anchor="middle" fill="#475569">Table per circuit: R0 · R now · change bar · heat at full load · status</text>
+<rect x="264" y="715" width="1152" height="130" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="780.0" font-size="26" text-anchor="middle" fill="#475569">Earth leakage by floor (3 tiles)</text>
+</svg></div>
+<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W7. Forecast</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="1440" height="900" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
+<rect x="0" y="0" width="240" height="900" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 9</text>
+<text x="120.0" y="86.4" font-size="22" text-anchor="middle" fill="#475569">nav items</text>
+<rect x="240" y="0" width="1200" height="50" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · language</text>
+<rect x="264" y="70" width="900" height="50" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="714.0" y="95.0" font-size="26" text-anchor="middle" fill="#475569">Title + inputs used</text>
+<rect x="264" y="135" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="403.0" y="182.5" font-size="26" text-anchor="middle" fill="#475569">Next 24 h kWh</text>
+<rect x="554" y="135" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="693.0" y="182.5" font-size="26" text-anchor="middle" fill="#475569">Expected bill</text>
+<rect x="844" y="135" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="983.0" y="182.5" font-size="26" text-anchor="middle" fill="#475569">Peak hour</text>
+<rect x="1134" y="135" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="1273.0" y="182.5" font-size="26" text-anchor="middle" fill="#475569">Yesterday's error</text>
+<rect x="264" y="250" width="1152" height="380" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2" stroke-dasharray="10 6"/>
+<polyline points="284,600 609.5999999999999,459.0 897.6,516.0 1185.6,383.0 1396,440.0" fill="none" stroke="#94a3b8" stroke-width="3"/>
+<text x="840.0" y="440.0" font-size="26" text-anchor="middle" fill="#475569">Bar chart: last 24 h actual | next 24 h forecast</text>
+</svg></div>
+<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W8. Savings & Carbon</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="1440" height="900" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
+<rect x="0" y="0" width="240" height="900" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 9</text>
+<text x="120.0" y="86.4" font-size="22" text-anchor="middle" fill="#475569">nav items</text>
+<rect x="240" y="0" width="1200" height="50" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · language</text>
+<rect x="264" y="70" width="900" height="50" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="714.0" y="95.0" font-size="26" text-anchor="middle" fill="#475569">Title</text>
+<rect x="264" y="135" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="403.0" y="182.5" font-size="26" text-anchor="middle" fill="#475569">Money saved</text>
+<rect x="554" y="135" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="693.0" y="182.5" font-size="26" text-anchor="middle" fill="#475569">Energy avoided</text>
+<rect x="844" y="135" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="983.0" y="182.5" font-size="26" text-anchor="middle" fill="#475569">Water avoided</text>
+<rect x="1134" y="135" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="1273.0" y="182.5" font-size="26" text-anchor="middle" fill="#475569">CO2 avoided</text>
+<rect x="264" y="250" width="1152" height="220" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2" stroke-dasharray="10 6"/>
+<polyline points="284,440 609.5999999999999,371.0 897.6,404.0 1185.6,327.0 1396,360.0" fill="none" stroke="#94a3b8" stroke-width="3"/>
+<text x="840.0" y="360.0" font-size="26" text-anchor="middle" fill="#475569">Chart: waste caught vs avoided per day</text>
+<rect x="264" y="490" width="376" height="110" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="452.0" y="545.0" font-size="26" text-anchor="middle" fill="#475569">Electricity before/after</text>
+<rect x="652" y="490" width="376" height="110" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="545.0" font-size="26" text-anchor="middle" fill="#475569">Water before/after</text>
+<rect x="1040" y="490" width="376" height="110" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="1228.0" y="545.0" font-size="26" text-anchor="middle" fill="#475569">Bill before/after</text>
+<rect x="264" y="620" width="1152" height="120" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2" stroke-dasharray="10 6"/>
+<polyline points="284,710 609.5999999999999,686.0 897.6,704.0 1185.6,662.0 1396,680.0" fill="none" stroke="#94a3b8" stroke-width="3"/>
+<text x="840.0" y="680.0" font-size="26" text-anchor="middle" fill="#475569">Monthly electricity: without vs with</text>
+<rect x="264" y="755" width="1152" height="120" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="815.0" font-size="26" text-anchor="middle" fill="#475569">Table: waste type, before, after, cut by %</text>
+</svg></div>
+<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W9. Simulator</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="1440" height="900" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
+<rect x="0" y="0" width="240" height="900" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 9</text>
+<text x="120.0" y="86.4" font-size="22" text-anchor="middle" fill="#475569">nav items</text>
+<rect x="240" y="0" width="1200" height="50" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · language</text>
+<rect x="264" y="70" width="900" height="50" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="714.0" y="95.0" font-size="26" text-anchor="middle" fill="#475569">Title + 'detector never sees the truth'</text>
+<rect x="264" y="135" width="566" height="230" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="547.0" y="250.0" font-size="26" text-anchor="middle" fill="#475569">Create a fault: type + where + button</text>
+<rect x="850" y="135" width="566" height="230" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="1133.0" y="250.0" font-size="26" text-anchor="middle" fill="#475569">Power cut · speed buttons</text>
+<rect x="264" y="385" width="1152" height="300" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="535.0" font-size="26" text-anchor="middle" fill="#475569">Ground truth list: fault · where · since · Detected? · Fix</text>
+</svg></div>
+<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W10. Settings</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="1440" height="900" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
+<rect x="0" y="0" width="240" height="900" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 9</text>
+<text x="120.0" y="86.4" font-size="22" text-anchor="middle" fill="#475569">nav items</text>
+<rect x="240" y="0" width="1200" height="50" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · language</text>
+<rect x="264" y="70" width="900" height="50" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="714.0" y="95.0" font-size="26" text-anchor="middle" fill="#475569">Title</text>
+<rect x="264" y="135" width="1152" height="380" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="325.0" font-size="26" text-anchor="middle" fill="#475569">Toggles: automatic mode, auto tickets · grace period · repair time · language</text>
+<rect x="264" y="535" width="1152" height="140" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="605.0" font-size="26" text-anchor="middle" fill="#475569">Detector report card: % caught, % real, test size</text>
+</svg></div>
+</div>
+
+<div class="page">
+<h2>8. High-fidelity screens (working prototype)</h2>
+<p class="small muted">Screens captured from the running prototype, fed by the simulated building.</p>
+<div style="break-inside:avoid;"><h3 style="font-size:10pt">Overview: building map, KPIs and the open alert</h3><img class="shot" src="img/overview.png"></div><div class="grid2"><div style="break-inside:avoid;"><h3 style="font-size:10pt">Alerts: advice, cost and feedback buttons</h3><img class="shot" src="img/alerts.png"></div><div style="break-inside:avoid;"><h3 style="font-size:10pt">Room detail: actual vs expected use</h3><img class="shot" src="img/room.png"></div><div style="break-inside:avoid;"><h3 style="font-size:10pt">Water & Pump: tank, sump and night flow</h3><img class="shot" src="img/water.png"></div><div style="break-inside:avoid;"><h3 style="font-size:10pt">Heat in Walls: wiring resistance and earth leakage</h3><img class="shot" src="img/wiring.png"></div><div style="break-inside:avoid;"><h3 style="font-size:10pt">Forecast: next 24 hours</h3><img class="shot" src="img/forecast.png"></div><div style="break-inside:avoid;"><h3 style="font-size:10pt">Savings & Carbon: full-year before vs after</h3><img class="shot" src="img/savings.png"></div><div style="break-inside:avoid;"><h3 style="font-size:10pt">Simulator: demo controls</h3><img class="shot" src="img/simulator.png"></div><div style="break-inside:avoid;max-width:45mm"><h3 style="font-size:10pt">Phone view</h3><img class="shot" src="img/mobile.png"></div></div>
+</div>
+
+<div class="page">
+<h2>9. Style guide</h2>
+<div class="grid2">
+<div><h3>Colour</h3><div class="swatch"><i style="background:#047857"></i><div><b>brand-700</b> <span class="muted small">#047857</span><br><span class="small">Primary actions, active nav, positive numbers</span></div></div><div class="swatch"><i style="background:#ecfdf5"></i><div><b>brand-50</b> <span class="muted small">#ecfdf5</span><br><span class="small">Selected nav, 'in use' rooms</span></div></div><div class="swatch"><i style="background:#d97706"></i><div><b>energy</b> <span class="muted small">#d97706</span><br><span class="small">Electricity values, energy alerts</span></div></div><div class="swatch"><i style="background:#0284c7"></i><div><b>water</b> <span class="muted small">#0284c7</span><br><span class="small">Water values, water alerts</span></div></div><div class="swatch"><i style="background:#7c3aed"></i><div><b>hidden</b> <span class="muted small">#7c3aed</span><br><span class="small">Wiring heat / earth leakage (hidden waste)</span></div></div><div class="swatch"><i style="background:#dc2626"></i><div><b>danger</b> <span class="muted small">#dc2626</span><br><span class="small">Open alerts, switch-off, power cut</span></div></div><div class="swatch"><i style="background:#0f172a"></i><div><b>ink-900</b> <span class="muted small">#0f172a</span><br><span class="small">Headings, key numbers</span></div></div><div class="swatch"><i style="background:#64748b"></i><div><b>ink-500</b> <span class="muted small">#64748b</span><br><span class="small">Secondary text</span></div></div><div class="swatch"><i style="background:#f1f5f9"></i><div><b>ink-100</b> <span class="muted small">#f1f5f9</span><br><span class="small">Page background, tiles</span></div></div><p class="small muted">Each resource has one colour everywhere: energy amber, water blue, hidden waste violet. Text contrast is at least 4.5:1 on white.</p></div>
+<div>
+<h3>Typography</h3>
+<p style="font-size:20pt;font-weight:600;margin:0">Inter 20 semibold: page title</p>
+<p style="font-size:14pt;font-weight:600;margin:0">Inter 16 semibold: card title</p>
+<p style="font-size:11pt;margin:0">Inter 14 regular: body and advice text</p>
+<p style="font-size:9pt;margin:0;text-transform:uppercase;letter-spacing:1px;color:#64748b">Inter 12 medium: labels</p>
+<h3>Spacing and shape</h3>
+<ul class="small"><li>4 px grid; card padding 16-20 px; gap 12 px; page padding 24 px</li><li>Card radius 14 px, button radius 8 px, pills fully round</li><li>One shadow level (cards only)</li></ul>
+<h3>Icons</h3>
+<p class="small">Lucide line icons at 16-18 px: Zap (energy), Droplets (water), Flame (wall heat), Bell (alerts), PowerOff (switch off), Wrench (ticket), Leaf (carbon).</p>
+<h3>Components</h3>
+<ul class="small"><li><b>KPI card</b>: label, big number + unit, one-line context</li><li><b>Alert card</b>: kind icon, title, kind pill, status pill, place and time, advice, cost line, actions</li><li><b>Room tile</b>: 4 states (in use, empty, wasting, wiring risk)</li><li><b>Buttons</b>: primary, ghost, danger; disabled when the action makes no sense (e.g. switching off an occupied room)</li><li><b>Toggle</b> (role=switch), <b>tabs</b>, <b>select</b>, <b>meter bar</b></li></ul>
+</div></div>
+<h2>10. States and accessibility</h2>
+<table><tr><th>State</th><th>What the user sees</th></tr>
+<tr><td>Loading</td><td>Spinner with "Loading the building…" (announced to screen readers)</td></tr>
+<tr><td>Empty</td><td>"Nothing is being wasted right now", "No readings yet: start the gateway", "Before-vs-after not run yet"</td></tr>
+<tr><td>Error</td><td>Red banner "Could not reach the ECOGUARD server" with a Retry button; header pill "Backend offline"; live view falls back to polling every 5 s</td></tr>
+<tr><td>Power cut</td><td>Header pill turns red "Power cut"; energy rules pause (meters read zero), water rules continue</td></tr>
+</table>
+<ul class="small"><li>Colour is never the only signal: every room tile and alert also has a text label.</li><li>All charts have text KPIs next to them; meters use role="meter" with values.</li><li>Keyboard: every control is a real button or link with a visible focus ring.</li><li>Readable sizes: body 14 px, minimum 11 px for chart ticks; layout works down to 390 px phones.</li></ul>
+<h2>11. Tool workflow</h2>
+<p class="small">We built the clickable prototype directly in code (React + Tailwind + Recharts), connected to live simulated data, so every screen shows realistic numbers and every button really works. The design tokens live in <code>tailwind.config.js</code> and are the same names as in this guide. To present the design file, the screens are rebuilt in Figma as follows:</p>
+<ol class="small"><li>Make one page per screen in the sitemap, each a 1440 × 900 desktop frame, plus one 390 × 844 phone frame for Overview.</li><li>Create colour styles from the table above (brand, energy, water, hidden, danger, ink) and text styles: H1 20/28 semibold, H2 16 semibold, body 14, small 12, label 12 uppercase.</li><li>Build components with auto-layout: Sidebar item (variants: default / active / with badge), KPI card, Alert card (variants: energy / water / hidden × open / actioned / dismissed), Room tile (in use / empty / wasting / wiring risk), Button (primary / ghost / danger), Pill.</li><li>Use a 4 px spacing grid: 16 px card padding, 12 px gaps between cards, 24 px page padding.</li><li>Assemble screens from components only (no loose rectangles), so a jury member can click any element and see it is an instance.</li><li>Prototype links: sidebar items → screens; room tile → Room detail; alert 'Switch room off' → overlay toast 'Switch-off sent'; 'Not waste' → card variant Dismissed. Use Smart Animate, 200 ms ease-out.</li><li>Design the three states on Overview and Alerts: Loading (skeleton), Empty ('Nothing is being wasted right now'), Error ('Could not reach the ECOGUARD server' + Retry).</li><li>Hand-off: turn on Dev Mode; tokens map 1:1 to tailwind.config.js names in the code.</li></ol>
+</div>
+</body></html>
