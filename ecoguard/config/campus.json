@@ -1,0 +1,216 @@
+{
+ "building": {
+  "id": "BLK-A",
+  "name": "Academic Block A",
+  "city": "Jammu",
+  "floors": [
+   {
+    "id": 0,
+    "name": "Ground floor"
+   },
+   {
+    "id": 1,
+    "name": "First floor"
+   },
+   {
+    "id": 2,
+    "name": "Second floor"
+   }
+  ]
+ },
+ "zones": [
+  {
+   "id": "OFF-ADM",
+   "name": "Admin Office",
+   "floor": 0,
+   "kind": "office",
+   "cap": 8,
+   "lightW": 360,
+   "fans": 4,
+   "acKW": 1.6,
+   "acUnits": 1,
+   "pcs": 8,
+   "heaterW": 2000,
+   "standbyW": 90,
+   "inverter": true,
+   "rWire": 0.16
+  },
+  {
+   "id": "LAB-1",
+   "name": "Computer Lab",
+   "floor": 0,
+   "kind": "lab",
+   "cap": 40,
+   "lightW": 720,
+   "fans": 6,
+   "acKW": 1.7,
+   "acUnits": 3,
+   "pcs": 40,
+   "heaterW": 0,
+   "standbyW": 140,
+   "inverter": false,
+   "rWire": 0.14
+  },
+  {
+   "id": "CR-101",
+   "name": "Classroom 101",
+   "floor": 1,
+   "kind": "class",
+   "cap": 60,
+   "lightW": 480,
+   "fans": 8,
+   "acKW": 0,
+   "acUnits": 0,
+   "pcs": 0,
+   "heaterW": 0,
+   "standbyW": 25,
+   "inverter": false,
+   "rWire": 0.22
+  },
+  {
+   "id": "CR-102",
+   "name": "Classroom 102",
+   "floor": 1,
+   "kind": "class",
+   "cap": 60,
+   "lightW": 480,
+   "fans": 8,
+   "acKW": 0,
+   "acUnits": 0,
+   "pcs": 0,
+   "heaterW": 0,
+   "standbyW": 25,
+   "inverter": false,
+   "rWire": 0.24
+  },
+  {
+   "id": "CR-103",
+   "name": "Seminar Room 103",
+   "floor": 1,
+   "kind": "class",
+   "cap": 90,
+   "lightW": 640,
+   "fans": 6,
+   "acKW": 1.7,
+   "acUnits": 2,
+   "pcs": 0,
+   "heaterW": 0,
+   "standbyW": 30,
+   "inverter": false,
+   "rWire": 0.2
+  },
+  {
+   "id": "CR-201",
+   "name": "Classroom 201",
+   "floor": 2,
+   "kind": "class",
+   "cap": 60,
+   "lightW": 480,
+   "fans": 8,
+   "acKW": 1.6,
+   "acUnits": 1,
+   "pcs": 0,
+   "heaterW": 0,
+   "standbyW": 25,
+   "inverter": false,
+   "rWire": 0.27
+  },
+  {
+   "id": "CR-202",
+   "name": "Classroom 202",
+   "floor": 2,
+   "kind": "class",
+   "cap": 60,
+   "lightW": 480,
+   "fans": 8,
+   "acKW": 0,
+   "acUnits": 0,
+   "pcs": 0,
+   "heaterW": 0,
+   "standbyW": 25,
+   "inverter": false,
+   "rWire": 0.29
+  },
+  {
+   "id": "OFF-FAC",
+   "name": "Faculty Room",
+   "floor": 2,
+   "kind": "office",
+   "cap": 10,
+   "lightW": 400,
+   "fans": 5,
+   "acKW": 1.6,
+   "acUnits": 2,
+   "pcs": 10,
+   "heaterW": 2000,
+   "standbyW": 80,
+   "inverter": true,
+   "rWire": 0.25
+  }
+ ],
+ "water": {
+  "tankL": 10000,
+  "sumpL": 20000,
+  "pumpKW": 1.5,
+  "pumpLpm": 150,
+  "pumpOnPct": 35,
+  "pumpOffPct": 95,
+  "supplyLpm": 60,
+  "supplyWindows": [
+   [
+    6,
+    8
+   ],
+   [
+    17,
+    18
+   ]
+  ],
+  "litresPerPersonHour": 4,
+  "cleaningL": 250
+ },
+ "tariff": {
+  "rsPerKWh": 7,
+  "rsPerKL": 30,
+  "kgCO2PerKWh": 0.716
+ },
+ "breaks": [
+  [
+   "2025-06-01",
+   "2025-07-20"
+  ],
+  [
+   "2025-12-24",
+   "2026-01-04"
+  ],
+  [
+   "2026-06-01",
+   "2026-07-19"
+  ],
+  [
+   "2026-12-24",
+   "2027-01-04"
+  ]
+ ],
+ "holidays": [
+  "2025-08-15",
+  "2025-08-16",
+  "2025-10-02",
+  "2025-10-20",
+  "2025-10-21",
+  "2025-11-05",
+  "2025-12-25",
+  "2026-01-26",
+  "2026-03-04",
+  "2026-03-21",
+  "2026-04-14",
+  "2026-05-01",
+  "2026-08-15",
+  "2026-10-02",
+  "2026-10-20",
+  "2026-11-08",
+  "2026-11-09",
+  "2026-11-24",
+  "2026-12-25"
+ ]
+}
