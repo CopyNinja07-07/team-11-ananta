@@ -24,12 +24,25 @@ STEP_MIN = 15
 RULES = {
     "empty_room": {"title": "Power used in an empty room", "kind": "energy", "auto": "switch_off"},
     "over_use": {"title": "Using much more than expected", "kind": "energy", "auto": None},
+    "overcool": {"title": "AC set too cold", "kind": "energy", "auto": "ac_setpoint"},
+    "door_open": {"title": "AC fighting an open door or window", "kind": "energy", "auto": None},
     "wall_heat": {"title": "Heat building up inside the wall wiring", "kind": "hidden", "auto": None},
     "earth_leak": {"title": "Current leaking to earth (damp wall or bad insulation)", "kind": "hidden", "auto": None},
     "night_flow": {"title": "Water flowing when the building is empty", "kind": "water", "auto": "close_valve"},
     "overflow": {"title": "Overhead tank overflowing", "kind": "water", "auto": "pump_off"},
     "dry_run": {"title": "Pump running but no water coming out", "kind": "water", "auto": "pump_off"},
 }
+
+
+def severity(rule: str, info: dict) -> str:
+    """high: safety risk or fast loss; medium: clear money loss; low: small or slow."""
+    if rule in ("wall_heat", "dry_run", "overflow") or (rule == "earth_leak" and info.get("leak_ma", 0) >= 30):
+        return "high"
+    if rule == "night_flow":
+        return "high" if info.get("inside_wall") else "medium" if info.get("lph", 0) > 40 else "low"
+    if rule in ("empty_room", "over_use", "overcool", "door_open"):
+        return "medium" if info.get("extra_kw", 0) >= 1.0 else "low"
+    return "medium"
 
 
 @dataclass
@@ -121,7 +134,24 @@ class Detector:
                     self._fire(ts, seen, "empty_room", zid, kwh=extra / 4, extra_kw=round(extra, 2),
                                cause=guess_cause(cfg, extra, temp, after_cut))
 
-                over = n["people"] > 0 and extra > max(0.6, 6 * sigma) and extra / max(exp, 0.1) > 0.35
+                # HVAC: the room's wall sensor (indoor temperature) and the AC circuit's own current clamp
+                t_in, ac_kw = n.get("t_in"), n.get("ac_kw")
+                hvac_issue = False
+                if t_in is not None and ac_kw is not None and cfg["acUnits"]:
+                    rated = cfg["acUnits"] * cfg["acKW"]
+                    cold = n["people"] > 0 and ac_kw > 0.3 and t_in < 21.5
+                    if self._streak(f"c:{zid}", cold, 2):
+                        # BEE: every degree below 24 C costs about 6% more AC energy; a 17-18 C setpoint costs ~30-40%
+                        xkw = ac_kw * min(0.45, 0.06 * (24 - t_in) + 0.1)
+                        self._fire(ts, seen, "overcool", zid, kwh=xkw / 4, t_in=round(t_in, 1), ac_kw=round(ac_kw, 2), extra_kw=round(xkw, 2))
+                        hvac_issue = True
+                    door = n["people"] > 0 and ac_kw >= 0.95 * rated and t_in > 27 and temp > 30
+                    if self._streak(f"d:{zid}", door, 4):
+                        xkw = ac_kw * 0.35
+                        self._fire(ts, seen, "door_open", zid, kwh=xkw / 4, t_in=round(t_in, 1), ac_kw=round(ac_kw, 2), extra_kw=round(xkw, 2))
+                        hvac_issue = True
+
+                over = n["people"] > 0 and not hvac_issue and extra > max(0.6, 6 * sigma) and extra / max(exp, 0.1) > 0.35
                 if self._streak(f"o:{zid}", over, 4):
                     self._fire(ts, seen, "over_use", zid, kwh=extra / 4, extra_kw=round(extra, 2), expected_kw=round(exp, 2))
 

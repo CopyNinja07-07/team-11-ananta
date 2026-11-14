@@ -57,6 +57,9 @@ class EnergyReading(Base):
     v_room = Column(Float)         # voltage at the room's sub-board
     amps = Column(Float)
     leak_ma = Column(Float)        # phase minus neutral current (earth leakage)
+    t_in = Column(Float)           # indoor temperature (wall sensor)
+    rh = Column(Float)             # indoor relative humidity, %
+    ac_kw = Column(Float)          # AC circuit power (separate current clamp)
     __table_args__ = (Index("ix_energy_zone_ts", "zone_id", "ts"),)
 
 
@@ -84,6 +87,7 @@ class Alert(Base):
     target = Column(String)
     kind = Column(String)              # energy | water | hidden
     title = Column(String)
+    severity = Column(String, default="medium")    # low | medium | high
     status = Column(String, default="open")       # open | actioned | resolved
     feedback = Column(String, nullable=True)       # confirmed | dismissed (builds a labelled dataset)
     start = Column(BigInteger)

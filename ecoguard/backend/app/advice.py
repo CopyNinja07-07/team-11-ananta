@@ -35,6 +35,19 @@ def advise(rule: str, target: str, info: dict, start_ms: int) -> tuple[str, str]
               f"(normal is about {exp:.1f} kW). Check if a door or window is open with the AC on, or the AC is set too cold. Set it to 24-26 °C.")
         hi = (f"{name} में इतने लोगों और इस मौसम के हिसाब से {kw:.1f} kW ज़्यादा बिजली लग रही है। "
               f"देखें कि AC चलते हुए दरवाज़ा/खिड़की खुली तो नहीं, या AC बहुत ठंडा तो नहीं। AC 24-26 °C पर रखें।")
+    elif rule == "overcool":
+        t, kw = info.get("t_in", 0), info.get("extra_kw", 0)
+        rs = round(kw * TARIFF["rsPerKWh"])
+        en = (f"{name} is at {t:.1f} °C inside: the AC is set far too cold. Every degree below 24 °C costs about 6% more power "
+              f"(BEE). Setting it to 24 °C saves about {kw:.1f} kW, roughly Rs {rs} an hour, and the room stays comfortable.")
+        hi = (f"{name} अंदर से {t:.1f} °C है: AC बहुत ठंडा सेट है। 24 °C से हर एक डिग्री कम पर लगभग 6% ज़्यादा बिजली लगती है (BEE)। "
+              f"24 °C करने से लगभग {kw:.1f} kW, यानी हर घंटे करीब ₹{rs} बचेंगे।")
+    elif rule == "door_open":
+        t, kw = info.get("t_in", 0), info.get("ac_kw", 0)
+        en = (f"The AC in {name} is running flat out ({kw:.1f} kW) but the room is still {t:.1f} °C. A door or window is probably open. "
+              f"Close it: the AC will cool the room faster and use about a third less power.")
+        hi = (f"{name} का AC पूरी ताकत ({kw:.1f} kW) से चल रहा है फिर भी कमरा {t:.1f} °C है। शायद दरवाज़ा या खिड़की खुली है। "
+              f"बंद करें: कमरा जल्दी ठंडा होगा और लगभग एक-तिहाई बिजली बचेगी।")
     elif rule == "wall_heat":
         r, r0 = info.get("r_now", 0), info.get("r0", 0)
         peak = info.get("peak_heat_w", 0)

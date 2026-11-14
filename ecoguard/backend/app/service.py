@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from .advice import advise
 from .baseline import Baseline
 from .campus import BUILDING, TARIFF, WATER, ZONES, to_ist
-from .detector import RULES, Detector
+from .detector import RULES, Detector, severity
 from .models import (Alert, Building, ControlAction, Device, EnergyReading, OccupancyRecord, SavingsDaily, Setting,
                      User, WaterReading, Zone)
 
@@ -25,6 +25,8 @@ DEFAULT_SETTINGS = {
     "auto_work_orders": True,     # raise maintenance tickets for leaks, wiring, pump faults
     "maintenance_hours": 24,      # how long staff usually take to fix a ticket
     "language": "en",
+    "scheduled_shutdown": False,  # at closing time, switch off every room that is already empty
+    "closing_hour": 19,
 }
 
 
@@ -76,7 +78,8 @@ class Pipeline:
             exp = self.baseline.expected_kw(n["zone"], n["people"], r["temp_c"], hour)
             n["expected_kw"] = round(exp, 3)
             db.add(EnergyReading(zone_id=n["zone"], ts=ts, kwh=n["kwh"], kw=n["kw"], expected_kw=exp, v_board=n["v_board"],
-                                 v_room=n["v_room"], amps=n["amps"], leak_ma=n["leak_ma"]))
+                                 v_room=n["v_room"], amps=n["amps"], leak_ma=n["leak_ma"],
+                                 t_in=n.get("t_in"), rh=n.get("rh"), ac_kw=n.get("ac_kw")))
             db.add(OccupancyRecord(zone_id=n["zone"], ts=ts, people=n["people"], source=n.get("source", "cv")))
             total_kwh += n["kwh"]
         w = r["water"]
@@ -109,9 +112,23 @@ class Pipeline:
 
         # --- control
         commands = self._auto_control(db, cfg, open_alerts, day)
+        commands += self._scheduled(db, cfg, r, day)
         db.commit()
         self.latest = r
         return commands
+
+    def _scheduled(self, db: Session, cfg: dict, r: dict, day: SavingsDaily) -> list[dict]:
+        """Scheduled mode: once a day at closing time, switch off non-essential loads in rooms nobody is in.
+        A room with people in it is never touched; it is picked up later by the empty-room rule."""
+        t = to_ist(self.now)
+        if not cfg.get("scheduled_shutdown") or t.hour != cfg.get("closing_hour", 19) or t.minute != 0 or not r.get("grid_on", True):
+            return []
+        cmds = []
+        for n in r["nodes"]:
+            standby = ZONES[n["zone"]]["standbyW"] / 1000
+            if n["people"] == 0 and n["kw"] > standby + 0.1:
+                cmds.append(self.issue(db, "switch_off", n["zone"], mode="scheduled", day=day))
+        return cmds
 
     def _day(self, db: Session, ts: int) -> SavingsDaily:
         key = to_ist(ts).strftime("%Y-%m-%d")
@@ -136,6 +153,7 @@ class Pipeline:
         row.rupees, row.co2 = a.rupees, a.co2
         row.info = dict(a.info)
         row.advice_en, row.advice_hi = advise(a.rule, a.target, a.info, a.start)
+        row.severity = severity(a.rule, a.info)
 
     # ------------------------------------------------------------------ control
     def _auto_control(self, db: Session, cfg: dict, open_alerts, day: SavingsDaily) -> list[dict]:
@@ -207,4 +225,6 @@ def estimate_avoided(command: str, alert: Alert | None, now: int) -> tuple[float
         return WATER["pumpKW"] * 0.75 * 12, 0.0
     if command == "close_valve":
         return 0.0, info.get("lph", 0) * 24
+    if command == "ac_setpoint":
+        return info.get("extra_kw", 0) * 4, 0.0     # rest of the class session at 24 C
     return 0.0, 0.0
