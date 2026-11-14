@@ -1,1 +1,1 @@
-{"type":"module","name":"ecoguard","private":true}
+{"type":"module","name":"ecoguard","private":true,"dependencies":{"mqtt":"^5.10.1"}}
