@@ -34,6 +34,7 @@ class Pipeline:
         self.detector = Detector(baseline)
         self.alert_rows: dict[str, int] = {}   # detector key -> alerts.id
         self.actioned: set[str] = set()
+        self.ticketed: set[str] = set()
         self.now = 0
         self.latest: dict | None = None
 
@@ -103,6 +104,7 @@ class Pipeline:
                 if row.status == "open":
                     row.status = "resolved"
                 self.actioned.discard(a.key)
+                self.ticketed.discard(a.key)
         self.detector.closed.clear()
 
         # --- control
@@ -155,11 +157,13 @@ class Pipeline:
                     action = rule["auto"]
             if action:
                 cmds.append(self.issue(db, action, a.target, mode="auto", alert=row, day=day))
+            # the repair ticket goes out at once; the relay/valve/pump action still waits for the grace period
             needs_ticket = a.rule in ("wall_heat", "earth_leak", "night_flow", "overflow", "dry_run")
-            if cfg["auto_work_orders"] and needs_ticket:
+            if cfg["auto_work_orders"] and needs_ticket and a.key not in self.ticketed:
                 cmds.append(self.issue(db, "work_order", a.target, mode="auto", alert=row, day=day,
                                        params={"rule": a.rule, "due": self.now + cfg["maintenance_hours"] * HOUR}))
-            if action or (cfg["auto_work_orders"] and needs_ticket):
+                self.ticketed.add(a.key)
+            if action or (not rule["auto"] and a.key in self.ticketed):
                 self.actioned.add(a.key)
         return [c for c in cmds if c]
 
