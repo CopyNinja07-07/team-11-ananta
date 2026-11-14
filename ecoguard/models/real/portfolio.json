@@ -1,0 +1,377 @@
+{
+ "buildings": 659,
+ "by_kind": {
+  "office": 274,
+  "classroom": 242,
+  "lab": 143
+ },
+ "total_kwh": 1027245409,
+ "avoidable_kwh": 123173796,
+ "avoidable_pct": {
+  "median": 13.8,
+  "p75": 24.9
+ },
+ "after_hours_share_pct": {
+  "median": 55.2,
+  "p75": 59.3
+ },
+ "avoidable_rupees_if_jammu": 862216571,
+ "avoidable_co2_t": 88192,
+ "cooling_buildings": 332,
+ "cooling_after_hours_share_pct": {
+  "median": 43.0,
+  "p75": 53.4
+ },
+ "simultaneous_heat_cool_buildings": 47,
+ "water_buildings": 57,
+ "buildings_with_leak_nights": 20,
+ "by_kind_avoidable_pct": {
+  "classroom": 18.8,
+  "lab": 6.5,
+  "office": 14.2
+ },
+ "sandbox": [
+  {
+   "id": "Panther_education_Quintin",
+   "kind": "classroom",
+   "use": "Classroom",
+   "sqm": 10578,
+   "avoidable_pct": 18.0,
+   "cooling": true,
+   "water": true
+  },
+  {
+   "id": "Bobcat_education_Angela",
+   "kind": "classroom",
+   "use": "Academic",
+   "sqm": 8803,
+   "avoidable_pct": 13.2,
+   "cooling": true,
+   "water": true
+  },
+  {
+   "id": "Bobcat_education_Monte",
+   "kind": "classroom",
+   "use": "Academic",
+   "sqm": 2147,
+   "avoidable_pct": 16.9,
+   "cooling": true,
+   "water": true
+  },
+  {
+   "id": "Bobcat_education_Whitney",
+   "kind": "classroom",
+   "use": "Academic",
+   "sqm": 6957,
+   "avoidable_pct": 18.5,
+   "cooling": true,
+   "water": true
+  },
+  {
+   "id": "Panther_education_Annetta",
+   "kind": "classroom",
+   "use": "Classroom",
+   "sqm": 9233,
+   "avoidable_pct": 12.1,
+   "cooling": true,
+   "water": true
+  },
+  {
+   "id": "Panther_education_Teofila",
+   "kind": "classroom",
+   "use": "Classroom",
+   "sqm": 8723,
+   "avoidable_pct": 16.2,
+   "cooling": true,
+   "water": true
+  },
+  {
+   "id": "Panther_education_Vincent",
+   "kind": "classroom",
+   "use": "Classroom",
+   "sqm": 11248,
+   "avoidable_pct": 17.2,
+   "cooling": true,
+   "water": true
+  },
+  {
+   "id": "Panther_education_Ivan",
+   "kind": "classroom",
+   "use": "Classroom",
+   "sqm": 5751,
+   "avoidable_pct": 10.2,
+   "cooling": true,
+   "water": true
+  },
+  {
+   "id": "Panther_education_Emily",
+   "kind": "classroom",
+   "use": "Classroom",
+   "sqm": 6326,
+   "avoidable_pct": 24.9,
+   "cooling": true,
+   "water": true
+  },
+  {
+   "id": "Panther_education_Aurora",
+   "kind": "classroom",
+   "use": "Classroom",
+   "sqm": 8013,
+   "avoidable_pct": 23.5,
+   "cooling": true,
+   "water": true
+  },
+  {
+   "id": "Panther_education_Zelda",
+   "kind": "classroom",
+   "use": "Classroom",
+   "sqm": 7520,
+   "avoidable_pct": 23.1,
+   "cooling": true,
+   "water": true
+  },
+  {
+   "id": "Bobcat_education_Toni",
+   "kind": "classroom",
+   "use": "Academic",
+   "sqm": 2034,
+   "avoidable_pct": 13.0,
+   "cooling": true,
+   "water": true
+  },
+  {
+   "id": "Wolf_education_Ursula",
+   "kind": "classroom",
+   "use": "College Classroom",
+   "sqm": 13998,
+   "avoidable_pct": 13.7,
+   "cooling": false,
+   "water": true
+  },
+  {
+   "id": "Bobcat_education_Coleman",
+   "kind": "classroom",
+   "use": "Academic",
+   "sqm": 10552,
+   "avoidable_pct": 15.0,
+   "cooling": false,
+   "water": true
+  },
+  {
+   "id": "Panther_education_Jerome",
+   "kind": "lab",
+   "use": "Research",
+   "sqm": 11974,
+   "avoidable_pct": 3.4,
+   "cooling": true,
+   "water": true
+  },
+  {
+   "id": "Panther_education_Rosalie",
+   "kind": "lab",
+   "use": "Research",
+   "sqm": 690,
+   "avoidable_pct": 13.5,
+   "cooling": false,
+   "water": true
+  },
+  {
+   "id": "Panther_education_Misty",
+   "kind": "lab",
+   "use": "Research",
+   "sqm": 253,
+   "avoidable_pct": 28.8,
+   "cooling": false,
+   "water": true
+  },
+  {
+   "id": "Panther_education_Violet",
+   "kind": "lab",
+   "use": "Research",
+   "sqm": 731,
+   "avoidable_pct": 8.3,
+   "cooling": false,
+   "water": true
+  },
+  {
+   "id": "Fox_education_Janina",
+   "kind": "lab",
+   "use": "College Laboratory",
+   "sqm": 8480,
+   "avoidable_pct": 15.6,
+   "cooling": true,
+   "water": false
+  },
+  {
+   "id": "Cockatoo_education_Rita",
+   "kind": "lab",
+   "use": "College Laboratory",
+   "sqm": 1704,
+   "avoidable_pct": 11.1,
+   "cooling": true,
+   "water": false
+  },
+  {
+   "id": "Panther_education_Gina",
+   "kind": "lab",
+   "use": "Research",
+   "sqm": 10833,
+   "avoidable_pct": 9.6,
+   "cooling": false,
+   "water": true
+  },
+  {
+   "id": "Hog_education_Caridad",
+   "kind": "lab",
+   "use": "College Laboratory",
+   "sqm": 24154,
+   "avoidable_pct": 26.4,
+   "cooling": true,
+   "water": false
+  },
+  {
+   "id": "Fox_education_Carleen",
+   "kind": "lab",
+   "use": "College Laboratory",
+   "sqm": 6635,
+   "avoidable_pct": 27.4,
+   "cooling": true,
+   "water": false
+  },
+  {
+   "id": "Panther_education_Hugh",
+   "kind": "lab",
+   "use": "Research",
+   "sqm": 10395,
+   "avoidable_pct": 3.7,
+   "cooling": false,
+   "water": true
+  },
+  {
+   "id": "Panther_office_Christian",
+   "kind": "office",
+   "use": "Office",
+   "sqm": 1554,
+   "avoidable_pct": 28.3,
+   "cooling": true,
+   "water": true
+  },
+  {
+   "id": "Bobcat_office_Kassandra",
+   "kind": "office",
+   "use": "Office",
+   "sqm": 4004,
+   "avoidable_pct": 18.3,
+   "cooling": true,
+   "water": true
+  },
+  {
+   "id": "Panther_office_Graham",
+   "kind": "office",
+   "use": "Office",
+   "sqm": 7800,
+   "avoidable_pct": 15.9,
+   "cooling": true,
+   "water": true
+  },
+  {
+   "id": "Panther_office_Ruthie",
+   "kind": "office",
+   "use": "Office",
+   "sqm": 4211,
+   "avoidable_pct": 17.9,
+   "cooling": false,
+   "water": true
+  },
+  {
+   "id": "Panther_office_Lois",
+   "kind": "office",
+   "use": "Office",
+   "sqm": 1186,
+   "avoidable_pct": 11.9,
+   "cooling": false,
+   "water": true
+  },
+  {
+   "id": "Panther_office_Lauretta",
+   "kind": "office",
+   "use": "Office",
+   "sqm": 3367,
+   "avoidable_pct": 12.3,
+   "cooling": false,
+   "water": true
+  },
+  {
+   "id": "Panther_office_Patti",
+   "kind": "office",
+   "use": "Office",
+   "sqm": 14503,
+   "avoidable_pct": 14.8,
+   "cooling": false,
+   "water": true
+  },
+  {
+   "id": "Panther_office_Shauna",
+   "kind": "office",
+   "use": "Office",
+   "sqm": 4496,
+   "avoidable_pct": 14.2,
+   "cooling": false,
+   "water": true
+  },
+  {
+   "id": "Panther_office_Catherine",
+   "kind": "office",
+   "use": "Office",
+   "sqm": 2504,
+   "avoidable_pct": 28.0,
+   "cooling": false,
+   "water": true
+  },
+  {
+   "id": "Panther_office_Danica",
+   "kind": "office",
+   "use": "Office",
+   "sqm": 210,
+   "avoidable_pct": 20.9,
+   "cooling": false,
+   "water": true
+  },
+  {
+   "id": "Hog_office_Catharine",
+   "kind": "office",
+   "use": "Office",
+   "sqm": 11042,
+   "avoidable_pct": 12.4,
+   "cooling": true,
+   "water": false
+  },
+  {
+   "id": "Hog_office_Sydney",
+   "kind": "office",
+   "use": "Office",
+   "sqm": 8095,
+   "avoidable_pct": 10.4,
+   "cooling": true,
+   "water": false
+  },
+  {
+   "id": "Eagle_office_Donovan",
+   "kind": "office",
+   "use": "Office",
+   "sqm": 8032,
+   "avoidable_pct": 21.6,
+   "cooling": true,
+   "water": false
+  },
+  {
+   "id": "Peacock_office_Norman",
+   "kind": "office",
+   "use": "Office",
+   "sqm": 3044,
+   "avoidable_pct": 12.7,
+   "cooling": true,
+   "water": false
+  }
+ ]
+}
