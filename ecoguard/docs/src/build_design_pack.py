@@ -10,19 +10,21 @@ OUT = HERE.parent
 # ---------------------------------------------------------------- sitemap
 sm = Diagram(900, 330)
 sm.node("home", 380, 10, 140, 44, "ECOGUARD AI\ndashboard", "start")
-pages = [("ov", "Overview", "KPIs · map · alerts"), ("rooms", "Rooms", "table of 8 rooms"), ("alerts", "Alerts", "open · history · all"),
-         ("water", "Water & Pump", "tank · sump · flows"), ("wall", "Heat in Walls", "circuits · leakage"),
-         ("fc", "Forecast", "next 24 h"), ("sav", "Savings & Carbon", "before vs after"), ("sim", "Simulator", "demo control"), ("set", "Settings", "automation rules")]
+pages = [("ov", "Overview", "KPIs · map"), ("rooms", "Rooms", "8 rooms"), ("alerts", "Alerts", "open · history"), ("cam", "Camera", "YOLO count"),
+         ("hvac", "HVAC", "comfort · AC"), ("water", "Water & Pump", "tank · flows"), ("wall", "Heat & Damp", "walls"),
+         ("fc", "Forecast", "next 24 h"), ("sav", "Savings", "before/after"), ("real", "Real Bldgs", "BDG2 sandbox"), ("sim", "Simulator", "demo"), ("set", "Settings", "modes")]
 for i, (k, t, sub) in enumerate(pages):
-    sm.node(k, 8 + i * 99, 110, 92, 52, f"{t}\n{sub}", "screen")
+    sm.node(k, 4 + i * 74.5, 110, 70, 52, f"{t}\n{sub}", "screen")
     sm.edge("home", k)
-sm.node("room", 70, 230, 150, 50, "Room detail\n(one per room, /rooms/:id)", "screen")
+sm.node("room", 40, 230, 150, 50, "Room detail\n(/rooms/:id)", "screen")
 sm.edge("rooms", "room")
 sm.edge("ov", "room", "map tile")
-sm.node("drawer", 300, 230, 170, 50, "Alert actions\nswitch off · confirm · dismiss", "note")
+sm.node("drawer", 240, 230, 170, 50, "Alert actions\nswitch off · 24 C · confirm", "note")
 sm.edge("alerts", "drawer")
-sm.node("csv", 520, 230, 150, 50, "Labelled alerts CSV\n(download)", "note")
-sm.edge("alerts", "csv")
+sm.node("bld", 600, 230, 170, 50, "Building sandbox\n(/real/:id) what-if", "screen")
+sm.edge("real", "bld")
+sm.node("voice", 430, 230, 150, 50, "Voice commands\n(header mic, EN / HI)", "note")
+sm.edge("home", "voice", "")
 SITEMAP = sm.render(width=680)
 
 # ---------------------------------------------------------------- user flows
@@ -38,7 +40,7 @@ def flow(steps, w=880):
 
 FLOW1 = flow([("Phone buzz /\ndashboard badge", "start"), ("Overview:\nalert card", "screen"), ("Read advice\n(EN / हिन्दी)", "screen"),
               ("Real waste?", "decision"), ("Switch room off\n(or wait 15 min:\nauto)", "process"), ("Savings updated\nlabel saved", "screen")])
-FLOW2 = flow([("Heat in Walls", "start"), ("Circuit shows\n'Hot joint'", "screen"), ("Open room\ndetail", "screen"),
+FLOW2 = flow([("Heat & Damp Walls", "start"), ("Circuit shows\n'Hot joint'", "screen"), ("Open room\ndetail", "screen"),
               ("See R rising\nover days", "screen"), ("Ticket to\nelectrician", "process"), ("R back to\nnormal", "screen")])
 FLOW3 = flow([("Night water\nalert on F1", "start"), ("Water & Pump:\nflow never 0", "screen"), ("Same floor:\nearth leakage up?", "decision"),
               ("Leak inside wall\n→ close valve", "process"), ("Ticket to\nplumber", "process"), ("Litres saved\non Savings", "screen")])
@@ -102,14 +104,15 @@ DFD1 = d1.render(width=680)
 
 # ---------------------------------------------------------------- module coverage (Round 1 -> screens)
 COVER = [
-    ("Data collection: IoT sensors, meters, CCTV", "Simulator (virtual ESP32 + occupancy) · Rooms · Water & Pump"),
+    ("Data collection: IoT sensors, meters, CCTV", "Camera Occupancy (YOLO person count) · room nodes over HTTP or MQTT · Rooms · Water & Pump"),
     ("Intelligence engine: anomaly detection", "Alerts · Overview map · Room detail chart (actual vs expected)"),
-    ("Intelligence engine: forecasting", "Forecast"),
-    ("Intelligence engine: cross-utility (energy + water)", "Water & Pump (pump links both) · Heat in Walls (damp wall + leak)"),
-    ("Decision & control automation (HVAC, lighting, water)", "Alert actions · Settings (auto mode, grace period, tickets)"),
-    ("User interface: portal, reports, AI insights", "All screens · advice in English/Hindi · labelled CSV export"),
+    ("Intelligence engine: forecasting", "Forecast (simulated block) · LSTM day-ahead forecaster on real buildings (Real Buildings)"),
+    ("Real data, trained models", "Real Buildings: 659 real classrooms, labs and offices (BDG2), LightGBM baselines, what-if sandbox"),
+    ("Intelligence engine: cross-utility (energy + water)", "Water & Pump (pump links both) · Heat & Damp Walls (damp wall + leak)"),
+    ("Decision & control automation (HVAC, lighting, water)", "HVAC & Comfort (reset to 24 C, open door) · alert actions · automatic, manual and scheduled modes"),
+    ("User interface: portal, voice, reports, AI insights", "All screens · voice commands (EN/HI) · advice in English/Hindi · labelled CSV export"),
     ("Savings & carbon (ER entity)", "Savings & Carbon (live + full-year before vs after)"),
-    ("Fail-safe: manual override, safe rules", "Settings toggles · 'Not waste' stops auto action · relays never cut occupied rooms"),
+    ("Fail-safe: manual override, safe rules", "'Not waste' stops auto action · relays never cut occupied rooms · nodes run local safe rules when the server is down"),
 ]
 
 STYLE_COLORS = [("brand-700", "#047857", "Primary actions, active nav, positive numbers"), ("brand-50", "#ecfdf5", "Selected nav, 'in use' rooms"),
@@ -129,7 +132,7 @@ PERSONAS = [
     ("Electrician / Plumber", "Gets called after something breaks.",
      ["Get told before it breaks, with the exact room or floor", "Fewer emergency calls"],
      ["Loose joints are found only after a burn smell or a trip", "Leaks inside walls are found only when paint peels"],
-     "Heat in Walls, work-order tickets"),
+     "Heat & Damp Walls, work-order tickets"),
     ("Faculty / Students (occupants)", "Use the rooms; not dashboard users.",
      ["Room is ready and comfortable when class starts", "Never lose power mid-class"],
      ["AC set to 16 °C, doors open", "Lights left on by the previous class"],
@@ -192,7 +195,7 @@ def build(shots: dict[str, str]):
 <tr><td>Advice in English and Hindi, one tap to switch</td><td>Facility and maintenance staff on Indian campuses are often more comfortable in Hindi.</td></tr>
 <tr><td>Two buttons on every alert: "Correct" and "Not waste"</td><td>Each answer becomes a label that retrains the model for this building. "Not waste" also stops any automatic action, so people stay in control.</td></tr>
 <tr><td>Automatic mode with a 15-minute grace period</td><td>Fast enough to stop most waste, slow enough for a manager to stop a wrong action. It never switches off a room with people in it.</td></tr>
-<tr><td>A separate "Heat in Walls" screen</td><td>This is our novel module. Waste that no normal meter shows (hot wiring joints, current leaking into damp walls) needs its own explanation, with a picture of how it is measured.</td></tr>
+<tr><td>A separate "Heat &amp; Damp Walls" screen</td><td>This is our novel module. Waste that no normal meter shows (hot wiring joints, current leaking into damp walls) needs its own explanation, with a picture of how it is measured.</td></tr>
 <tr><td>Energy and water on the same screens, with the pump in the middle</td><td>The pump is where energy and water meet. An overflowing tank wastes both, so we show them together instead of in two separate apps.</td></tr>
 <tr><td>Savings page with a full-year before vs after</td><td>Answers the estate officer's real question: did it work, and how much did it save?</td></tr>
 </table>
@@ -212,7 +215,7 @@ def build(shots: dict[str, str]):
 <div class="page">
 <h2>3. Sitemap</h2>
 {SITEMAP}
-<p class="small muted">Nine top-level screens in a fixed sidebar (a drawer on phones). Room detail opens from the Rooms table or from any tile on the building map. Every screen is at most two clicks from Overview.</p>
+<p class="small muted">Twelve top-level screens in a fixed sidebar (a drawer on phones). Room detail opens from the Rooms table or from any tile on the building map. Every screen is at most two clicks from Overview.</p>
 <h2>4. User flows</h2>
 <h3>Flow A: respond to waste (facility manager), 2 taps</h3>{FLOW1}
 <h3>Flow B: catch a hot wiring joint before it fails (electrician)</h3>{FLOW2}
