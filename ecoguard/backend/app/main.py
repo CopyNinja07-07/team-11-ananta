@@ -26,6 +26,8 @@ from .campus import BUILDING, ROOT, TARIFF, WATER, ZONES
 from .db import Base, SessionLocal, engine
 from .forecast import HOUR, actual_hourly, forecast, hour_start
 from .models import Alert, ControlAction, EnergyReading, SavingsDaily, Setting, WaterReading, Zone
+from .real import router as real_router
+from . import mqtt_bridge, vision
 from .service import Pipeline
 
 pipeline = Pipeline(Baseline())
@@ -38,7 +40,18 @@ async def lifespan(_app: FastAPI):
     Base.metadata.create_all(engine)
     with SessionLocal() as db:
         pipeline.seed(db)
+    mqtt = mqtt_bridge.start(_ingest_from_mqtt)
     yield
+    if mqtt:
+        mqtt.loop_stop()
+
+
+def _ingest_from_mqtt(data: dict) -> list[dict]:
+    reading = Reading(**data).model_dump()       # same validation as the HTTP endpoint
+    with SessionLocal() as db:
+        out = pipeline.ingest(db, reading) + pending[:]
+    pending.clear()
+    return out
 
 
 app = FastAPI(title="ECOGUARD AI", version="1.0", lifespan=lifespan)
@@ -64,6 +77,9 @@ class Node(BaseModel):
     v_room: float
     amps: float
     leak_ma: float
+    t_in: float | None = None     # indoor temperature (optional wall sensor)
+    rh: float | None = None       # indoor humidity, %
+    ac_kw: float | None = None    # AC circuit power (optional current clamp)
     source: str = "cv"
 
 
@@ -88,7 +104,7 @@ class Reading(BaseModel):
 
 
 class ControlIn(BaseModel):
-    command: str                  # switch_off | pump_off | close_valve | work_order
+    command: str                  # switch_off | ac_setpoint | pump_off | close_valve | work_order
     target: str
     alert_id: int | None = None
 
@@ -102,6 +118,21 @@ class SimIn(BaseModel):
 
 
 # ---------------------------------------------------------------- ingest (sensor gateway)
+app.include_router(real_router)
+
+
+class _CvState:
+    def store_occupancy(self, zone: str, people: int, cap: int) -> dict:
+        from .models import OccupancyRecord
+        with SessionLocal() as db:
+            db.add(OccupancyRecord(zone_id=zone, ts=pipeline.now or 0, people=people, source="cv"))
+            db.commit()
+        return {"zone": zone, "ts": pipeline.now, "occupancy_pct": round(100 * people / cap)}
+
+
+app.include_router(vision.attach(_CvState()))
+
+
 @app.post("/api/ingest")
 async def ingest(r: Reading, db: Session = Depends(get_db)):
     data = r.model_dump()
@@ -146,7 +177,8 @@ def live_payload(db: Session) -> dict:
         z = ZONES[n["zone"]]
         rooms.append({"id": n["zone"], "name": z["name"], "floor": z["floor"], "kind": z["kind"], "people": n["people"],
                       "cap": z["cap"], "kw": n["kw"], "expected_kw": n.get("expected_kw", 0),
-                      "v_board": n["v_board"], "v_room": n["v_room"], "amps": n["amps"], "leak_ma": n["leak_ma"]})
+                      "v_board": n["v_board"], "v_room": n["v_room"], "amps": n["amps"], "leak_ma": n["leak_ma"],
+                      "t_in": n.get("t_in"), "rh": n.get("rh"), "ac_kw": n.get("ac_kw")})
     open_alerts = db.scalars(select(Alert).where(Alert.end.is_(None)).order_by(desc(Alert.start))).all()
     today = db.get(SavingsDaily, _date(r["ts"]))
     return {
@@ -165,7 +197,7 @@ def _date(ts: int) -> str:
 
 
 def alert_dict(a: Alert) -> dict:
-    return {"id": a.id, "rule": a.rule, "target": a.target, "kind": a.kind, "title": a.title, "status": a.status,
+    return {"id": a.id, "rule": a.rule, "target": a.target, "kind": a.kind, "title": a.title, "severity": a.severity, "status": a.status,
             "feedback": a.feedback, "start": a.start, "last": a.last, "end": a.end, "kwh": round(a.kwh, 2),
             "litres": round(a.litres), "rupees": round(a.rupees), "co2": round(a.co2, 2), "info": a.info,
             "advice_en": a.advice_en, "advice_hi": a.advice_hi}
@@ -206,8 +238,32 @@ def room_series(zone_id: str, hours: int = 24, db: Session = Depends(get_db)):
     occ = dict(db.execute(select(OccupancyRecord.ts, OccupancyRecord.people)
                           .where(OccupancyRecord.zone_id == zone_id, OccupancyRecord.ts > since)).all())
     return [{"ts": e.ts, "kw": e.kw, "expected_kw": round(e.expected_kw or 0, 3), "people": occ.get(e.ts, 0),
-             "r_ohm": round((e.v_board - e.v_room) / e.amps, 3) if e.amps > 1.5 else None, "leak_ma": e.leak_ma}
+             "r_ohm": round((e.v_board - e.v_room) / e.amps, 3) if e.amps > 1.5 else None, "leak_ma": e.leak_ma,
+             "t_in": e.t_in, "rh": e.rh, "ac_kw": e.ac_kw}
             for e in rows]
+
+
+@app.get("/api/hvac")
+def hvac(hours: int = 24, db: Session = Depends(get_db)):
+    """HVAC view: indoor temperature, humidity and AC power for every room with an AC, plus open HVAC alerts."""
+    since = pipeline.now - hours * HOUR
+    rooms = []
+    open_rules = {(a.rule, a.target) for a in pipeline.detector.open.values()}
+    latest = {n["zone"]: n for n in (pipeline.latest or {}).get("nodes", [])}
+    for zid, z in ZONES.items():
+        rows = db.execute(select(EnergyReading.ts, EnergyReading.t_in, EnergyReading.rh, EnergyReading.ac_kw)
+                          .where(EnergyReading.zone_id == zid, EnergyReading.ts > since).order_by(EnergyReading.ts)).all()
+        n = latest.get(zid, {})
+        t_in, ac = n.get("t_in"), n.get("ac_kw") or 0
+        status = ("overcool" if ("overcool", zid) in open_rules else "door_open" if ("door_open", zid) in open_rules
+                  else "cooling" if ac > 0.05 else "hot" if t_in and t_in > 30 and n.get("people") else "comfortable" if t_in and 22 <= t_in <= 27 else "off")
+        rooms.append({"id": zid, "name": z["name"], "floor": z["floor"], "ac_units": z["acUnits"], "rated_kw": round(z["acUnits"] * z["acKW"], 2),
+                      "people": n.get("people", 0), "t_in": t_in, "rh": n.get("rh"), "ac_kw": ac, "status": status,
+                      "series": [{"ts": r.ts, "t_in": r.t_in, "rh": r.rh, "ac_kw": r.ac_kw} for r in rows]})
+    ac_kwh = db.execute(select(func.sum(EnergyReading.ac_kw)).where(EnergyReading.ts > since)).scalar() or 0
+    total = db.execute(select(func.sum(EnergyReading.kw)).where(EnergyReading.ts > since)).scalar() or 0
+    return {"outside_c": (pipeline.latest or {}).get("temp_c"), "rooms": rooms, "ac_share": round(ac_kwh / total, 3) if total else 0,
+            "ac_kwh": round(ac_kwh / 4, 1), "setpoint_c": 24}
 
 
 @app.get("/api/wiring")
@@ -230,7 +286,13 @@ def wiring(db: Session = Depends(get_db)):
         for n in pipeline.latest["nodes"]:
             f = ZONES[n["zone"]]["floor"]
             leak[f] = max(leak.get(f, 0), n["leak_ma"])
-    return {"circuits": out, "earth_leak_ma": leak}
+    floors = []
+    for f in (0, 1, 2):
+        nf = det.open.get(f"night_flow:F{f}")
+        el = det.open.get(f"earth_leak:F{f}")
+        floors.append({"floor": f, "leak_ma": round(leak.get(f, 0), 1), "earth_alert": el is not None,
+                       "night_flow_lph": nf.info.get("lph") if nf else 0, "inside_wall": bool(nf and nf.info.get("inside_wall"))})
+    return {"circuits": out, "earth_leak_ma": leak, "floors": floors}
 
 
 @app.get("/api/water/series")
@@ -294,7 +356,7 @@ def labels(db: Session = Depends(get_db)):
 
 @app.post("/api/control")
 def control(c: ControlIn, db: Session = Depends(get_db)):
-    if c.command not in ("switch_off", "pump_off", "close_valve", "work_order"):
+    if c.command not in ("switch_off", "ac_setpoint", "pump_off", "close_valve", "work_order"):
         raise HTTPException(400, "unknown command")
     alert = db.get(Alert, c.alert_id) if c.alert_id else None
     params = {"rule": alert.rule, "due": pipeline.now + 24 * HOUR} if c.command == "work_order" and alert else {}
@@ -332,6 +394,10 @@ def get_settings(db: Session = Depends(get_db)):
 
 @app.put("/api/settings")
 def put_settings(body: dict, db: Session = Depends(get_db)):
+    from .service import DEFAULT_SETTINGS
+    unknown = set(body) - set(DEFAULT_SETTINGS)
+    if unknown:
+        raise HTTPException(400, f"unknown setting: {', '.join(sorted(unknown))}")
     for k, v in body.items():
         row = db.get(Setting, k)
         if row:
