@@ -99,7 +99,7 @@ export default function RealBuilding() {
               {closedRuns.map(([a, b]) => <ReferenceArea key={a} x1={rows[a].ts} x2={rows[Math.min(b, rows.length - 1)].ts} fill="#f1f5f9" fillOpacity={0.9} ifOverflow="hidden" />)}
               {weekEvents.map((e) => <ReferenceArea key={e.i} x1={t0 + e.i * 3600000} x2={t0 + (e.i + e.hours) * 3600000} fill="#fee2e2" fillOpacity={0.8} ifOverflow="hidden" />)}
               <XAxis dataKey="ts" type="number" domain={['dataMin', 'dataMax']} tickFormatter={tick} ticks={rows.filter((r) => r.i % 24 === 0).map((r) => r.ts)} fontSize={11} />
-              <YAxis fontSize={11} width={48} unit=" kW" />
+              <YAxis fontSize={11} width={56} tickFormatter={(v) => `${num(v, 0)} kW`} />
               <Tooltip labelFormatter={(v) => new Date(v).toUTCString().slice(0, 22)} formatter={(v, n) => [`${num(v, 1)} kW`, n]} />
               <Legend />
               <Area dataKey="actual" name="Actual" stroke="#d97706" fill="#fde68a" fillOpacity={0.5} isAnimationActive={false} />
@@ -135,7 +135,7 @@ export default function RealBuilding() {
             <Stat icon={PiggyBank} v={rs(sim.saved * RS_KWH)} l="a year at Jammu tariff" />
             <Stat icon={Leaf} v={`${num(sim.saved * CO2 / 1000, 0)} t`} l="CO₂ a year (CEA)" />
           </div>
-          {d.chw && <p className="text-sm text-ink-700"><Snowflake size={14} className="mr-1 inline text-water" />Plus <b>{num(sim.chwSaved / 1000, 0)} MWh</b> of cooling energy a year from HVAC scheduling.</p>}
+          {d.chw && <p className="text-sm text-ink-700"><Snowflake size={14} className="mr-1 inline text-water" />Plus <b>{num(sim.chwSaved / 1000, 0)} MWh</b> a year of chilled-water cooling (thermal, separate meter) from HVAC scheduling.</p>}
         </section>
       </div>
 
@@ -151,7 +151,7 @@ export default function RealBuilding() {
                     <CartesianGrid stroke="#e2e8f0" vertical={false} />
                     {closedRuns.map(([a, b]) => <ReferenceArea key={a} x1={rows[a].ts} x2={rows[Math.min(b, rows.length - 1)].ts} fill="#f1f5f9" ifOverflow="hidden" />)}
                     <XAxis dataKey="ts" type="number" domain={['dataMin', 'dataMax']} tickFormatter={tick} ticks={rows.filter((r) => r.i % 24 === 0).map((r) => r.ts)} fontSize={11} />
-                    <YAxis yAxisId="c" fontSize={11} width={48} />
+                    <YAxis yAxisId="c" fontSize={11} width={56} tickFormatter={(v) => `${num(v, 0)} kW`} />
                     <YAxis yAxisId="t" orientation="right" fontSize={11} width={36} unit="°" />
                     <Tooltip labelFormatter={(v) => new Date(v).toUTCString().slice(0, 22)} />
                     <Legend />

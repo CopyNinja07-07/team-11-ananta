@@ -122,11 +122,17 @@ export default function Hvac() {
 }
 
 function TempScale({ t }) {
-  const pos = t == null ? null : Math.max(0, Math.min(1, (t - 14) / 26));
+  const at = (v) => `${((v - 14) / 26) * 100}%`;
   return (
-    <div className="relative mt-2 h-2 rounded-full" style={{ background: 'linear-gradient(90deg,#0284c7 0%,#7dd3fc 25%,#34d399 38%,#34d399 50%,#fbbf24 62%,#dc2626 100%)' }} aria-hidden>
-      {pos != null && <div className="absolute -top-1 h-4 w-1.5 -translate-x-1/2 rounded bg-ink-900" style={{ left: `${pos * 100}%` }} />}
-      <div className="mt-3 flex justify-between text-[10px] text-ink-500"><span>14°</span><span>24°</span><span>40°</span></div>
+    <div className="mt-3" aria-hidden>
+      <div className="relative h-2 rounded-full" style={{ background: 'linear-gradient(90deg,#0284c7 0%,#7dd3fc 25%,#34d399 35%,#34d399 50%,#fbbf24 62%,#dc2626 100%)' }}>
+        {t != null && <div className="absolute -top-1 h-4 w-1.5 -translate-x-1/2 rounded bg-ink-900 ring-2 ring-white" style={{ left: at(Math.max(14, Math.min(40, t))) }} />}
+      </div>
+      <div className="relative mt-1 h-3 text-[10px] text-ink-500">
+        <span className="absolute left-0">14°</span>
+        <span className="absolute -translate-x-1/2 font-medium text-brand-700" style={{ left: at(24) }}>24°</span>
+        <span className="absolute right-0">40°</span>
+      </div>
     </div>
   );
 }
