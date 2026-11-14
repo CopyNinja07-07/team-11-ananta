@@ -170,8 +170,11 @@ def build(shots: dict[str, str]):
     items = list(shots.items())
     def shot(t, p, style=""):
         return f'<div style="break-inside:avoid;{style}"><h3 style="font-size:10pt">{t}</h3><img class="shot" src="{p}"></div>'
-    shots_html = (shot(*items[0]) if items else "") + '<div class="grid2">' + "".join(
-        shot(t, p, "max-width:45mm" if "Phone" in t else "") for t, p in items[1:]) + "</div>"
+    desk = [(t, p) for t, p in items if "Phone" not in t]
+    phones = [(t, p) for t, p in items if "Phone" in t]
+    shots_html = (shot(*desk[0]) if desk else "") + '<div class="grid2">' + "".join(shot(t, p) for t, p in desk[1:]) + "</div>"
+    if phones:
+        shots_html += '<div style="display:flex;gap:8mm;break-inside:avoid">' + "".join(shot(t, p, "width:42mm") for t, p in phones) + "</div>"
     cover_rows = "".join(f"<tr><td>{a}</td><td>{b}</td></tr>" for a, b in COVER)
     html = f"""<!doctype html><html><head><meta charset="utf-8"><title>ECOGUARD AI: Round 2 UI/UX Design Pack</title><style>{css}</style></head><body>
 <div class="page cover">
@@ -261,14 +264,14 @@ def build(shots: dict[str, str]):
 <h3>Components</h3>
 <ul class="small"><li><b>KPI card</b>: label, big number + unit, one-line context</li><li><b>Alert card</b>: kind icon, title, kind pill, status pill, place and time, advice, cost line, actions</li><li><b>Room tile</b>: 4 states (in use, empty, wasting, wiring risk)</li><li><b>Buttons</b>: primary, ghost, danger; disabled when the action makes no sense (e.g. switching off an occupied room)</li><li><b>Toggle</b> (role=switch), <b>tabs</b>, <b>select</b>, <b>meter bar</b></li></ul>
 </div></div>
-<h2>10. States and accessibility</h2>
+<div style="break-inside:avoid"><h2>10. States and accessibility</h2>
 <table><tr><th>State</th><th>What the user sees</th></tr>
 <tr><td>Loading</td><td>Spinner with "Loading the building…" (announced to screen readers)</td></tr>
 <tr><td>Empty</td><td>"Nothing is being wasted right now", "No readings yet: start the gateway", "Before-vs-after not run yet"</td></tr>
 <tr><td>Error</td><td>Red banner "Could not reach the ECOGUARD server" with a Retry button; header pill "Backend offline"; live view falls back to polling every 5 s</td></tr>
 <tr><td>Power cut</td><td>Header pill turns red "Power cut"; energy rules pause (meters read zero), water rules continue</td></tr>
 </table>
-<ul class="small"><li>Colour is never the only signal: every room tile and alert also has a text label.</li><li>All charts have text KPIs next to them; meters use role="meter" with values.</li><li>Keyboard: every control is a real button or link with a visible focus ring.</li><li>Readable sizes: body 14 px, minimum 11 px for chart ticks; layout works down to 390 px phones.</li></ul>
+<ul class="small"><li>Colour is never the only signal: every room tile and alert also has a text label.</li><li>All charts have text KPIs next to them; meters use role="meter" with values.</li><li>Keyboard: every control is a real button or link with a visible focus ring.</li><li>Readable sizes: body 14 px, minimum 11 px for chart ticks; layout works down to 390 px phones.</li></ul></div>
 <h2>11. Tool workflow</h2>
 <p class="small">We built the clickable prototype directly in code (React + Tailwind + Recharts), connected to live simulated data, so every screen shows realistic numbers and every button really works. The design tokens live in <code>tailwind.config.js</code> and are the same names as in this guide. To present the design file, the screens are rebuilt in Figma as follows:</p>
 <ol class="small">{"".join(f"<li>{s}</li>" for s in FIGMA)}</ol>

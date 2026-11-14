@@ -52,7 +52,7 @@ code { background: #f1f5f9; padding: 0 1mm; border-radius: 1mm; font-size: 9pt; 
 <tr><td>Advice in English and Hindi, one tap to switch</td><td>Facility and maintenance staff on Indian campuses are often more comfortable in Hindi.</td></tr>
 <tr><td>Two buttons on every alert: "Correct" and "Not waste"</td><td>Each answer becomes a label that retrains the model for this building. "Not waste" also stops any automatic action, so people stay in control.</td></tr>
 <tr><td>Automatic mode with a 15-minute grace period</td><td>Fast enough to stop most waste, slow enough for a manager to stop a wrong action. It never switches off a room with people in it.</td></tr>
-<tr><td>A separate "Heat in Walls" screen</td><td>This is our novel module. Waste that no normal meter shows (hot wiring joints, current leaking into damp walls) needs its own explanation, with a picture of how it is measured.</td></tr>
+<tr><td>A separate "Heat &amp; Damp Walls" screen</td><td>This is our novel module. Waste that no normal meter shows (hot wiring joints, current leaking into damp walls) needs its own explanation, with a picture of how it is measured.</td></tr>
 <tr><td>Energy and water on the same screens, with the pump in the middle</td><td>The pump is where energy and water meet. An overflowing tank wastes both, so we show them together instead of in two separate apps.</td></tr>
 <tr><td>Savings page with a full-year before vs after</td><td>Answers the estate officer's real question: did it work, and how much did it save?</td></tr>
 </table>
@@ -60,74 +60,90 @@ code { background: #f1f5f9; padding: 0 1mm; border-radius: 1mm; font-size: 9pt; 
 
 <div class="page">
 <h3>Round 1 plan → Round 2 screens (consistency check)</h3>
-<table><tr><th style="width:42%">Module in our Round 1 PPT</th><th>Where it lives now</th></tr><tr><td>Data collection: IoT sensors, meters, CCTV</td><td>Simulator (virtual ESP32 + occupancy) · Rooms · Water & Pump</td></tr><tr><td>Intelligence engine: anomaly detection</td><td>Alerts · Overview map · Room detail chart (actual vs expected)</td></tr><tr><td>Intelligence engine: forecasting</td><td>Forecast</td></tr><tr><td>Intelligence engine: cross-utility (energy + water)</td><td>Water & Pump (pump links both) · Heat in Walls (damp wall + leak)</td></tr><tr><td>Decision & control automation (HVAC, lighting, water)</td><td>Alert actions · Settings (auto mode, grace period, tickets)</td></tr><tr><td>User interface: portal, reports, AI insights</td><td>All screens · advice in English/Hindi · labelled CSV export</td></tr><tr><td>Savings & carbon (ER entity)</td><td>Savings & Carbon (live + full-year before vs after)</td></tr><tr><td>Fail-safe: manual override, safe rules</td><td>Settings toggles · 'Not waste' stops auto action · relays never cut occupied rooms</td></tr></table>
+<table><tr><th style="width:42%">Module in our Round 1 PPT</th><th>Where it lives now</th></tr><tr><td>Data collection: IoT sensors, meters, CCTV</td><td>Camera Occupancy (YOLO person count) · room nodes over HTTP or MQTT · Rooms · Water & Pump</td></tr><tr><td>Intelligence engine: anomaly detection</td><td>Alerts · Overview map · Room detail chart (actual vs expected)</td></tr><tr><td>Intelligence engine: forecasting</td><td>Forecast (simulated block) · LSTM day-ahead forecaster on real buildings (Real Buildings)</td></tr><tr><td>Real data, trained models</td><td>Real Buildings: 659 real classrooms, labs and offices (BDG2), LightGBM baselines, what-if sandbox</td></tr><tr><td>Intelligence engine: cross-utility (energy + water)</td><td>Water & Pump (pump links both) · Heat & Damp Walls (damp wall + leak)</td></tr><tr><td>Decision & control automation (HVAC, lighting, water)</td><td>HVAC & Comfort (reset to 24 C, open door) · alert actions · automatic, manual and scheduled modes</td></tr><tr><td>User interface: portal, voice, reports, AI insights</td><td>All screens · voice commands (EN/HI) · advice in English/Hindi · labelled CSV export</td></tr><tr><td>Savings & carbon (ER entity)</td><td>Savings & Carbon (live + full-year before vs after)</td></tr><tr><td>Fail-safe: manual override, safe rules</td><td>'Not waste' stops auto action · relays never cut occupied rooms · nodes run local safe rules when the server is down</td></tr></table>
 </div>
 
 <div class="page">
 <h2>2. Personas</h2>
 <p class="muted small">Proto-personas built from our literature review of campus energy and water studies and the roles that run our own university blocks.</p>
-<div class="grid2"><div class="card"><span class="tag">Persona</span><h3>Facility Manager</h3><p class="muted small">Runs the block day to day; looks at the phone between rounds.</p><b class="small">Goals</b><ul class="small"><li>Know which room is wasting right now, without walking every floor</li><li>Act in one tap, and not be blamed for switching off a class</li></ul><b class="small">Pain points</b><ul class="small"><li>Finds out about leaks from the electricity/water bill a month later</li><li>Guard rounds catch lights at 10 pm, too late</li></ul><b class="small">Served by:</b> <span class="small">Overview, Alerts, one-tap Switch off, Hindi advice</span></div><div class="card"><span class="tag">Persona</span><h3>Estate Officer / Admin</h3><p class="muted small">Owns the budget and the green-campus report.</p><b class="small">Goals</b><ul class="small"><li>Show money and CO₂ saved with numbers that hold up</li><li>Decide where to spend on repairs</li></ul><b class="small">Pain points</b><ul class="small"><li>No sub-metering: one bill for the whole block</li><li>Cannot prove that an intervention worked</li></ul><b class="small">Served by:</b> <span class="small">Savings & Carbon (before vs after), Forecast</span></div><div class="card"><span class="tag">Persona</span><h3>Electrician / Plumber</h3><p class="muted small">Gets called after something breaks.</p><b class="small">Goals</b><ul class="small"><li>Get told before it breaks, with the exact room or floor</li><li>Fewer emergency calls</li></ul><b class="small">Pain points</b><ul class="small"><li>Loose joints are found only after a burn smell or a trip</li><li>Leaks inside walls are found only when paint peels</li></ul><b class="small">Served by:</b> <span class="small">Heat in Walls, work-order tickets</span></div><div class="card"><span class="tag">Persona</span><h3>Faculty / Students (occupants)</h3><p class="muted small">Use the rooms; not dashboard users.</p><b class="small">Goals</b><ul class="small"><li>Room is ready and comfortable when class starts</li><li>Never lose power mid-class</li></ul><b class="small">Pain points</b><ul class="small"><li>AC set to 16 °C, doors open</li><li>Lights left on by the previous class</li></ul><b class="small">Served by:</b> <span class="small">Nothing to learn: ECOGUARD never switches off an occupied room</span></div></div>
+<div class="grid2"><div class="card"><span class="tag">Persona</span><h3>Facility Manager</h3><p class="muted small">Runs the block day to day; looks at the phone between rounds.</p><b class="small">Goals</b><ul class="small"><li>Know which room is wasting right now, without walking every floor</li><li>Act in one tap, and not be blamed for switching off a class</li></ul><b class="small">Pain points</b><ul class="small"><li>Finds out about leaks from the electricity/water bill a month later</li><li>Guard rounds catch lights at 10 pm, too late</li></ul><b class="small">Served by:</b> <span class="small">Overview, Alerts, one-tap Switch off, Hindi advice</span></div><div class="card"><span class="tag">Persona</span><h3>Estate Officer / Admin</h3><p class="muted small">Owns the budget and the green-campus report.</p><b class="small">Goals</b><ul class="small"><li>Show money and CO₂ saved with numbers that hold up</li><li>Decide where to spend on repairs</li></ul><b class="small">Pain points</b><ul class="small"><li>No sub-metering: one bill for the whole block</li><li>Cannot prove that an intervention worked</li></ul><b class="small">Served by:</b> <span class="small">Savings & Carbon (before vs after), Forecast</span></div><div class="card"><span class="tag">Persona</span><h3>Electrician / Plumber</h3><p class="muted small">Gets called after something breaks.</p><b class="small">Goals</b><ul class="small"><li>Get told before it breaks, with the exact room or floor</li><li>Fewer emergency calls</li></ul><b class="small">Pain points</b><ul class="small"><li>Loose joints are found only after a burn smell or a trip</li><li>Leaks inside walls are found only when paint peels</li></ul><b class="small">Served by:</b> <span class="small">Heat & Damp Walls, work-order tickets</span></div><div class="card"><span class="tag">Persona</span><h3>Faculty / Students (occupants)</h3><p class="muted small">Use the rooms; not dashboard users.</p><b class="small">Goals</b><ul class="small"><li>Room is ready and comfortable when class starts</li><li>Never lose power mid-class</li></ul><b class="small">Pain points</b><ul class="small"><li>AC set to 16 °C, doors open</li><li>Lights left on by the previous class</li></ul><b class="small">Served by:</b> <span class="small">Nothing to learn: ECOGUARD never switches off an occupied room</span></div></div>
 </div>
 
 <div class="page">
 <h2>3. Sitemap</h2>
 <svg viewBox="0 0 900 330" width="680" xmlns="http://www.w3.org/2000/svg">
 <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker></defs>
-<path d="M380.0,50.4 Q252.0,84.0 100.0,123.9" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
-<path d="M387.2,54.0 Q301.5,84.0 199.0,119.9" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
-<path d="M408.1,54.0 Q351.0,84.0 298.0,111.8" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
-<path d="M429.1,54.0 Q400.5,84.0 375.8,110.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
-<path d="M450.0,54.0 Q450.0,84.0 450.0,110.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
-<path d="M470.9,54.0 Q499.5,84.0 524.2,110.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
-<path d="M491.9,54.0 Q549.0,84.0 602.0,111.8" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
-<path d="M512.8,54.0 Q598.5,84.0 701.0,119.9" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
-<path d="M520.0,50.4 Q648.0,84.0 800.0,123.9" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
-<path d="M151.3,162.0 Q149.0,195.5 146.7,230.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
-<path d="M73.9,162.0 Q99.5,195.5 125.9,230.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
-<text x="99.5" y="191.5" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">map tile</text>
-<path d="M281.1,162.0 Q318.5,195.5 357.1,230.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
-<path d="M298.0,152.0 Q423.5,195.5 522.9,230.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M380.0,49.7 Q244.5,84.0 74.0,127.1" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M380.0,53.6 Q281.8,84.0 148.5,125.2" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M394.6,54.0 Q319.0,84.0 223.0,122.1" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M410.3,54.0 Q356.2,84.0 297.5,116.6" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M426.1,54.0 Q393.5,84.0 365.2,110.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M441.9,54.0 Q430.8,84.0 421.1,110.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M457.6,54.0 Q468.0,84.0 477.0,110.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M473.4,54.0 Q505.2,84.0 532.9,110.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M489.1,54.0 Q542.5,84.0 600.0,116.3" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M504.9,54.0 Q579.8,84.0 674.5,122.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M520.0,53.8 Q617.0,84.0 749.0,125.1" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M520.0,49.8 Q654.2,84.0 823.5,127.1" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M113.8,162.0 Q114.2,195.5 114.7,230.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M55.6,162.0 Q77.0,195.5 99.0,230.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="77.0" y="191.5" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">map tile</text>
+<path d="M217.9,162.0 Q256.5,195.5 296.2,230.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M704.1,162.0 Q697.2,195.5 690.1,230.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M455.4,54.0 Q477.5,143.5 498.8,230.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
 <rect x="380" y="10" width="140" height="44" rx="22.0" fill="#047857" stroke="#047857" stroke-width="1.8"/>
 <text x="450.0" y="29.0" font-size="12" font-weight="600" text-anchor="middle" fill="#ffffff">ECOGUARD AI</text>
 <text x="450.0" y="43.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#ffffff">dashboard</text>
-<rect x="8" y="110" width="92" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
-<text x="54.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Overview</text>
-<text x="54.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">KPIs · map · alerts</text>
-<rect x="107" y="110" width="92" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
-<text x="153.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Rooms</text>
-<text x="153.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">table of 8 rooms</text>
-<rect x="206" y="110" width="92" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
-<text x="252.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Alerts</text>
-<text x="252.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">open · history · all</text>
-<rect x="305" y="110" width="92" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
-<text x="351.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Water &amp; Pump</text>
-<text x="351.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">tank · sump · flows</text>
-<rect x="404" y="110" width="92" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
-<text x="450.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Heat in Walls</text>
-<text x="450.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">circuits · leakage</text>
-<rect x="503" y="110" width="92" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
-<text x="549.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Forecast</text>
-<text x="549.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">next 24 h</text>
-<rect x="602" y="110" width="92" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
-<text x="648.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Savings &amp; Carbon</text>
-<text x="648.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">before vs after</text>
-<rect x="701" y="110" width="92" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
-<text x="747.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Simulator</text>
-<text x="747.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">demo control</text>
-<rect x="800" y="110" width="92" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
-<text x="846.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Settings</text>
-<text x="846.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">automation rules</text>
-<rect x="70" y="230" width="150" height="50" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
-<text x="145.0" y="252.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Room detail</text>
-<text x="145.0" y="266.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(one per room, /rooms/:id)</text>
-<rect x="300" y="230" width="170" height="50" rx="6" fill="#fafafa" stroke="#94a3b8" stroke-width="1.8"/>
-<text x="385.0" y="252.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Alert actions</text>
-<text x="385.0" y="266.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">switch off · confirm · dismiss</text>
-<rect x="520" y="230" width="150" height="50" rx="6" fill="#fafafa" stroke="#94a3b8" stroke-width="1.8"/>
-<text x="595.0" y="252.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Labelled alerts CSV</text>
-<text x="595.0" y="266.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(download)</text>
+<rect x="4.0" y="110" width="70" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="39.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Overview</text>
+<text x="39.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">KPIs · map</text>
+<rect x="78.5" y="110" width="70" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="113.5" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Rooms</text>
+<text x="113.5" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">8 rooms</text>
+<rect x="153.0" y="110" width="70" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="188.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Alerts</text>
+<text x="188.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">open · history</text>
+<rect x="227.5" y="110" width="70" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="262.5" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Camera</text>
+<text x="262.5" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">YOLO count</text>
+<rect x="302.0" y="110" width="70" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="337.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">HVAC</text>
+<text x="337.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">comfort · AC</text>
+<rect x="376.5" y="110" width="70" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="411.5" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Water &amp; Pump</text>
+<text x="411.5" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">tank · flows</text>
+<rect x="451.0" y="110" width="70" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="486.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Heat &amp; Damp</text>
+<text x="486.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">walls</text>
+<rect x="525.5" y="110" width="70" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="560.5" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Forecast</text>
+<text x="560.5" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">next 24 h</text>
+<rect x="600.0" y="110" width="70" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="635.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Savings</text>
+<text x="635.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">before/after</text>
+<rect x="674.5" y="110" width="70" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="709.5" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Real Bldgs</text>
+<text x="709.5" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">BDG2 sandbox</text>
+<rect x="749.0" y="110" width="70" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="784.0" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Simulator</text>
+<text x="784.0" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">demo</text>
+<rect x="823.5" y="110" width="70" height="52" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="858.5" y="133.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Settings</text>
+<text x="858.5" y="147.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">modes</text>
+<rect x="40" y="230" width="150" height="50" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="115.0" y="252.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Room detail</text>
+<text x="115.0" y="266.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(/rooms/:id)</text>
+<rect x="240" y="230" width="170" height="50" rx="6" fill="#fafafa" stroke="#94a3b8" stroke-width="1.8"/>
+<text x="325.0" y="252.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Alert actions</text>
+<text x="325.0" y="266.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">switch off · 24 C · confirm</text>
+<rect x="600" y="230" width="170" height="50" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="685.0" y="252.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Building sandbox</text>
+<text x="685.0" y="266.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(/real/:id) what-if</text>
+<rect x="430" y="230" width="150" height="50" rx="6" fill="#fafafa" stroke="#94a3b8" stroke-width="1.8"/>
+<text x="505.0" y="252.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Voice commands</text>
+<text x="505.0" y="266.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(header mic, EN / HI)</text>
 </svg>
-<p class="small muted">Nine top-level screens in a fixed sidebar (a drawer on phones). Room detail opens from the Rooms table or from any tile on the building map. Every screen is at most two clicks from Overview.</p>
+<p class="small muted">Twelve top-level screens in a fixed sidebar (a drawer on phones). Room detail opens from the Rooms table or from any tile on the building map. Every screen is at most two clicks from Overview.</p>
 <h2>4. User flows</h2>
 <h3>Flow A: respond to waste (facility manager), 2 taps</h3><svg viewBox="0 0 880 90" width="680" xmlns="http://www.w3.org/2000/svg">
 <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker></defs>
@@ -163,7 +179,7 @@ code { background: #f1f5f9; padding: 0 1mm; border-radius: 1mm; font-size: 9pt; 
 <path d="M577.3,45.0 Q586.3,45.0 595.3,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
 <path d="M723.7,45.0 Q732.7,45.0 741.7,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
 <rect x="10.0" y="15" width="128.33333333333334" height="60" rx="30" fill="#047857" stroke="#047857" stroke-width="1.8"/>
-<text x="74.16666666666667" y="49.0" font-size="12" font-weight="600" text-anchor="middle" fill="#ffffff">Heat in Walls</text>
+<text x="74.16666666666667" y="49.0" font-size="12" font-weight="600" text-anchor="middle" fill="#ffffff">Heat &amp; Damp Walls</text>
 <rect x="156.33333333333334" y="15" width="128.33333333333334" height="60" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
 <text x="220.5" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Circuit shows</text>
 <text x="220.5" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">&#x27;Hot joint&#x27;</text>
@@ -372,10 +388,10 @@ code { background: #f1f5f9; padding: 0 1mm; border-radius: 1mm; font-size: 9pt; 
 <div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W1. Overview</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="1440" height="900" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
 <rect x="0" y="0" width="240" height="900" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
-<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 9</text>
+<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 13</text>
 <text x="120.0" y="86.4" font-size="22" text-anchor="middle" fill="#475569">nav items</text>
 <rect x="240" y="0" width="1200" height="50" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
-<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · language</text>
+<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · voice mic · language</text>
 <rect x="264" y="70" width="700" height="50" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
 <text x="614.0" y="95.0" font-size="26" text-anchor="middle" fill="#475569">Title + one-line purpose</text>
 <rect x="264" y="135" width="220" height="100" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
@@ -404,10 +420,10 @@ code { background: #f1f5f9; padding: 0 1mm; border-radius: 1mm; font-size: 9pt; 
 <div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W2. Rooms</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="1440" height="900" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
 <rect x="0" y="0" width="240" height="900" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
-<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 9</text>
+<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 13</text>
 <text x="120.0" y="86.4" font-size="22" text-anchor="middle" fill="#475569">nav items</text>
 <rect x="240" y="0" width="1200" height="50" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
-<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · language</text>
+<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · voice mic · language</text>
 <rect x="264" y="70" width="700" height="50" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
 <text x="614.0" y="95.0" font-size="26" text-anchor="middle" fill="#475569">Title + purpose</text>
 <rect x="264" y="135" width="1152" height="520" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
@@ -417,10 +433,10 @@ code { background: #f1f5f9; padding: 0 1mm; border-radius: 1mm; font-size: 9pt; 
 <div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W3. Room detail</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="1440" height="900" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
 <rect x="0" y="0" width="240" height="900" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
-<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 9</text>
+<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 13</text>
 <text x="120.0" y="86.4" font-size="22" text-anchor="middle" fill="#475569">nav items</text>
 <rect x="240" y="0" width="1200" height="50" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
-<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · language</text>
+<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · voice mic · language</text>
 <rect x="264" y="65" width="120" height="20" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
 <text x="324.0" y="59.4" font-size="26" text-anchor="middle" fill="#475569">< All</text>
 <text x="324.0" y="90.6" font-size="26" text-anchor="middle" fill="#475569">rooms</text>
@@ -446,10 +462,10 @@ code { background: #f1f5f9; padding: 0 1mm; border-radius: 1mm; font-size: 9pt; 
 <div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W4. Alerts</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="1440" height="900" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
 <rect x="0" y="0" width="240" height="900" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
-<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 9</text>
+<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 13</text>
 <text x="120.0" y="86.4" font-size="22" text-anchor="middle" fill="#475569">nav items</text>
 <rect x="240" y="0" width="1200" height="50" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
-<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · language</text>
+<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · voice mic · language</text>
 <rect x="264" y="70" width="800" height="50" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
 <text x="664.0" y="95.0" font-size="26" text-anchor="middle" fill="#475569">Title + 'your answers train the model'</text>
 <rect x="1230" y="75" width="186" height="40" rx="10" fill="#cbd5e1" stroke="#94a3b8" stroke-width="2"/>
@@ -477,13 +493,83 @@ code { background: #f1f5f9; padding: 0 1mm; border-radius: 1mm; font-size: 9pt; 
 <text x="1133.0" y="741.9" font-size="26" text-anchor="middle" fill="#475569">Alert card: advice EN/HI, Rs, kWh/L,</text>
 <text x="1133.0" y="773.1" font-size="26" text-anchor="middle" fill="#475569">Switch off / Correct / Not waste</text>
 </svg></div>
-<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W5. Water & Pump</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
+<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W5. Camera Occupancy</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="1440" height="900" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
 <rect x="0" y="0" width="240" height="900" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
-<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 9</text>
+<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 13</text>
 <text x="120.0" y="86.4" font-size="22" text-anchor="middle" fill="#475569">nav items</text>
 <rect x="240" y="0" width="1200" height="50" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
-<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · language</text>
+<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · voice mic · language</text>
+<rect x="264" y="70" width="900" height="50" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="714.0" y="95.0" font-size="26" text-anchor="middle" fill="#475569">Title + purpose</text>
+<rect x="264" y="135" width="760" height="40" rx="10" fill="#cbd5e1" stroke="#94a3b8" stroke-width="2"/>
+<text x="644.0" y="155.0" font-size="26" text-anchor="middle" fill="#475569">Room select · Upload photo · Use webcam · Count now</text>
+<rect x="264" y="185" width="760" height="480" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="644.0" y="425.0" font-size="26" text-anchor="middle" fill="#475569">Frame with person boxes + confidence (never stored)</text>
+<rect x="1044" y="135" width="372" height="140" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="1230.0" y="173.8" font-size="26" text-anchor="middle" fill="#475569">People counted · % of</text>
+<text x="1230.0" y="205.0" font-size="26" text-anchor="middle" fill="#475569">seats · ms · room sensor</text>
+<text x="1230.0" y="236.20000000000002" font-size="26" text-anchor="middle" fill="#475569">count</text>
+<rect x="1044" y="290" width="372" height="150" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="1230.0" y="349.4" font-size="26" text-anchor="middle" fill="#475569">Privacy note (DPDP Act:</text>
+<text x="1230.0" y="380.59999999999997" font-size="26" text-anchor="middle" fill="#475569">count only)</text>
+<rect x="1044" y="455" width="372" height="150" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="1230.0" y="514.4" font-size="26" text-anchor="middle" fill="#475569">Model: YOLO11n,</text>
+<text x="1230.0" y="545.6" font-size="26" text-anchor="middle" fill="#475569">confidence, camera node</text>
+</svg></div>
+<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W6. HVAC & Comfort</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="1440" height="900" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
+<rect x="0" y="0" width="240" height="900" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 13</text>
+<text x="120.0" y="86.4" font-size="22" text-anchor="middle" fill="#475569">nav items</text>
+<rect x="240" y="0" width="1200" height="50" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · voice mic · language</text>
+<rect x="264" y="70" width="900" height="50" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="714.0" y="95.0" font-size="26" text-anchor="middle" fill="#475569">Title + BEE 24 C rule</text>
+<rect x="264" y="135" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="403.0" y="182.5" font-size="26" text-anchor="middle" fill="#475569">Outside C</text>
+<rect x="554" y="135" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="693.0" y="182.5" font-size="26" text-anchor="middle" fill="#475569">ACs running</text>
+<rect x="844" y="135" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="983.0" y="182.5" font-size="26" text-anchor="middle" fill="#475569">AC share of power</text>
+<rect x="1134" y="135" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="1273.0" y="182.5" font-size="26" text-anchor="middle" fill="#475569">Needs attention</text>
+<rect x="264" y="250" width="374" height="185" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="451.0" y="295.7" font-size="26" text-anchor="middle" fill="#475569">Room card: indoor C, RH,</text>
+<text x="451.0" y="326.9" font-size="26" text-anchor="middle" fill="#475569">status pill, comfort</text>
+<text x="451.0" y="358.09999999999997" font-size="26" text-anchor="middle" fill="#475569">scale, AC load bar, Reset</text>
+<text x="451.0" y="389.29999999999995" font-size="26" text-anchor="middle" fill="#475569">to 24 C</text>
+<rect x="650" y="250" width="374" height="185" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="837.0" y="295.7" font-size="26" text-anchor="middle" fill="#475569">Room card: indoor C, RH,</text>
+<text x="837.0" y="326.9" font-size="26" text-anchor="middle" fill="#475569">status pill, comfort</text>
+<text x="837.0" y="358.09999999999997" font-size="26" text-anchor="middle" fill="#475569">scale, AC load bar, Reset</text>
+<text x="837.0" y="389.29999999999995" font-size="26" text-anchor="middle" fill="#475569">to 24 C</text>
+<rect x="1036" y="250" width="374" height="185" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="1223.0" y="295.7" font-size="26" text-anchor="middle" fill="#475569">Room card: indoor C, RH,</text>
+<text x="1223.0" y="326.9" font-size="26" text-anchor="middle" fill="#475569">status pill, comfort</text>
+<text x="1223.0" y="358.09999999999997" font-size="26" text-anchor="middle" fill="#475569">scale, AC load bar, Reset</text>
+<text x="1223.0" y="389.29999999999995" font-size="26" text-anchor="middle" fill="#475569">to 24 C</text>
+<rect x="264" y="450" width="374" height="185" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="451.0" y="495.7" font-size="26" text-anchor="middle" fill="#475569">Room card: indoor C, RH,</text>
+<text x="451.0" y="526.9" font-size="26" text-anchor="middle" fill="#475569">status pill, comfort</text>
+<text x="451.0" y="558.1" font-size="26" text-anchor="middle" fill="#475569">scale, AC load bar, Reset</text>
+<text x="451.0" y="589.3" font-size="26" text-anchor="middle" fill="#475569">to 24 C</text>
+<rect x="650" y="450" width="374" height="185" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="837.0" y="495.7" font-size="26" text-anchor="middle" fill="#475569">Room card: indoor C, RH,</text>
+<text x="837.0" y="526.9" font-size="26" text-anchor="middle" fill="#475569">status pill, comfort</text>
+<text x="837.0" y="558.1" font-size="26" text-anchor="middle" fill="#475569">scale, AC load bar, Reset</text>
+<text x="837.0" y="589.3" font-size="26" text-anchor="middle" fill="#475569">to 24 C</text>
+<rect x="264" y="660" width="1152" height="170" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2" stroke-dasharray="10 6"/>
+<polyline points="284,800 609.5999999999999,753.5 897.6,779.0 1185.6,719.5 1396,745.0" fill="none" stroke="#94a3b8" stroke-width="3"/>
+<text x="840.0" y="745.0" font-size="26" text-anchor="middle" fill="#475569">Chart: indoor temperature per room, 23-27 C comfort band</text>
+</svg></div>
+<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W7. Water & Pump</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="1440" height="900" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
+<rect x="0" y="0" width="240" height="900" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 13</text>
+<text x="120.0" y="86.4" font-size="22" text-anchor="middle" fill="#475569">nav items</text>
+<rect x="240" y="0" width="1200" height="50" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · voice mic · language</text>
 <rect x="264" y="70" width="900" height="50" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
 <text x="714.0" y="95.0" font-size="26" text-anchor="middle" fill="#475569">Title + energy-water link line</text>
 <rect x="264" y="135" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
@@ -501,29 +587,35 @@ code { background: #f1f5f9; padding: 0 1mm; border-radius: 1mm; font-size: 9pt; 
 <polyline points="284,800 609.5999999999999,713.0 897.6,752.0 1185.6,661.0 1396,700.0" fill="none" stroke="#94a3b8" stroke-width="3"/>
 <text x="840.0" y="700.0" font-size="26" text-anchor="middle" fill="#475569">Chart: flow per floor, stacked (leaks never reach zero)</text>
 </svg></div>
-<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W6. Heat in Walls</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
+<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W8. Heat & Damp Walls</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="1440" height="900" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
 <rect x="0" y="0" width="240" height="900" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
-<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 9</text>
+<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 13</text>
 <text x="120.0" y="86.4" font-size="22" text-anchor="middle" fill="#475569">nav items</text>
 <rect x="240" y="0" width="1200" height="50" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
-<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · language</text>
+<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · voice mic · language</text>
 <rect x="264" y="70" width="900" height="50" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
 <text x="714.0" y="95.0" font-size="26" text-anchor="middle" fill="#475569">Title + 'waste no meter can see'</text>
-<rect x="264" y="135" width="1152" height="210" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
-<text x="840.0" y="240.0" font-size="26" text-anchor="middle" fill="#475569">How we measure: board V1 -> wall wire (hot joint) -> room V2 + 3 formulas</text>
-<rect x="264" y="365" width="1152" height="330" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
-<text x="840.0" y="530.0" font-size="26" text-anchor="middle" fill="#475569">Table per circuit: R0 · R now · change bar · heat at full load · status</text>
-<rect x="264" y="715" width="1152" height="130" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
-<text x="840.0" y="780.0" font-size="26" text-anchor="middle" fill="#475569">Earth leakage by floor (3 tiles)</text>
+<rect x="264" y="135" width="1152" height="190" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="230.0" font-size="26" text-anchor="middle" fill="#475569">How we measure: board V1 -> wall wire (hot joint) -> room V2 + 3 formulas</text>
+<rect x="264" y="340" width="1152" height="270" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="475.0" font-size="26" text-anchor="middle" fill="#475569">Table per circuit: R0 · R now · change bar · heat at full load · status</text>
+<rect x="264" y="625" width="480" height="230" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2" stroke-dasharray="10 6"/>
+<polyline points="284,825 408.0,751.5 528.0,786.0 648.0,705.5 724,740.0" fill="none" stroke="#94a3b8" stroke-width="3"/>
+<text x="504.0" y="708.8" font-size="26" text-anchor="middle" fill="#475569">Building cross-section: walls</text>
+<text x="504.0" y="740.0" font-size="26" text-anchor="middle" fill="#475569">coloured by earth leakage, water</text>
+<text x="504.0" y="771.1999999999999" font-size="26" text-anchor="middle" fill="#475569">riser</text>
+<rect x="764" y="625" width="652" height="230" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="1090.0" y="724.4" font-size="26" text-anchor="middle" fill="#475569">Per floor: leakage mA · night flow · verdict</text>
+<text x="1090.0" y="755.6" font-size="26" text-anchor="middle" fill="#475569">(leak inside wall?)</text>
 </svg></div>
-<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W7. Forecast</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
+<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W9. Forecast</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="1440" height="900" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
 <rect x="0" y="0" width="240" height="900" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
-<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 9</text>
+<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 13</text>
 <text x="120.0" y="86.4" font-size="22" text-anchor="middle" fill="#475569">nav items</text>
 <rect x="240" y="0" width="1200" height="50" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
-<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · language</text>
+<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · voice mic · language</text>
 <rect x="264" y="70" width="900" height="50" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
 <text x="714.0" y="95.0" font-size="26" text-anchor="middle" fill="#475569">Title + inputs used</text>
 <rect x="264" y="135" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
@@ -538,13 +630,13 @@ code { background: #f1f5f9; padding: 0 1mm; border-radius: 1mm; font-size: 9pt; 
 <polyline points="284,600 609.5999999999999,459.0 897.6,516.0 1185.6,383.0 1396,440.0" fill="none" stroke="#94a3b8" stroke-width="3"/>
 <text x="840.0" y="440.0" font-size="26" text-anchor="middle" fill="#475569">Bar chart: last 24 h actual | next 24 h forecast</text>
 </svg></div>
-<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W8. Savings & Carbon</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
+<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W10. Savings & Carbon</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="1440" height="900" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
 <rect x="0" y="0" width="240" height="900" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
-<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 9</text>
+<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 13</text>
 <text x="120.0" y="86.4" font-size="22" text-anchor="middle" fill="#475569">nav items</text>
 <rect x="240" y="0" width="1200" height="50" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
-<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · language</text>
+<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · voice mic · language</text>
 <rect x="264" y="70" width="900" height="50" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
 <text x="714.0" y="95.0" font-size="26" text-anchor="middle" fill="#475569">Title</text>
 <rect x="264" y="135" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
@@ -570,13 +662,62 @@ code { background: #f1f5f9; padding: 0 1mm; border-radius: 1mm; font-size: 9pt; 
 <rect x="264" y="755" width="1152" height="120" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
 <text x="840.0" y="815.0" font-size="26" text-anchor="middle" fill="#475569">Table: waste type, before, after, cut by %</text>
 </svg></div>
-<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W9. Simulator</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
+<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W11. Real Buildings</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="1440" height="900" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
 <rect x="0" y="0" width="240" height="900" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
-<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 9</text>
+<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 13</text>
 <text x="120.0" y="86.4" font-size="22" text-anchor="middle" fill="#475569">nav items</text>
 <rect x="240" y="0" width="1200" height="50" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
-<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · language</text>
+<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · voice mic · language</text>
+<rect x="264" y="70" width="900" height="60" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+<text x="714.0" y="100.0" font-size="26" text-anchor="middle" fill="#475569">Title + BDG2 data set line</text>
+<rect x="264" y="145" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="403.0" y="176.9" font-size="26" text-anchor="middle" fill="#475569">Avoidable</text>
+<text x="403.0" y="208.1" font-size="26" text-anchor="middle" fill="#475569">electricity</text>
+<rect x="554" y="145" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="693.0" y="192.5" font-size="26" text-anchor="middle" fill="#475569">Cooling when closed</text>
+<rect x="844" y="145" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="983.0" y="176.9" font-size="26" text-anchor="middle" fill="#475569">Heat + cool</text>
+<text x="983.0" y="208.1" font-size="26" text-anchor="middle" fill="#475569">together</text>
+<rect x="1134" y="145" width="278" height="95" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+<text x="1273.0" y="176.9" font-size="26" text-anchor="middle" fill="#475569">Night-flow leak</text>
+<text x="1273.0" y="208.1" font-size="26" text-anchor="middle" fill="#475569">signs</text>
+<rect x="264" y="260" width="1152" height="200" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="360.0" font-size="26" text-anchor="middle" fill="#475569">Model report card: electricity baseline · HVAC baseline · LSTM forecaster</text>
+<rect x="264" y="475" width="1152" height="30" rx="10" fill="#cbd5e1" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="490.0" font-size="26" text-anchor="middle" fill="#475569">Filter: All · Classrooms · Labs · Offices</text>
+<rect x="264" y="515" width="278" height="120" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="403.0" y="528.2" font-size="26" text-anchor="middle" fill="#475569">Building card:</text>
+<text x="403.0" y="559.4000000000001" font-size="26" text-anchor="middle" fill="#475569">name, use, m2,</text>
+<text x="403.0" y="590.6" font-size="26" text-anchor="middle" fill="#475569">avoidable %,</text>
+<text x="403.0" y="621.8000000000001" font-size="26" text-anchor="middle" fill="#475569">HVAC/Water tags</text>
+<rect x="554" y="515" width="278" height="120" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="693.0" y="528.2" font-size="26" text-anchor="middle" fill="#475569">Building card:</text>
+<text x="693.0" y="559.4000000000001" font-size="26" text-anchor="middle" fill="#475569">name, use, m2,</text>
+<text x="693.0" y="590.6" font-size="26" text-anchor="middle" fill="#475569">avoidable %,</text>
+<text x="693.0" y="621.8000000000001" font-size="26" text-anchor="middle" fill="#475569">HVAC/Water tags</text>
+<rect x="844" y="515" width="278" height="120" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="983.0" y="528.2" font-size="26" text-anchor="middle" fill="#475569">Building card:</text>
+<text x="983.0" y="559.4000000000001" font-size="26" text-anchor="middle" fill="#475569">name, use, m2,</text>
+<text x="983.0" y="590.6" font-size="26" text-anchor="middle" fill="#475569">avoidable %,</text>
+<text x="983.0" y="621.8000000000001" font-size="26" text-anchor="middle" fill="#475569">HVAC/Water tags</text>
+<rect x="1134" y="515" width="278" height="120" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+<text x="1273.0" y="528.2" font-size="26" text-anchor="middle" fill="#475569">Building card:</text>
+<text x="1273.0" y="559.4000000000001" font-size="26" text-anchor="middle" fill="#475569">name, use, m2,</text>
+<text x="1273.0" y="590.6" font-size="26" text-anchor="middle" fill="#475569">avoidable %,</text>
+<text x="1273.0" y="621.8000000000001" font-size="26" text-anchor="middle" fill="#475569">HVAC/Water tags</text>
+<rect x="264" y="650" width="1152" height="200" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2" stroke-dasharray="10 6"/>
+<polyline points="284,820 609.5999999999999,760.0 897.6,790.0 1185.6,720.0 1396,750.0" fill="none" stroke="#94a3b8" stroke-width="3"/>
+<text x="840.0" y="734.4" font-size="26" text-anchor="middle" fill="#475569">Building sandbox: week chart actual vs expected · year heatmap · what-if sliders</text>
+<text x="840.0" y="765.6" font-size="26" text-anchor="middle" fill="#475569">-> kWh, Rs, CO2</text>
+</svg></div>
+<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W12. Simulator</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="1440" height="900" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
+<rect x="0" y="0" width="240" height="900" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 13</text>
+<text x="120.0" y="86.4" font-size="22" text-anchor="middle" fill="#475569">nav items</text>
+<rect x="240" y="0" width="1200" height="50" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · voice mic · language</text>
 <rect x="264" y="70" width="900" height="50" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
 <text x="714.0" y="95.0" font-size="26" text-anchor="middle" fill="#475569">Title + 'detector never sees the truth'</text>
 <rect x="264" y="135" width="566" height="230" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
@@ -586,17 +727,18 @@ code { background: #f1f5f9; padding: 0 1mm; border-radius: 1mm; font-size: 9pt; 
 <rect x="264" y="385" width="1152" height="300" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
 <text x="840.0" y="535.0" font-size="26" text-anchor="middle" fill="#475569">Ground truth list: fault · where · since · Detected? · Fix</text>
 </svg></div>
-<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W10. Settings</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
+<div class="card" style="margin-bottom:4mm"><h3 style="margin-top:0">W13. Settings</h3><svg viewBox="0 0 1440 900" width="619" height="387" xmlns="http://www.w3.org/2000/svg">
 <rect x="0" y="0" width="1440" height="900" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
 <rect x="0" y="0" width="240" height="900" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
-<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 9</text>
+<text x="120.0" y="60.0" font-size="22" text-anchor="middle" fill="#475569">Sidebar: logo + 13</text>
 <text x="120.0" y="86.4" font-size="22" text-anchor="middle" fill="#475569">nav items</text>
 <rect x="240" y="0" width="1200" height="50" rx="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
-<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · language</text>
+<text x="840.0" y="25.0" font-size="22" text-anchor="middle" fill="#475569">Header: block name · sim clock · temp · grid status · voice mic · language</text>
 <rect x="264" y="70" width="900" height="50" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
 <text x="714.0" y="95.0" font-size="26" text-anchor="middle" fill="#475569">Title</text>
 <rect x="264" y="135" width="1152" height="380" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
-<text x="840.0" y="325.0" font-size="26" text-anchor="middle" fill="#475569">Toggles: automatic mode, auto tickets · grace period · repair time · language</text>
+<text x="840.0" y="309.4" font-size="26" text-anchor="middle" fill="#475569">Toggles: automatic mode, auto tickets, scheduled closing-time shutdown · closing</text>
+<text x="840.0" y="340.59999999999997" font-size="26" text-anchor="middle" fill="#475569">hour · grace period · repair time · language</text>
 <rect x="264" y="535" width="1152" height="140" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
 <text x="840.0" y="605.0" font-size="26" text-anchor="middle" fill="#475569">Detector report card: % caught, % real, test size</text>
 </svg></div>
@@ -605,7 +747,7 @@ code { background: #f1f5f9; padding: 0 1mm; border-radius: 1mm; font-size: 9pt; 
 <div class="page">
 <h2>8. High-fidelity screens (working prototype)</h2>
 <p class="small muted">Screens captured from the running prototype, fed by the simulated building.</p>
-<div style="break-inside:avoid;"><h3 style="font-size:10pt">Overview: building map, KPIs and the open alert</h3><img class="shot" src="img/overview.png"></div><div class="grid2"><div style="break-inside:avoid;"><h3 style="font-size:10pt">Alerts: advice, cost and feedback buttons</h3><img class="shot" src="img/alerts.png"></div><div style="break-inside:avoid;"><h3 style="font-size:10pt">Room detail: actual vs expected use</h3><img class="shot" src="img/room.png"></div><div style="break-inside:avoid;"><h3 style="font-size:10pt">Water & Pump: tank, sump and night flow</h3><img class="shot" src="img/water.png"></div><div style="break-inside:avoid;"><h3 style="font-size:10pt">Heat in Walls: wiring resistance and earth leakage</h3><img class="shot" src="img/wiring.png"></div><div style="break-inside:avoid;"><h3 style="font-size:10pt">Forecast: next 24 hours</h3><img class="shot" src="img/forecast.png"></div><div style="break-inside:avoid;"><h3 style="font-size:10pt">Savings & Carbon: full-year before vs after</h3><img class="shot" src="img/savings.png"></div><div style="break-inside:avoid;"><h3 style="font-size:10pt">Simulator: demo controls</h3><img class="shot" src="img/simulator.png"></div><div style="break-inside:avoid;max-width:45mm"><h3 style="font-size:10pt">Phone view</h3><img class="shot" src="img/mobile.png"></div></div>
+<div style="break-inside:avoid;"><h3 style="font-size:10pt">Overview: building map, KPIs and the open alert</h3><img class="shot" src="img/overview.png"></div><div class="grid2"><div style="break-inside:avoid;"><h3 style="font-size:10pt">Alerts: advice, cost, priority and feedback buttons</h3><img class="shot" src="img/alerts.png"></div><div style="break-inside:avoid;"><h3 style="font-size:10pt">Room detail: actual vs expected use</h3><img class="shot" src="img/room.png"></div><div style="break-inside:avoid;"><h3 style="font-size:10pt">HVAC & Comfort: indoor temperature, AC load, reset to 24 °C</h3><img class="shot" src="img/hvac.png"></div><div style="break-inside:avoid;"><h3 style="font-size:10pt">Camera Occupancy: person count, frames never stored</h3><img class="shot" src="img/camera.png"></div><div style="break-inside:avoid;"><h3 style="font-size:10pt">Water & Pump: tank, sump and night flow</h3><img class="shot" src="img/water.png"></div><div style="break-inside:avoid;"><h3 style="font-size:10pt">Heat & Damp Walls: wiring resistance, earth leakage, per-floor verdict</h3><img class="shot" src="img/wiring.png"></div><div style="break-inside:avoid;"><h3 style="font-size:10pt">Forecast: next 24 hours</h3><img class="shot" src="img/forecast.png"></div><div style="break-inside:avoid;"><h3 style="font-size:10pt">Savings & Carbon: full-year before vs after</h3><img class="shot" src="img/savings.png"></div><div style="break-inside:avoid;"><h3 style="font-size:10pt">Real Buildings: 659 real classrooms and offices (BDG2)</h3><img class="shot" src="img/real.png"></div><div style="break-inside:avoid;"><h3 style="font-size:10pt">Real building sandbox: what-if sliders</h3><img class="shot" src="img/realb.png"></div><div style="break-inside:avoid;"><h3 style="font-size:10pt">Simulator: demo controls</h3><img class="shot" src="img/simulator.png"></div></div><div style="display:flex;gap:8mm;break-inside:avoid"><div style="break-inside:avoid;width:42mm"><h3 style="font-size:10pt">Phone view</h3><img class="shot" src="img/mobile.png"></div><div style="break-inside:avoid;width:42mm"><h3 style="font-size:10pt">Phone view: HVAC</h3><img class="shot" src="img/mobile_hvac.png"></div></div>
 </div>
 
 <div class="page">
@@ -625,14 +767,14 @@ code { background: #f1f5f9; padding: 0 1mm; border-radius: 1mm; font-size: 9pt; 
 <h3>Components</h3>
 <ul class="small"><li><b>KPI card</b>: label, big number + unit, one-line context</li><li><b>Alert card</b>: kind icon, title, kind pill, status pill, place and time, advice, cost line, actions</li><li><b>Room tile</b>: 4 states (in use, empty, wasting, wiring risk)</li><li><b>Buttons</b>: primary, ghost, danger; disabled when the action makes no sense (e.g. switching off an occupied room)</li><li><b>Toggle</b> (role=switch), <b>tabs</b>, <b>select</b>, <b>meter bar</b></li></ul>
 </div></div>
-<h2>10. States and accessibility</h2>
+<div style="break-inside:avoid"><h2>10. States and accessibility</h2>
 <table><tr><th>State</th><th>What the user sees</th></tr>
 <tr><td>Loading</td><td>Spinner with "Loading the building…" (announced to screen readers)</td></tr>
 <tr><td>Empty</td><td>"Nothing is being wasted right now", "No readings yet: start the gateway", "Before-vs-after not run yet"</td></tr>
 <tr><td>Error</td><td>Red banner "Could not reach the ECOGUARD server" with a Retry button; header pill "Backend offline"; live view falls back to polling every 5 s</td></tr>
 <tr><td>Power cut</td><td>Header pill turns red "Power cut"; energy rules pause (meters read zero), water rules continue</td></tr>
 </table>
-<ul class="small"><li>Colour is never the only signal: every room tile and alert also has a text label.</li><li>All charts have text KPIs next to them; meters use role="meter" with values.</li><li>Keyboard: every control is a real button or link with a visible focus ring.</li><li>Readable sizes: body 14 px, minimum 11 px for chart ticks; layout works down to 390 px phones.</li></ul>
+<ul class="small"><li>Colour is never the only signal: every room tile and alert also has a text label.</li><li>All charts have text KPIs next to them; meters use role="meter" with values.</li><li>Keyboard: every control is a real button or link with a visible focus ring.</li><li>Readable sizes: body 14 px, minimum 11 px for chart ticks; layout works down to 390 px phones.</li></ul></div>
 <h2>11. Tool workflow</h2>
 <p class="small">We built the clickable prototype directly in code (React + Tailwind + Recharts), connected to live simulated data, so every screen shows realistic numbers and every button really works. The design tokens live in <code>tailwind.config.js</code> and are the same names as in this guide. To present the design file, the screens are rebuilt in Figma as follows:</p>
 <ol class="small"><li>Make one page per screen in the sitemap, each a 1440 × 900 desktop frame, plus one 390 × 844 phone frame for Overview.</li><li>Create colour styles from the table above (brand, energy, water, hidden, danger, ink) and text styles: H1 20/28 semibold, H2 16 semibold, body 14, small 12, label 12 uppercase.</li><li>Build components with auto-layout: Sidebar item (variants: default / active / with badge), KPI card, Alert card (variants: energy / water / hidden × open / actioned / dismissed), Room tile (in use / empty / wasting / wiring risk), Button (primary / ghost / danger), Pill.</li><li>Use a 4 px spacing grid: 16 px card padding, 12 px gaps between cards, 24 px page padding.</li><li>Assemble screens from components only (no loose rectangles), so a jury member can click any element and see it is an instance.</li><li>Prototype links: sidebar items → screens; room tile → Room detail; alert 'Switch room off' → overlay toast 'Switch-off sent'; 'Not waste' → card variant Dismissed. Use Smart Animate, 200 ms ease-out.</li><li>Design the three states on Overview and Alerts: Loading (skeleton), Empty ('Nothing is being wasted right now'), Error ('Could not reach the ECOGUARD server' + Retry).</li><li>Hand-off: turn on Dev Mode; tokens map 1:1 to tailwind.config.js names in the code.</li></ol>
