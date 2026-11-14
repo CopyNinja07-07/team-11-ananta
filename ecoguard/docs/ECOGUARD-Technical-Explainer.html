@@ -1,0 +1,365 @@
+<!doctype html><html><head><meta charset="utf-8"><title>ECOGUARD AI: How it works</title><style>@page { size: A4; margin: 16mm 15mm 18mm; }
+* { box-sizing: border-box; }
+body { font-family: Inter, "Helvetica Neue", Arial, sans-serif; color: #0f172a; font-size: 10.5pt; line-height: 1.5; margin: 0; }
+h1 { font-size: 24pt; margin: 0 0 4mm; letter-spacing: -0.3px; }
+h2 { font-size: 15pt; margin: 9mm 0 3mm; color: #064e3b; border-bottom: 2px solid #d1fae5; padding-bottom: 1.5mm; }
+h3 { font-size: 11.5pt; margin: 5mm 0 1.5mm; }
+p { margin: 0 0 2.5mm; }
+.page { page-break-after: always; }
+.page:last-child { page-break-after: auto; }
+.muted { color: #64748b; }
+.small { font-size: 9pt; }
+table { width: 100%; border-collapse: collapse; margin: 2mm 0 4mm; font-size: 9.5pt; }
+th, td { border-bottom: 1px solid #e2e8f0; padding: 1.6mm 2mm; text-align: left; vertical-align: top; }
+th { background: #f1f5f9; font-weight: 600; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4mm; }
+.card { border: 1px solid #cbd5e1; border-radius: 3mm; padding: 4mm; break-inside: avoid; }
+.tag { display: inline-block; font-size: 8pt; padding: 0.5mm 2mm; border-radius: 10mm; background: #ecfdf5; color: #047857; font-weight: 600; }
+.cover { height: 250mm; display: flex; flex-direction: column; justify-content: center; }
+.cover .brand { font-size: 11pt; color: #047857; font-weight: 700; letter-spacing: 1px; }
+.cover h1 { font-size: 30pt; }
+.kv { display: grid; grid-template-columns: 38mm 1fr; gap: 1mm 4mm; font-size: 10pt; }
+.kv b { color: #334155; }
+svg text { font-family: Inter, "Helvetica Neue", Arial, sans-serif; }
+img.shot { width: 100%; border: 1px solid #cbd5e1; border-radius: 2mm; }
+.swatch { display: flex; align-items: center; gap: 3mm; margin-bottom: 2mm; }
+.swatch i { width: 12mm; height: 8mm; border-radius: 1.5mm; display: inline-block; border: 1px solid #e2e8f0; }
+ul { margin: 0 0 3mm; padding-left: 5mm; }
+li { margin-bottom: 1mm; }
+.callout { background: #ecfdf5; border-left: 3px solid #059669; padding: 3mm 4mm; margin: 3mm 0; break-inside: avoid; }
+.warn { background: #fffbeb; border-left-color: #d97706; }
+code { background: #f1f5f9; padding: 0 1mm; border-radius: 1mm; font-size: 9pt; }
+</style></head><body>
+<div class="page cover">
+  <div class="brand">ANANTA HACKATHON 2026 · TEAM 11 · PS 11</div>
+  <h1>ECOGUARD AI<br>How it works</h1>
+  <p style="font-size:13pt">A walk through the whole prototype: the building we simulate, every waste we look for, the model, the checks for hidden waste, how it acts, and what it saved.</p>
+  <div class="kv" style="margin-top:10mm">
+    <b>For</b><span>Our team, mentor and jury questions</span>
+    <b>Code</b><span>ecoguard/ folder in our repository (README has the run steps)</span>
+    <b>Result</b><span>19.2% less electricity, 22.6% less water, ₹46,380 a year saved in one block, 3.6 t CO₂ avoided</span>
+    <b>Detection</b><span>recall 95.2%, precision 99.2% on a year the model never saw</span>
+  </div>
+</div>
+
+<div class="page">
+<h2>1. What changed since Round 1</h2>
+<p>Our Round 1 deck promised ECOGUARD for every building and every kind of waste. The jury found it too broad, and our mentor gave us a clear direction in the 14 November meeting:</p>
+<ul>
+<li><b>Pick one environment.</b> We chose one academic block: five classrooms, a computer lab and two offices. Everyone on the jury has sat in these rooms.</li>
+<li><b>Cover every connected waste inside it.</b> Electricity and water together, including the pump that links them, and the waste nobody can see.</li>
+<li><b>Simulate it and show before vs after.</b> One full year, same events, with and without ECOGUARD, in kWh, litres and rupees.</li>
+<li><b>Train on data.</b> We generated a labelled year from public numbers, trained on it, and tested on a second year the model had never seen.</li>
+<li><b>Point to the exact problem.</b> Every alert names the room, the cause, the cost and the next step.</li>
+</ul>
+<p>The core idea from Round 1 stays the same: learn what normal looks like, flag what is not, explain it in plain words and act on it. What changed is focus and proof.</p>
+
+<h2>2. The building: Academic Block A, Jammu</h2>
+<table><tr><th>ID</th><th>Room</th><th>Floor</th><th>Seats</th><th>Equipment</th><th>Inverter</th><th>Wire R (Ω)</th></tr><tr><td>OFF-ADM</td><td>Admin Office</td><td>Ground</td><td>8</td><td>1 AC, 8 PCs, heater, 4 fans</td><td>yes</td><td>0.16</td></tr><tr><td>LAB-1</td><td>Computer Lab</td><td>Ground</td><td>40</td><td>3 AC, 40 PCs, 6 fans</td><td>no</td><td>0.14</td></tr><tr><td>CR-101</td><td>Classroom 101</td><td>First</td><td>60</td><td>8 fans</td><td>no</td><td>0.22</td></tr><tr><td>CR-102</td><td>Classroom 102</td><td>First</td><td>60</td><td>8 fans</td><td>no</td><td>0.24</td></tr><tr><td>CR-103</td><td>Seminar Room 103</td><td>First</td><td>90</td><td>2 AC, 6 fans</td><td>no</td><td>0.2</td></tr><tr><td>CR-201</td><td>Classroom 201</td><td>Second</td><td>60</td><td>1 AC, 8 fans</td><td>no</td><td>0.27</td></tr><tr><td>CR-202</td><td>Classroom 202</td><td>Second</td><td>60</td><td>8 fans</td><td>no</td><td>0.29</td></tr><tr><td>OFF-FAC</td><td>Faculty Room</td><td>Second</td><td>10</td><td>2 AC, 10 PCs, heater, 5 fans</td><td>yes</td><td>0.25</td></tr></table>
+<p class="small">Water: a 20 kL sump fed by municipal supply in two short windows a day, a 1.5 kW pump (150 L/min) lifting to a 10 kL roof tank
+that feeds three floors of washrooms. Prices: ₹7/kWh, ₹30/kL. Carbon: 0.716 kg CO₂ per kWh (CEA).</p>
+</div>
+
+<div class="page">
+<h2>3. Every waste in the block, and how they connect</h2>
+<svg viewBox="0 0 900 400" width="600" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker></defs>
+<path d="M170.0,45.0 Q202.5,45.0 230.0,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M400.0,45.0 Q432.5,45.0 460.0,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M640.0,45.0 Q672.5,45.0 700.0,45.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M315.0,70.0 Q315.0,95.0 315.0,120.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M315.0,70.0 Q315.0,152.5 315.0,230.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="315.0" y="148.5" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">energy</text>
+<path d="M90.0,285.0 Q90.0,307.5 90.0,330.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M149.2,330.0 Q202.5,307.5 243.9,290.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M400.0,260.0 Q432.5,260.0 460.0,260.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="432.5" y="256.0" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">water</text>
+<path d="M640.0,260.0 Q672.5,260.0 700.0,260.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M795.0,230.0 Q795.0,202.5 795.0,170.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="795.0" y="198.5" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">hidden leak</text>
+<path d="M733.8,120.0 Q672.5,95.0 611.2,70.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="10" y="20" width="160" height="50" rx="0" fill="#f1f5f9" stroke="#475569" stroke-width="1.8"/>
+<text x="90.0" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Grid supply</text>
+<text x="90.0" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(JPDCL, cuts)</text>
+<rect x="230" y="20" width="170" height="50" rx="25.0" fill="#ecfdf5" stroke="#047857" stroke-width="1.8"/>
+<text x="315.0" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Distribution board</text>
+<text x="315.0" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(V at board)</text>
+<rect x="460" y="20" width="180" height="50" rx="25.0" fill="#ecfdf5" stroke="#047857" stroke-width="1.8"/>
+<text x="550.0" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Wiring inside walls</text>
+<text x="550.0" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(joints, insulation)</text>
+<rect x="700" y="20" width="190" height="50" rx="25.0" fill="#ecfdf5" stroke="#047857" stroke-width="1.8"/>
+<text x="795.0" y="42.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Room loads</text>
+<text x="795.0" y="56.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">lights · fans · AC · PCs</text>
+<rect x="230" y="120" width="170" height="50" rx="6" fill="#fafafa" stroke="#94a3b8" stroke-width="1.8"/>
+<text x="315.0" y="142.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Inverter battery</text>
+<text x="315.0" y="156.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(recharge after cut)</text>
+<polygon points="315.0,230 400,260.0 315.0,290 230,260.0" fill="#fffbeb" stroke="#d97706" stroke-width="1.8"/>
+<text x="315.0" y="257.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Pump 1.5 kW</text>
+<text x="315.0" y="271.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">sump → roof tank</text>
+<rect x="10" y="235" width="160" height="50" rx="0" fill="#f1f5f9" stroke="#475569" stroke-width="1.8"/>
+<text x="90.0" y="257.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Municipal supply</text>
+<text x="90.0" y="271.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(2 short windows/day)</text>
+<rect x="10" y="330" width="160" height="50" fill="#eff6ff" stroke="none"/>
+<path d="M170,330 L10,330 L10,380 L170,380" fill="none" stroke="#0369a1" stroke-width="1.8"/>
+<line x1="40" y1="330" x2="40" y2="380" stroke="#0369a1" stroke-width="1.2"/>
+<text x="105.0" y="359.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Sump 20 kL</text>
+<rect x="460" y="230" width="180" height="60" fill="#eff6ff" stroke="none"/>
+<path d="M640,230 L460,230 L460,290 L640,290" fill="none" stroke="#0369a1" stroke-width="1.8"/>
+<line x1="490" y1="230" x2="490" y2="290" stroke="#0369a1" stroke-width="1.2"/>
+<text x="565.0" y="257.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Overhead tank 10 kL</text>
+<text x="565.0" y="271.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(float switch)</text>
+<rect x="700" y="230" width="190" height="60" rx="30.0" fill="#ecfdf5" stroke="#047857" stroke-width="1.8"/>
+<text x="795.0" y="257.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Floor pipes</text>
+<text x="795.0" y="271.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">taps · cisterns</text>
+<rect x="700" y="120" width="190" height="50" rx="6" fill="#fafafa" stroke="#94a3b8" stroke-width="1.8"/>
+<text x="795.0" y="142.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Damp wall</text>
+<text x="795.0" y="156.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(earth leakage)</text>
+</svg>
+<p class="small muted">Electricity flows left to right along the top; water along the bottom. The pump sits where they meet. A hidden leak in a wall also shows up on the electrical side as earth leakage.</p>
+<table><tr><th style="width:26%">Waste</th><th>What happens</th><th style="width:28%">How we see it</th><th style="width:20%">What we do</th></tr>
+<tr><td>Lights, fans, AC left on</td><td>Class ends, room empties, loads keep running</td><td>People = 0 but power above the room's expected use</td><td>Switch room off after 15 min</td></tr>
+<tr><td>Lab PCs on overnight</td><td>40 PCs idle all night</td><td>Same, at night</td><td>Switch off</td></tr>
+<tr><td>Comeback after power cut</td><td>Switches were left on; power returns to an empty room</td><td>Empty-room use within an hour of restore</td><td>Switch off</td></tr>
+<tr><td>AC set too cold</td><td>Remote set to 16-18 °C</td><td>Room below 21.5 °C with the AC running</td><td>Reset AC to 24 °C</td></tr>
+<tr><td>AC fighting an open door</td><td>Door propped open in May</td><td>AC flat out, room still above 27 °C</td><td>Alert the room</td></tr>
+<tr><td>Heat in the walls</td><td>Loose or corroded joint gets hot</td><td>Wiring resistance rising over days</td><td>Electrician ticket</td></tr>
+<tr><td>Earth leakage</td><td>Damp wall or worn insulation</td><td>&gt; 15 mA for 2 hours on a floor</td><td>Electrician ticket</td></tr>
+<tr><td>Pipe leak</td><td>Water lost all day and night</td><td>Night flow never drops to zero</td><td>Close floor valve + plumber</td></tr>
+<tr><td>Running cistern / drip</td><td>Small but endless flow</td><td>Low steady night flow</td><td>Plumber ticket</td></tr>
+<tr><td>Tank overflow</td><td>Float switch stuck; pump keeps lifting water off the roof</td><td>Pump on, tank full</td><td>Stop pump, level interlock</td></tr>
+<tr><td>Pump dry run</td><td>Sump empty, pump spins with no water</td><td>Pump on, no flow</td><td>Stop pump</td></tr>
+</table>
+</div>
+
+<div class="page">
+<h2>4. The simulator</h2>
+<p>The simulator (<code>sensors/sim/</code>) moves the block forward in 15-minute steps. Each step it works out:</p>
+<ul>
+<li><b>Weather</b> from IMD climate normals for Jammu, with day-to-day noise, so summers are hot and winters need heaters.</li>
+<li><b>People</b> from a weekly timetable, with holidays, semester breaks, cancelled classes and people staying late. The timetable is what is planned; the headcount is what really happened.</li>
+<li><b>Indoor climate</b>: each room's temperature and humidity follow the weather, the people inside and the AC (a first-order thermal model). An AC set to 17 °C pulls the room down to 17 °C; an open door stops it reaching 24 °C.</li>
+<li><b>Room power</b> from the equipment list: lights, fans, ACs that work harder on hot days, PCs, heaters and standby loads.</li>
+<li><b>Power cuts</b> in the JPDCL pattern, with voltage sag at peak hours, and inverter batteries that recharge once power returns.</li>
+<li><b>Wiring</b>: each circuit has a resistance, so the room sees a lower voltage than the board. A loose joint raises that resistance slowly.</li>
+<li><b>Water</b>: use per person per hour, cleaning in the morning, municipal supply windows, the sump, the pump and the roof tank.</li>
+<li><b>Faults</b>: eleven kinds, started at random but at realistic rates (lights left on is common; a failing joint is rare). Each fault keeps a record of exactly how much it wasted. That record is the ground truth.</li>
+</ul>
+<div class="callout">Every step is driven by a seeded random generator. With the same seed you get exactly the same year. That is what makes a fair before-vs-after test possible: the world is identical, only ECOGUARD's presence changes.</div>
+<p>The gateway (<code>sensors/gateway.mjs</code>) turns each step into the same JSON message a real ESP32 node would send, posts it to the backend, and applies any command that comes back (switch off, stop pump, close valve, repair ticket).</p>
+</div>
+
+<div class="page">
+<h2>5. The model: what should this room be using?</h2>
+<p>For each room we train one regression model that predicts power from:</p>
+<ul class="small">
+<li>whether the room is in use, and how many people are inside</li>
+<li>cooling need above 25 °C and above 30 °C, and heating need below 13 °C</li>
+<li>whether it is daylight</li>
+<li>the hour of the day when the room is empty (24 small terms, to learn standby and fridge-like loads)</li>
+</ul>
+<p>Training uses one simulated year (seed 11) up to 31 March; the rest is held out. We use <b>Huber regression</b>: it behaves like a normal straight-line fit for ordinary readings but stops large spikes (the waste already hiding in the training data) from dragging the line upwards. The spread of normal readings is measured with the median absolute deviation, which is also not fooled by spikes.</p>
+<table><tr><th>Room</th><th style="text-align:right">Error, Huber (kW)</th><th style="text-align:right">Error, plain least squares (kW)</th><th style="text-align:right">Average use (kW)</th></tr><tr><td>CR-101</td><td style='text-align:right'>0.024</td><td style='text-align:right'>0.046</td><td style='text-align:right'>0.138</td></tr><tr><td>CR-102</td><td style='text-align:right'>0.051</td><td style='text-align:right'>0.067</td><td style='text-align:right'>0.158</td></tr><tr><td>CR-103</td><td style='text-align:right'>0.086</td><td style='text-align:right'>0.147</td><td style='text-align:right'>0.236</td></tr><tr><td>CR-201</td><td style='text-align:right'>0.143</td><td style='text-align:right'>0.186</td><td style='text-align:right'>0.329</td></tr><tr><td>CR-202</td><td style='text-align:right'>0.031</td><td style='text-align:right'>0.066</td><td style='text-align:right'>0.148</td></tr><tr><td>LAB-1</td><td style='text-align:right'>0.317</td><td style='text-align:right'>0.525</td><td style='text-align:right'>0.878</td></tr><tr><td>OFF-ADM</td><td style='text-align:right'>0.089</td><td style='text-align:right'>0.142</td><td style='text-align:right'>0.723</td></tr><tr><td>OFF-FAC</td><td style='text-align:right'>0.192</td><td style='text-align:right'>0.262</td><td style='text-align:right'>1.137</td></tr></table>
+<p class="small muted">Mean absolute error on held-out data. Huber wins in every room.</p>
+</div>
+
+<div class="page">
+<h2>6. The detector</h2>
+<table><tr><th style="width:24%">Check</th><th>Rule</th></tr>
+<tr><td>Empty room</td><td>People = 0 and use above expected by more than max(0.2 kW, 4σ), for 30 minutes</td></tr>
+<tr><td>Over use</td><td>Occupied and use above expected by more than max(0.6 kW, 6σ) and 35%, for one hour</td></tr>
+<tr><td>AC set too cold</td><td>Occupied, AC drawing power and the room below 21.5 °C for 30 minutes (wall sensor + AC current clamp)</td></tr>
+<tr><td>AC fighting an open door</td><td>Occupied, AC at 95% of its rating or more, room still above 27 °C and above 30 °C outside, for one hour</td></tr>
+<tr><td>Heat in the walls</td><td>Wiring resistance R = (V_board − V_room) / I, median of the last 6 hours, above 1.6 × the circuit's own normal and at least 0.1 Ω higher</td></tr>
+<tr><td>Earth leakage</td><td>Worst circuit on a floor above 15 mA for 2 hours (an RCCB trips at 30 mA)</td></tr>
+<tr><td>Night flow</td><td>Lowest flow on a floor over 3 empty hours above 6 L/h. Above 40 L/h it is a leak; with earth leakage on the same floor, it is a leak inside the wall</td></tr>
+<tr><td>Overflow</td><td>Pump running while the tank is at 99.5% or more</td></tr>
+<tr><td>Dry run</td><td>Pump running with no water coming out, for 30 minutes</td></tr>
+</table>
+<p>After a power cut, rooms on an inverter are allowed about 0.65 kW extra for 8 hours: that is the battery recharging, not waste. Energy checks pause while the grid is off, because the meters read zero.</p>
+</div>
+
+<div class="page">
+<h2>7. Heat and damp in the walls (our novel check)</h2>
+<svg viewBox="0 0 900 190" width="640" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker></defs>
+<path d="M180.0,95.0 Q247.5,95.0 300.0,95.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="247.5" y="91.0" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">current I</text>
+<path d="M500.0,95.0 Q577.5,95.0 620.0,95.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="577.5" y="91.0" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">voltage drop</text>
+<rect x="10" y="60" width="170" height="70" rx="0" fill="#f1f5f9" stroke="#475569" stroke-width="1.8"/>
+<text x="95.0" y="92.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Distribution board</text>
+<text x="95.0" y="106.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">measure V_board</text>
+<polygon points="400.0,60 500,95.0 400.0,130 300,95.0" fill="#fffbeb" stroke="#d97706" stroke-width="1.8"/>
+<text x="400.0" y="85.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Wire + joints in wall</text>
+<text x="400.0" y="99.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">resistance R</text>
+<text x="400.0" y="113.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">heat = I² × R</text>
+<rect x="620" y="60" width="270" height="70" rx="35.0" fill="#ecfdf5" stroke="#047857" stroke-width="1.8"/>
+<text x="755.0" y="85.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Room node (ESP32)</text>
+<text x="755.0" y="99.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">measure V_room and current I</text>
+<text x="755.0" y="113.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">R = (V_board − V_room) / I</text>
+</svg>
+<p>Wiring is never perfect. A healthy classroom circuit here has about 0.14 to 0.29 Ω between the board and the room. When a joint loosens, oxidises or a wire is undersized, that number climbs, and every amp that flows through it turns into heat inside the wall: <b>P = I² × R</b>. At 15 A, an extra 0.3 Ω means about 70 W of heat in one spot, day after day. No bill shows it and no meter separates it, and it is how many electrical fires start.</p>
+<p>We need only two voltage readings and one current reading, which the room node already has. ECOGUARD learns each circuit's normal resistance from its first readings and then watches the trend. In the test year it caught all 8 failing joints, typically about 9 days after they started, well before they would heat up enough to fail.</p>
+<p>The second hidden check links water and wiring: a pipe leaking inside a wall makes it damp, and a damp wall leaks current to earth. Night water flow plus rising earth leakage on the same floor tells the plumber to look inside the wall, not just at the taps.</p>
+</div>
+
+<div class="page">
+<h2>8. Acting on what it finds</h2>
+<ul>
+<li><b>Automatic mode</b> (on by default): after a 15-minute grace period the system acts. Rooms are switched off only when nobody is inside, and only non-essential loads. The pump is stopped on overflow or dry run, and the level sensors then control it so a stuck float switch no longer matters. A floor valve is closed only for a real leak (above 40 L/h), never for a drip.</li>
+<li><b>Repair tickets</b> go out at once for hidden waste, leaks and pump faults, with a due time (24 hours by default).</li>
+<li><b>People stay in charge.</b> "Not waste" on any alert stops the action and is saved as a label. Automatic mode can be turned off in Settings.</li>
+<li><b>Advice</b> is written in English and Hindi from templates. The numbers in it (kW, litres, rupees, CO₂) are always computed in code. If we add a language model later, it only rephrases; it never makes up a number.</li>
+<li><b>Forecast</b>: the next 24 hours of use from the timetable and the weather, so the manager sees tomorrow's expected bill and peak hour.</li>
+</ul>
+</div>
+
+<div class="page">
+<h2>9. Results</h2>
+<h3>Detection, on a year the model never saw (seed 99)</h3>
+<p>558 faults that actually wasted something; 1205 alerts raised. <b>Recall 95.2%</b> (faults caught), <b>precision 99.2%</b> (alerts that were real).</p>
+<div>
+<table class="small"><tr><th>Fault</th><th style="text-align:right">Count</th><th style="text-align:right">Caught</th><th style="text-align:right">Recall</th><th style="text-align:right">Typical delay</th></tr><tr><td>Lights and fans left on in empty room</td><td style="text-align:right">245</td><td style="text-align:right">224</td><td style="text-align:right"><b>91%</b></td><td style="text-align:right">15 min</td></tr><tr><td>Loads restarted in empty room after power cut</td><td style="text-align:right">122</td><td style="text-align:right">120</td><td style="text-align:right"><b>98%</b></td><td style="text-align:right">15 min</td></tr><tr><td>AC left running after class</td><td style="text-align:right">64</td><td style="text-align:right">63</td><td style="text-align:right"><b>98%</b></td><td style="text-align:right">15 min</td></tr><tr><td>AC set too cold (16-18 deg setpoint)</td><td style="text-align:right">31</td><td style="text-align:right">29</td><td style="text-align:right"><b>94%</b></td><td style="text-align:right">30 min</td></tr><tr><td>Lab PCs left on overnight</td><td style="text-align:right">31</td><td style="text-align:right">31</td><td style="text-align:right"><b>100%</b></td><td style="text-align:right">15 min</td></tr><tr><td>Running toilet cistern</td><td style="text-align:right">21</td><td style="text-align:right">21</td><td style="text-align:right"><b>100%</b></td><td style="text-align:right">2.8 h</td></tr><tr><td>Pipe leak (possibly inside wall)</td><td style="text-align:right">16</td><td style="text-align:right">16</td><td style="text-align:right"><b>100%</b></td><td style="text-align:right">3.0 h</td></tr><tr><td>Tank overflow: float switch stuck</td><td style="text-align:right">9</td><td style="text-align:right">9</td><td style="text-align:right"><b>100%</b></td><td style="text-align:right">0 min</td></tr><tr><td>Heat in the wall: loose joint / failing wire</td><td style="text-align:right">8</td><td style="text-align:right">8</td><td style="text-align:right"><b>100%</b></td><td style="text-align:right">8.6 days</td></tr><tr><td>Pump running dry (sump empty)</td><td style="text-align:right">6</td><td style="text-align:right">6</td><td style="text-align:right"><b>100%</b></td><td style="text-align:right">11.9 h</td></tr><tr><td>AC fighting an open door or window</td><td style="text-align:right">5</td><td style="text-align:right">4</td><td style="text-align:right"><b>80%</b></td><td style="text-align:right">45 min</td></tr></table>
+<table class="small"><tr><th>Alert type</th><th style="text-align:right">Alerts</th><th style="text-align:right">Real</th><th style="text-align:right">Precision</th></tr><tr><td>door_open</td><td style="text-align:right">4</td><td style="text-align:right">4</td><td style="text-align:right"><b>100%</b></td></tr><tr><td>Pump running dry</td><td style="text-align:right">18</td><td style="text-align:right">18</td><td style="text-align:right"><b>100%</b></td></tr><tr><td>Current leaking to earth</td><td style="text-align:right">14</td><td style="text-align:right">14</td><td style="text-align:right"><b>100%</b></td></tr><tr><td>Power used in an empty room</td><td style="text-align:right">587</td><td style="text-align:right">587</td><td style="text-align:right"><b>100%</b></td></tr><tr><td>Water flowing in an empty building</td><td style="text-align:right">239</td><td style="text-align:right">239</td><td style="text-align:right"><b>100%</b></td></tr><tr><td>Using much more than expected</td><td style="text-align:right">2</td><td style="text-align:right">0</td><td style="text-align:right"><b>0%</b></td></tr><tr><td>overcool</td><td style="text-align:right">31</td><td style="text-align:right">31</td><td style="text-align:right"><b>100%</b></td></tr><tr><td>Tank overflowing</td><td style="text-align:right">18</td><td style="text-align:right">18</td><td style="text-align:right"><b>100%</b></td></tr><tr><td>Heat in the wall wiring</td><td style="text-align:right">292</td><td style="text-align:right">284</td><td style="text-align:right"><b>97%</b></td></tr></table>
+</div>
+</div>
+
+<div class="page">
+<h3>Before vs after: one full year, same block</h3>
+<p>Same people, same weather, same power cuts and the same 520 faults, run twice from 2025-07-07: once with nobody watching, once with ECOGUARD connected through the real backend.</p>
+<table><tr><th></th><th style="text-align:right">Without ECOGUARD</th><th style="text-align:right">With ECOGUARD</th><th style="text-align:right">Saved</th></tr>
+<tr><td>Electricity</td><td style="text-align:right">26,000 kWh</td><td style="text-align:right">21,019 kWh</td><td style="text-align:right"><b>4,981 kWh (19.2%)</b></td></tr>
+<tr><td>Water</td><td style="text-align:right">1,680 kL</td><td style="text-align:right">1,300 kL</td><td style="text-align:right"><b>380 kL (22.6%)</b></td></tr>
+<tr><td>Pump electricity</td><td style="text-align:right">1,140 kWh</td><td style="text-align:right">327 kWh</td><td style="text-align:right">813 kWh</td></tr>
+<tr><td>Bill</td><td style="text-align:right">₹232,395</td><td style="text-align:right">₹186,142</td><td style="text-align:right"><b>₹46,253</b></td></tr>
+<tr><td>CO₂</td><td style="text-align:right">18.6 t</td><td style="text-align:right">15.1 t</td><td style="text-align:right"><b>3.6 t</b></td></tr>
+<tr><td>Rooms switched off with people inside</td><td></td><td style="text-align:right">0</td><td></td></tr>
+</table>
+<h3>Waste by type</h3>
+<table><tr><th>Waste</th><th style="text-align:right">Times</th><th style="text-align:right">Before</th><th style="text-align:right">After</th><th style="text-align:right">Cut</th></tr><tr><td>Lab PCs left on overnight</td><td style="text-align:right">26</td><td style="text-align:right">1,482.3 kWh</td><td style="text-align:right">48.7 kWh</td><td style="text-align:right"><b>97%</b></td></tr><tr><td>Lights and fans left on in empty room</td><td style="text-align:right">219</td><td style="text-align:right">1,416.0 kWh</td><td style="text-align:right">144.6 kWh</td><td style="text-align:right"><b>90%</b></td></tr><tr><td>AC left running after class</td><td style="text-align:right">66</td><td style="text-align:right">1,016.9 kWh</td><td style="text-align:right">99.7 kWh</td><td style="text-align:right"><b>90%</b></td></tr><tr><td>Loads restarted in empty room after power cut</td><td style="text-align:right">133</td><td style="text-align:right">511.9 kWh</td><td style="text-align:right">134.8 kWh</td><td style="text-align:right"><b>74%</b></td></tr><tr><td>AC set too cold (16-18 deg setpoint)</td><td style="text-align:right">14</td><td style="text-align:right">52.4 kWh</td><td style="text-align:right">21.2 kWh</td><td style="text-align:right"><b>60%</b></td></tr><tr><td>Room heater left on</td><td style="text-align:right">1</td><td style="text-align:right">30.5 kWh</td><td style="text-align:right">1.5 kWh</td><td style="text-align:right"><b>95%</b></td></tr><tr><td>Heat in the wall: loose joint / failing wire</td><td style="text-align:right">7</td><td style="text-align:right">43.2 kWh</td><td style="text-align:right">0.7 kWh</td><td style="text-align:right"><b>98%</b></td></tr><tr><td>Pump running dry (sump empty)</td><td style="text-align:right">14</td><td style="text-align:right">422.9 kWh</td><td style="text-align:right">0.0 kWh</td><td style="text-align:right"><b>100%</b></td></tr><tr><td>Tank overflow: float switch stuck</td><td style="text-align:right">14</td><td style="text-align:right">154.4 kL</td><td style="text-align:right">4.2 kL</td><td style="text-align:right"><b>97%</b></td></tr><tr><td>Pipe leak (possibly inside wall)</td><td style="text-align:right">8</td><td style="text-align:right">216.2 kL</td><td style="text-align:right">3.4 kL</td><td style="text-align:right"><b>98%</b></td></tr><tr><td>Running toilet cistern</td><td style="text-align:right">15</td><td style="text-align:right">23.0 kL</td><td style="text-align:right">6.4 kL</td><td style="text-align:right"><b>72%</b></td></tr></table>
+<p class="small">Scaled up: one block saves about ₹46,380 a year. A campus with 20 similar blocks would save around ₹9.3 lakh and 71 t CO₂ a year.</p>
+</div>
+
+<div class="page">
+<h2>10. Real buildings: trained and tested on real meters</h2>
+<p>To prove the models on real data, we used the <b>Building Data Genome 2</b> (BDG2) open data set (Miller et al., Scientific Data, 2020): 1,636 real non-residential buildings with two full years of hourly meter readings and on-site weather. We kept the ones that match our block: <b>242 classroom buildings, 143 labs and 274 offices</b>.</p>
+<table><tr><th style="width:30%">Model</th><th>What it does</th><th style="width:30%">Result on 2017 (never seen)</th></tr>
+<tr><td>Electricity baseline<br><span class="small muted">LightGBM, one model for all buildings</span></td><td>Predicts each building's normal hourly use from hour, weekday, holidays, weather, size and its own typical profile. Trained on 5.5 million hourly rows.</td><td>Median CV(RMSE) 20.8%, bias -0.6%; 57.1% of buildings pass ASHRAE Guideline 14</td></tr>
+<tr><td>Cooling (HVAC) baseline<br><span class="small muted">LightGBM on chilled-water meters</span></td><td>The same idea for cooling energy in 340 buildings.</td><td>Median CV(RMSE) 47.9% (cooling is spikier and harder)</td></tr>
+<tr><td>Day-ahead forecaster<br><span class="small muted">2-layer LSTM + MLP, PyTorch</span></td><td>Reads the last 7 days and predicts the next 24 hours, for planning pre-cooling and the next day's bill.</td><td>Median error 14.1% vs 22.0% for 'same as yesterday' and 19.5% for 'same as last week'; beats both in 92.3% of buildings</td></tr>
+</table>
+<h3>Waste found in real buildings</h3>
+<table><tr><th>Check</th><th>Finding</th></tr>
+<tr><td>Avoidable electricity (after-hours above the building's own best nights, plus waste events)</td><td>Median 13.8% of the year's use; one building in four above 24.9%. Classrooms 18.8%, offices 14.2%, labs 6.5%.</td></tr>
+<tr><td>Cooling while closed (HVAC)</td><td>Median 43.0% of chilled-water energy is used when the building is closed (332 buildings).</td></tr>
+<tr><td>Heating and cooling at the same time</td><td>47 buildings for more than 100 hours in the year.</td></tr>
+<tr><td>Water: minimum night flow</td><td>20 of 57 water-metered buildings show runs of 3+ nights with leak-like flow.</td></tr>
+</table>
+<p>The dashboard's <b>Real Buildings</b> page lets anyone open 38 of these buildings, replay 2017 week by week against the model, see every waste event on a year heatmap, and move sliders (switch-off when closed, act on waste events, schedule HVAC) to see what ECOGUARD would have saved, in kWh, rupees at the Jammu tariff and tonnes of CO₂.</p>
+</div>
+
+<div class="page">
+<h2>11. Every module in our Round 1 deck, working</h2>
+<table><tr><th style="width:30%">Deck module</th><th>How it works in the prototype</th></tr>
+<tr><td>Computer vision occupancy (OpenCV, YOLO)</td><td>The Camera Occupancy page and <code>cv/camera_node.py</code> count people with a YOLO11 person detector on the server. The frame is processed in memory and thrown away; only the count is stored (DPDP Act data minimisation).</td></tr>
+<tr><td>Electricity, water and environment sensors</td><td>Room nodes send voltage at both ends of the circuit, current, earth leakage, indoor temperature and humidity, and AC power; the water node sends flow per floor, tank and sump levels and pump state.</td></tr>
+<tr><td>MQTT</td><td>Nodes publish to <code>ecoguard/block-a/readings</code> and get commands on <code>ecoguard/block-a/commands</code>. HTTP works too.</td></tr>
+<tr><td>Anomaly detection, forecasting, cross-utility</td><td>Learned baseline + physics rules + hidden-waste checks; LSTM forecaster; pump and damp-wall checks link energy and water.</td></tr>
+<tr><td>HVAC optimisation</td><td>HVAC &amp; Comfort page: indoor temperature against the 23-27 °C comfort band, AC load, one-tap reset to 24 °C (the BEE default), open-door detection.</td></tr>
+<tr><td>Automatic, manual and scheduled modes</td><td>Automatic (after a 15-minute grace period), manual buttons on every alert, and a scheduled closing-time shutdown of rooms that are already empty.</td></tr>
+<tr><td>Voice commands</td><td>Microphone button in the header (English or Hindi): "switch off classroom 202", "status of the lab", "open alerts". It refuses to switch off a room with people in it.</td></tr>
+<tr><td>Fail-safe local control</td><td>If the server or network is down, the nodes switch off rooms empty for an hour and run the pump from the level sensors on their own.</td></tr>
+<tr><td>Alerts with type, time, severity, status</td><td>Every alert has a severity (high for fire, flood or pump-damage risks), a status, advice in English and Hindi, and two feedback buttons that build a labelled data set.</td></tr>
+<tr><td>Savings and carbon</td><td>Live savings from actions, plus the full-year before vs after and the real-building sandbox.</td></tr>
+</table>
+</div>
+
+<div class="page">
+<h2>12. Architecture</h2>
+<svg viewBox="0 0 900 330" width="680" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker></defs>
+<path d="M200.0,64.5 Q252.5,72.5 290.0,78.2" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M200.0,125.5 Q252.5,117.5 290.0,111.8" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M169.5,220.0 Q252.5,175.0 335.5,130.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M400.0,130.0 Q400.0,165.0 400.0,190.0" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M510.0,80.7 Q572.5,72.5 600.0,68.9" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M510.0,112.5 Q572.5,122.5 600.0,126.9" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="572.5" y="118.5" font-size="10.5" text-anchor="middle" fill="#334155" paint-order="stroke" stroke="#ffffff" stroke-width="4">live push</text>
+<path d="M510.0,239.8 Q572.5,242.5 600.0,243.7" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="10" y="20" width="190" height="60" rx="0" fill="#f1f5f9" stroke="#475569" stroke-width="1.8"/>
+<text x="105.0" y="47.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Room nodes (ESP32)</text>
+<text x="105.0" y="61.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">V, I, kWh, people, leak mA</text>
+<rect x="10" y="110" width="190" height="60" rx="0" fill="#f1f5f9" stroke="#475569" stroke-width="1.8"/>
+<text x="105.0" y="137.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Water node</text>
+<text x="105.0" y="151.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">flow per floor, tank, sump, pump</text>
+<rect x="10" y="220" width="190" height="70" rx="6" fill="#fafafa" stroke="#94a3b8" stroke-width="1.8"/>
+<text x="105.0" y="245.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Simulator today</text>
+<text x="105.0" y="259.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(sensors/, Node.js)</text>
+<text x="105.0" y="273.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">same JSON as real nodes</text>
+<rect x="290" y="60" width="220" height="70" rx="35.0" fill="#ecfdf5" stroke="#047857" stroke-width="1.8"/>
+<text x="400.0" y="92.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">FastAPI backend</text>
+<text x="400.0" y="106.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">/api/ingest · /ws</text>
+<rect x="290" y="190" width="220" height="90" rx="40" fill="#ecfdf5" stroke="#047857" stroke-width="1.8"/>
+<text x="400.0" y="218.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Detector</text>
+<text x="400.0" y="232.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">learned baseline +</text>
+<text x="400.0" y="246.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">physics rules +</text>
+<text x="400.0" y="260.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">hidden-waste checks</text>
+<rect x="600" y="20" width="290" height="60" fill="#eff6ff" stroke="none"/>
+<path d="M890,20 L600,20 L600,80 L890,80" fill="none" stroke="#0369a1" stroke-width="1.8"/>
+<line x1="630" y1="20" x2="630" y2="80" stroke="#0369a1" stroke-width="1.2"/>
+<text x="760.0" y="47.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">SQL database (SQLite / PostgreSQL)</text>
+<text x="760.0" y="61.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">readings · alerts · actions · savings</text>
+<rect x="600" y="120" width="290" height="60" rx="8" fill="#ffffff" stroke="#047857" stroke-width="1.8"/>
+<text x="745.0" y="147.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">React dashboard</text>
+<text x="745.0" y="161.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">(EN / Hindi, phone + desktop)</text>
+<polygon points="745.0,220 890,250.0 745.0,280 600,250.0" fill="#fffbeb" stroke="#d97706" stroke-width="1.8"/>
+<text x="745.0" y="247.0" font-size="12" font-weight="600" text-anchor="middle" fill="#0f172a">Commands back to nodes</text>
+<text x="745.0" y="261.0" font-size="10.5" font-weight="400" text-anchor="middle" fill="#0f172a">relay off · pump off · valve close · ticket</text>
+</svg>
+<table><tr><th style="width:28%">Part</th><th>Built with</th></tr>
+<tr><td>Room and water nodes</td><td>ESP32 with current, voltage, leakage and flow sensors (simulated today by <code>sensors/</code>, same message format)</td></tr>
+<tr><td>Backend</td><td>Python, FastAPI, SQLAlchemy; SQLite on a laptop, PostgreSQL/TimescaleDB on a server; WebSocket for live updates</td></tr>
+<tr><td>Model training</td><td>pandas, scikit-learn (<code>ml/train_baseline.py</code>, <code>ml/evaluate.py</code>); LightGBM and PyTorch for the real buildings (<code>ml/real/</code>); YOLO11n for camera counts (<code>cv/</code>)</td></tr>
+<tr><td>Messaging</td><td>HTTP by default; MQTT (<code>ecoguard/block-a/readings</code> and <code>/commands</code>) when <code>MQTT_URL</code> is set</td></tr>
+<tr><td>Dashboard</td><td>React, Tailwind CSS, Recharts; twelve screens, English and Hindi, voice commands, works on phones</td></tr>
+</table>
+<h3>Database tables</h3>
+<p class="small">buildings · zones · devices · occupancy_records · energy_readings · water_readings · alerts (with feedback label) · control_actions · savings_daily · users · settings</p>
+<h3>Main API</h3>
+<table class="small"><tr><th style="width:38%">Endpoint</th><th>Purpose</th></tr>
+<tr><td><code>POST /api/ingest</code></td><td>A node sends readings; the reply carries any commands for it</td></tr>
+<tr><td><code>GET /api/live</code>, <code>/ws</code></td><td>Current state of every room, the tank and the pump</td></tr>
+<tr><td><code>GET /api/alerts</code></td><td>Open and past alerts with advice, cost and cause</td></tr>
+<tr><td><code>POST /api/alerts/{id}/confirm | dismiss</code></td><td>The two feedback buttons</td></tr>
+<tr><td><code>GET /api/labels.csv</code></td><td>All labelled alerts, for retraining</td></tr>
+<tr><td><code>POST /api/control</code></td><td>Manual switch off, pump off, valve close, ticket</td></tr>
+<tr><td><code>GET /api/wiring</code>, <code>/api/water/series</code>, <code>/api/forecast</code>, <code>/api/savings</code></td><td>Data for each screen</td></tr>
+<tr><td><code>GET/PUT /api/settings</code></td><td>Automatic mode, grace period, tickets, language</td></tr>
+<tr><td><code>POST /api/sim</code></td><td>Demo only: inject a fault or a power cut</td></tr>
+</table>
+
+<h2>13. Running the demo</h2>
+<ol class="small">
+<li><code>cd backend && pip install -r requirements.txt && uvicorn app.main:app --port 8000</code></li>
+<li><code>cd frontend && npm install && npm run build</code> (the backend then serves the dashboard at <code>localhost:8000</code>)</li>
+<li><code>cd sensors && node gateway.mjs --api http://localhost:8000 --speed 2 --start 2026-04-13</code></li>
+</ol>
+<h3>Five-minute demo script</h3>
+<ol class="small">
+<li><b>Overview</b>: the building map. Point out a room that is empty but drawing power.</li>
+<li><b>Simulator</b>: inject "AC left on" in CR-201. Back on Overview the room turns amber and an alert appears with the cost in rupees, in English, then switch to Hindi.</li>
+<li>Press <b>Switch room off</b>. The room goes back to normal and the saving appears on Savings.</li>
+<li><b>Heat in Walls</b>: explain R = (V_board − V_room) / I with the diagram on the page; show a circuit whose resistance is climbing.</li>
+<li><b>HVAC &amp; Comfort</b>: inject "AC set too cold" in CR-201; the room drops to 17 °C, the alert appears, and "Reset AC to 24 °C" fixes it.</li>
+<li><b>Water &amp; Pump</b>: inject a stuck float switch; the tank overflow alert stops the pump.</li>
+<li><b>Real Buildings</b>: open a real classroom, scroll through 2017 and move the sandbox sliders.</li>
+<li><b>Savings &amp; Carbon</b>: finish on the full-year before vs after.</li>
+</ol>
+</div>
+
+<div class="page">
+<h2>14. Questions we expect, and our answers</h2>
+<div style="break-inside:avoid;margin-bottom:3mm"><b>Q. How good are the models on real buildings?</b><p>On 2017, a year they never saw, the electricity baseline has a median hourly error of 20.8% (CV(RMSE)) and 57.1% of buildings pass ASHRAE Guideline 14, the standard energy auditors use to accept a baseline. Labs pass most often (73.6%); classrooms are hardest because their use follows a timetable the data set does not include. Real 2017 meters also contain real faults, which count as model error here, so the true accuracy is a little better.</p></div><div style="break-inside:avoid;margin-bottom:3mm"><b>Q. What did ECOGUARD find in the real buildings?</b><p>In the median building, 13.8% of the electricity is avoidable, and one building in four is above 24.9%. Classrooms waste the most (18.8%). The median building with a cooling meter spends 43.0% of its cooling while closed, and 47 buildings heat and cool at the same time for more than 100 hours a year.</p></div><div style="break-inside:avoid;margin-bottom:3mm"><b>Q. Is this real data?</b><p>Both. The models were trained and tested on real meters: 659 real classrooms, labs and offices from the open Building Data Genome 2 data set, two full years of hourly electricity, cooling, heating and water readings (5.5 million training rows). Our own block in Jammu is simulated, because no public data set has room-level occupancy, wiring voltage, earth leakage and water flow together, with every fault labelled. The simulator's numbers come from public sources (IMD, CEA, JPDCL, BEE). The detector does not know which one it is talking to: it receives the same JSON a real ESP32 node would send.</p></div><div style="break-inside:avoid;margin-bottom:3mm"><b>Q. Why simulate at all? Why not use a public dataset?</b><p>Public datasets (BDG2, CU-BEMS and others) have whole-building or floor meters, but none of them has occupancy, wiring voltage drop, earth leakage and water flow for the same rooms at the same time, and none of them marks which hours were waste. Without that ground truth you cannot say how many faults you caught. The simulator gives us a full year with every fault labelled, so we can measure recall and precision honestly. Our mentor suggested exactly this.</p></div><div style="break-inside:avoid;margin-bottom:3mm"><b>Q. What is the AI part?</b><p>Each room has a learned model of what it should be using for the number of people inside, the outside temperature and the time of day. Anything above that expected use, with nobody to justify it, is waste. On top of that come physics checks the model cannot learn on its own (wiring resistance, earth leakage, minimum night flow, pump state). The advice text is written from templates filled with numbers computed in code, so it can never invent a figure.</p></div><div style="break-inside:avoid;margin-bottom:3mm"><b>Q. Why Huber regression and not a neural network?</b><p>Two reasons. It is explainable: we can say exactly how many kW one extra person or one degree of heat adds. And it is robust: the training year already contains waste, and Huber loss stops those spikes from pulling the 'normal' line upwards. On held-out data its error was lower than ordinary least squares in all 8 rooms (Computer Lab: 0.317 kW vs 0.525 kW). We do use deep learning where it pays off: the LSTM day-ahead forecaster, trained across hundreds of real buildings, where there is enough data and nobody needs to read the model's coefficients.</p></div><div style="break-inside:avoid;margin-bottom:3mm"><b>Q. How do you know a room is empty?</b><p>From the room node's people count. In the real build that comes from a PIR sensor or the existing CCTV with a person-detection model, and the timetable is a fallback. The simulator gives both a planned headcount (timetable) and the actual one, because classes get cancelled and people stay late.</p></div><div style="break-inside:avoid;margin-bottom:3mm"><b>Q. What if the system switches off a room with people in it?</b><p>It cannot. The switch-off command is only sent when the people count is zero, after a 15-minute grace period, and only for non-essential loads. Anyone pressing 'Not waste' stops the action and teaches the model. In the full-year test there were 0 cases of a room being switched off with people inside.</p></div><div style="break-inside:avoid;margin-bottom:3mm"><b>Q. How does 'heat in the walls' work?</b><p>Every wire and joint has resistance. Current through resistance makes heat (I² × R) that no meter bills separately. We measure the voltage at the distribution board and at the room, and the current. The difference divided by the current is the resistance of the wiring in between. When a joint loosens or corrodes, that resistance climbs slowly over days. We learn each circuit's normal value and warn when it is 60% higher. The energy is small; the real value is catching a fire risk before it becomes one.</p></div><div style="break-inside:avoid;margin-bottom:3mm"><b>Q. And earth leakage?</b><p>A leakage sensor (the same principle as an RCCB) measures current escaping to earth. A healthy circuit leaks almost nothing. When water from a hidden pipe leak soaks a wall, leakage on that floor rises. If at the same time water keeps flowing on that floor at night, we say the leak is probably inside the wall. That combination is our second novel check.</p></div><div style="break-inside:avoid;margin-bottom:3mm"><b>Q. Why is the pump the centre of the water side?</b><p>Because it is where energy and water meet. If the float switch sticks, the pump keeps lifting water that pours off the roof: water wasted and electricity wasted to lift it. If the sump is empty, the pump runs dry, burns electricity and damages itself. Our level sensors let ECOGUARD stop the pump in both cases.</p></div><div style="break-inside:avoid;margin-bottom:3mm"><b>Q. How did you get the before-vs-after numbers?</b><p>We ran the same year twice: same people, same weather, same power cuts and the same 520 faults. The first run had nobody watching. In the second, every reading went through the real backend and every command came back to the building. Electricity fell 19.2%, water 22.6%.</p></div><div style="break-inside:avoid;margin-bottom:3mm"><b>Q. Why not 100% savings?</b><p>Some waste happens before any detector can be sure (a room has to be empty for 30 minutes before we call it waste), some needs a plumber or electrician who takes time, and some is small enough that shutting a whole floor's valve would be worse than the drip. We chose to be right and safe over being fast.</p></div><div style="break-inside:avoid;margin-bottom:3mm"><b>Q. Which waste is hardest to catch?</b><p>Lights and fans left on in a classroom for a short gap between classes: the room is empty for less than 30 minutes, so we let it go on purpose (91% caught overall). Before we added the wall temperature sensor, an AC set too cold was the hardest (32% caught from power alone); with the sensor it is 94%. We keep thresholds high on purpose, because a false alert in an occupied room is the fastest way to make staff ignore the system.</p></div><div style="break-inside:avoid;margin-bottom:3mm"><b>Q. What does it cost to deploy?</b><p>Per room: one ESP32 board, a current sensor, a voltage sensor at each end of the circuit, a leakage sensor and a relay module, roughly ₹2,500 to ₹3,500. For water: a flow meter per floor and level sensors for tank and sump. The software runs on one small server or a Raspberry Pi on campus.</p></div><div style="break-inside:avoid;margin-bottom:3mm"><b>Q. Can it work without internet?</b><p>Yes. The backend runs on the campus network. Readings are small JSON messages every 15 minutes, and the room nodes keep working on their own if the server is down.</p></div><div style="break-inside:avoid;margin-bottom:3mm"><b>Q. What happens during a power cut?</b><p>Grid meters read zero, so energy rules pause. Water rules continue. After power returns we watch for loads coming back on in empty rooms (switches left on), and we do not blame inverter rooms for the battery recharge, which is the cost of the outage and not someone's mistake.</p></div><div style="break-inside:avoid;margin-bottom:3mm"><b>Q. How is this different from a smart meter app?</b><p>A smart meter tells you how much you used. ECOGUARD tells you which room wasted it, why, what it cost, and fixes it, and it sees waste a meter never shows: heat in wiring, leaks inside walls, and the pump wasting both resources at once.</p></div><div style="break-inside:avoid;margin-bottom:3mm"><b>Q. How does the system get better over time?</b><p>Every alert has 'Correct' and 'Not waste' buttons. Each tap is stored as a label and can be downloaded as a CSV. Retraining on those labels tunes the model to this building.</p></div>
+</div>
+</body></html>
