@@ -61,10 +61,10 @@ function BeforeAfter({ exp }) {
   const { before, after } = exp.totals;
   const monthly = Object.values(exp.daily.reduce((m, d) => {
     const k = d.date.slice(0, 7);
-    m[k] ||= { month: k, before: 0, after: 0 };
-    m[k].before += d.before_kwh; m[k].after += d.after_kwh;
+    m[k] ||= { month: k, before: 0, after: 0, days: 0 };
+    m[k].before += d.before_kwh; m[k].after += d.after_kwh; m[k].days++;
     return m;
-  }, {}));
+  }, {})).filter((m) => m.days >= 20); // skip part months at the edges
   const faults = Object.entries(exp.by_fault).sort((a, b) => (b[1].before_kwh * 7 + b[1].before_l * 0.03) - (a[1].before_kwh * 7 + a[1].before_l * 0.03));
   return (
     <section className="space-y-4">

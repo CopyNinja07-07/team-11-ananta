@@ -47,7 +47,7 @@ export default function RoomDetail() {
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Kpi label="People" value={room.people} sub={`camera count, capacity ${room.cap}`} />
         <Kpi label="Using" value={num(room.kw, 2)} unit="kW" tone="energy" sub={`should be ${num(room.expected_kw, 2)} kW`} />
-        <Kpi label="Wiring resistance" value={rMed ? num(rMed, 3) : '–'} unit="Ω" tone="hidden" sub="(board V − room V) ÷ current" />
+        <Kpi label="Wiring resistance" value={rMed ? num(rMed, 3) : '–'} unit="Ω" tone="hidden" sub={rMed ? '(board V − room V) ÷ current' : 'measured when the room draws over 1.5 A'} />
         <Kpi label="Earth leakage" value={num(room.leak_ma, 1)} unit="mA" tone={room.leak_ma > 15 ? 'danger' : 'ink'} sub="safe below 10 mA" />
       </div>
 
@@ -64,7 +64,7 @@ export default function RoomDetail() {
             <ComposedChart data={series}>
               <CartesianGrid stroke="#e2e8f0" vertical={false} />
               <XAxis dataKey="ts" tickFormatter={fmtTime} minTickGap={40} fontSize={11} />
-              <YAxis yAxisId="kw" fontSize={11} unit=" kW" width={60} />
+              <YAxis yAxisId="kw" fontSize={11} width={50} domain={[0, (max) => Math.max(0.5, Math.ceil(max * 2) / 2)]} tickFormatter={(v) => `${num(v, 1)} kW`} />
               <YAxis yAxisId="p" orientation="right" fontSize={11} width={30} />
               <Tooltip labelFormatter={(v) => fmtTime(v)} formatter={(v, n) => [n === 'People' ? v : `${num(v, 2)} kW`, n]} />
               <Legend />
