@@ -1,0 +1,32 @@
+@page { size: A4; margin: 16mm 15mm 18mm; }
+* { box-sizing: border-box; }
+body { font-family: Inter, "Helvetica Neue", Arial, sans-serif; color: #0f172a; font-size: 10.5pt; line-height: 1.5; margin: 0; }
+h1 { font-size: 24pt; margin: 0 0 4mm; letter-spacing: -0.3px; }
+h2 { font-size: 15pt; margin: 9mm 0 3mm; color: #064e3b; border-bottom: 2px solid #d1fae5; padding-bottom: 1.5mm; }
+h3 { font-size: 11.5pt; margin: 5mm 0 1.5mm; }
+p { margin: 0 0 2.5mm; }
+.page { page-break-after: always; }
+.page:last-child { page-break-after: auto; }
+.muted { color: #64748b; }
+.small { font-size: 9pt; }
+table { width: 100%; border-collapse: collapse; margin: 2mm 0 4mm; font-size: 9.5pt; }
+th, td { border-bottom: 1px solid #e2e8f0; padding: 1.6mm 2mm; text-align: left; vertical-align: top; }
+th { background: #f1f5f9; font-weight: 600; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4mm; }
+.card { border: 1px solid #cbd5e1; border-radius: 3mm; padding: 4mm; break-inside: avoid; }
+.tag { display: inline-block; font-size: 8pt; padding: 0.5mm 2mm; border-radius: 10mm; background: #ecfdf5; color: #047857; font-weight: 600; }
+.cover { height: 250mm; display: flex; flex-direction: column; justify-content: center; }
+.cover .brand { font-size: 11pt; color: #047857; font-weight: 700; letter-spacing: 1px; }
+.cover h1 { font-size: 30pt; }
+.kv { display: grid; grid-template-columns: 38mm 1fr; gap: 1mm 4mm; font-size: 10pt; }
+.kv b { color: #334155; }
+svg text { font-family: Inter, "Helvetica Neue", Arial, sans-serif; }
+img.shot { width: 100%; border: 1px solid #cbd5e1; border-radius: 2mm; }
+.swatch { display: flex; align-items: center; gap: 3mm; margin-bottom: 2mm; }
+.swatch i { width: 12mm; height: 8mm; border-radius: 1.5mm; display: inline-block; border: 1px solid #e2e8f0; }
+ul { margin: 0 0 3mm; padding-left: 5mm; }
+li { margin-bottom: 1mm; }
+.callout { background: #ecfdf5; border-left: 3px solid #059669; padding: 3mm 4mm; margin: 3mm 0; break-inside: avoid; }
+.warn { background: #fffbeb; border-left-color: #d97706; }
+code { background: #f1f5f9; padding: 0 1mm; border-radius: 1mm; font-size: 9pt; }
