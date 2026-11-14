@@ -26,6 +26,19 @@ export const api = {
   settings: () => req('/api/settings'),
   saveSettings: (body) => req('/api/settings', { method: 'PUT', body: JSON.stringify(body) }),
   sim: (body) => req('/api/sim', { method: 'POST', body: JSON.stringify(body) }),
+  hvac: () => req('/api/hvac'),
+  cvStatus: () => req('/api/cv/status'),
+  cvCount: async (blob, zone) => {
+    const fd = new FormData();
+    fd.append('image', blob, 'frame.jpg');
+    if (zone) fd.append('zone', zone);
+    const res = await fetch(`${BASE}/api/cv/count`, { method: 'POST', body: fd });
+    if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
+    return res.json();
+  },
+  realPortfolio: () => req('/api/real/portfolio'),
+  realModels: () => req('/api/real/models'),
+  realBuilding: (id) => req(`/api/real/buildings/${encodeURIComponent(id)}`),
 };
 
 export function wsUrl() {

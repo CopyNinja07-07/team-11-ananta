@@ -1,17 +1,21 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Bell, Building2, Droplets, Flame, Gauge, LineChart, Menu, PiggyBank, Settings, SlidersHorizontal, X, Zap, ZapOff } from 'lucide-react';
+import { AirVent, Bell, Cctv, Building2, Database, Droplets, Flame, Gauge, LineChart, Menu, PiggyBank, Settings, SlidersHorizontal, X, Zap, ZapOff } from 'lucide-react';
 import { useApp } from '../App';
 import { fmtDateTime, num } from '../lib/format';
+import Voice from './Voice';
 
 const NAV = [
   { to: '/', label: 'Overview', icon: Gauge },
   { to: '/rooms', label: 'Rooms', icon: Building2 },
   { to: '/alerts', label: 'Alerts', icon: Bell },
+  { to: '/camera', label: 'Camera Occupancy', icon: Cctv },
+  { to: '/hvac', label: 'HVAC & Comfort', icon: AirVent },
   { to: '/water', label: 'Water & Pump', icon: Droplets },
-  { to: '/wiring', label: 'Heat in Walls', icon: Flame },
+  { to: '/wiring', label: 'Heat & Damp Walls', icon: Flame },
   { to: '/forecast', label: 'Forecast', icon: LineChart },
   { to: '/savings', label: 'Savings & Carbon', icon: PiggyBank },
+  { to: '/real', label: 'Real Buildings', icon: Database },
   { to: '/simulator', label: 'Simulator', icon: SlidersHorizontal },
   { to: '/settings', label: 'Settings', icon: Settings },
 ];
@@ -66,6 +70,7 @@ export default function Layout({ children }) {
           )}
           <div className="ml-auto flex items-center gap-2">
             {error && <span className="pill bg-red-50 text-danger" role="status">Backend offline</span>}
+            <Voice />
             <div className="flex rounded-lg border border-ink-300 p-0.5 text-xs" role="group" aria-label="Advice language">
               {['en', 'hi'].map((l) => (
                 <button key={l} onClick={() => setLang(l)} aria-pressed={lang === l}

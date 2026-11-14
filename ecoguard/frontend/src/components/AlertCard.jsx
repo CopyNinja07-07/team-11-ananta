@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, Droplets, Flame, PowerOff, Wrench, X, Zap } from 'lucide-react';
+import { Check, Droplets, Flame, PowerOff, Thermometer, Wrench, X, Zap } from 'lucide-react';
 import { useApp } from '../App';
 import { api } from '../lib/api';
 import { KIND, num, rs, since, targetName, fmtTime } from '../lib/format';
@@ -10,6 +10,8 @@ const ICON = { energy: Zap, water: Droplets, hidden: Flame };
 const ACTIONS = {
   empty_room: [{ command: 'switch_off', label: 'Switch room off', icon: PowerOff }],
   over_use: [{ command: 'work_order', label: 'Ask staff to check', icon: Wrench }],
+  overcool: [{ command: 'ac_setpoint', label: 'Reset AC to 24 °C', icon: Thermometer }],
+  door_open: [{ command: 'work_order', label: 'Ask staff to close it', icon: Wrench }],
   wall_heat: [{ command: 'work_order', label: 'Send electrician', icon: Wrench }],
   earth_leak: [{ command: 'work_order', label: 'Send electrician', icon: Wrench }],
   night_flow: [{ command: 'close_valve', label: 'Close floor valve', icon: PowerOff }, { command: 'work_order', label: 'Send plumber', icon: Wrench }],
@@ -38,6 +40,7 @@ export default function AlertCard({ alert, now, rooms, compact = false, onChange
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="font-semibold text-ink-900">{alert.title}</h3>
             <span className={`pill ${k.bg} ${k.color}`}>{k.label}</span>
+            {alert.severity === 'high' && <span className="pill bg-danger text-white">High priority</span>}
             <StatusPill alert={alert} />
           </div>
           <div className="mt-0.5 text-sm text-ink-500">

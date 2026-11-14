@@ -12,6 +12,10 @@ import Forecast from './pages/Forecast';
 import Savings from './pages/Savings';
 import Simulator from './pages/Simulator';
 import Settings from './pages/Settings';
+import Hvac from './pages/Hvac';
+import Camera from './pages/Camera';
+import RealBuildings from './pages/RealBuildings';
+import RealBuilding from './pages/RealBuilding';
 
 export const AppCtx = createContext(null);
 export const useApp = () => useContext(AppCtx);
@@ -31,12 +35,16 @@ export default function App() {
           <Route path="/rooms" element={<Rooms />} />
           <Route path="/rooms/:id" element={<RoomDetail />} />
           <Route path="/alerts" element={<Alerts />} />
+          <Route path="/camera" element={<Camera />} />
+          <Route path="/hvac" element={<Hvac />} />
           <Route path="/water" element={<Water />} />
           <Route path="/wiring" element={<Wiring />} />
           <Route path="/forecast" element={<Forecast />} />
           <Route path="/savings" element={<Savings />} />
           <Route path="/simulator" element={<Simulator />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/real" element={<RealBuildings />} />
+          <Route path="/real/:id" element={<RealBuilding />} />
           <Route path="*" element={<div className="card card-pad">Page not found.</div>} />
         </Routes>
       </Layout>

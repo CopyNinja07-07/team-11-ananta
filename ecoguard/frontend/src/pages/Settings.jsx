@@ -21,11 +21,18 @@ export default function Settings() {
     <div className="space-y-5">
       <div>
         <h1 className="h-title">Settings</h1>
-        <p className="h-sub">How much ECOGUARD is allowed to do on its own.</p>
+        <p className="h-sub">How much ECOGUARD is allowed to do on its own: automatic, scheduled or manual only. Every action can be undone from the dashboard, and the room nodes fall back to safe local rules if the server or network is down.</p>
       </div>
       <section className="card card-pad space-y-4">
         <Toggle label="Automatic mode" hint="Switch off empty rooms, stop the pump and close a leaking floor's valve on its own, after the grace period." value={s.auto_mode} onChange={(v) => save({ auto_mode: v })} />
         <Toggle label="Raise maintenance tickets automatically" hint="Wiring heat, earth leakage, leaks and pump faults go straight to the electrician or plumber." value={s.auto_work_orders} onChange={(v) => save({ auto_work_orders: v })} />
+        <Toggle label="Scheduled mode: switch off at closing time" hint="Every evening at the hour below, rooms that are already empty are switched off in one go. Rooms with people are never touched." value={s.scheduled_shutdown} onChange={(v) => save({ scheduled_shutdown: v })} />
+        <label className="block text-sm">
+          <span className="font-medium text-ink-900">Closing time</span>
+          <select className="mt-1 block rounded-lg border border-ink-300 px-2 py-1.5" value={s.closing_hour} onChange={(e) => save({ closing_hour: Number(e.target.value) })}>
+            {[17, 18, 19, 20, 21].map((h) => <option key={h} value={h}>{h}:00</option>)}
+          </select>
+        </label>
         <label className="block text-sm">
           <span className="font-medium text-ink-900">Grace period before auto action</span>
           <span className="block text-ink-500">Time a manager has to press "Not waste" before ECOGUARD acts.</span>

@@ -18,7 +18,7 @@ export default function Wiring() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="h-title">Heat in the Walls</h1>
+        <h1 className="h-title">Heat & Damp in the Walls</h1>
         <p className="h-sub">Waste no ordinary meter can see: energy lost as heat in loose joints and old wiring inside the walls, and current leaking into damp walls.</p>
       </div>
 
@@ -72,20 +72,54 @@ export default function Wiring() {
       </section>
 
       <section className="card card-pad">
-        <h2 className="font-semibold text-ink-900">Earth leakage by floor</h2>
-        <div className="mt-3 grid grid-cols-3 gap-3">
-          {[0, 1, 2].map((f) => {
-            const ma = data.earth_leak_ma[f] ?? 0;
-            return (
-              <div key={f} className={`rounded-lg p-3 ${ma > 15 ? 'bg-red-50' : 'bg-ink-100'}`}>
-                <div className="text-xs text-ink-500">{['Ground', 'First', 'Second'][f]} floor</div>
-                <div className={`text-xl font-semibold ${ma > 15 ? 'text-danger' : 'text-ink-900'}`}>{num(ma, 1)} mA</div>
-                <div className="text-xs text-ink-500">{ma > 15 ? 'Check for damp walls' : 'Normal (under 10 mA)'}</div>
-              </div>
-            );
-          })}
+        <h2 className="font-semibold text-ink-900">Damp walls: earth leakage and night water, floor by floor</h2>
+        <p className="h-sub">A hidden pipe leak shows up twice: water that never stops flowing at night, and current leaking into the wet wall. ECOGUARD only calls it a leak inside the wall when both happen on the same floor.</p>
+        <div className="mt-4 grid gap-5 md:grid-cols-[1fr_1.1fr]">
+          <BuildingSection floors={data.floors || []} />
+          <div className="space-y-2">
+            {[...(data.floors || [])].reverse().map((f) => {
+              const damp = f.leak_ma > 15;
+              const verdict = f.inside_wall ? ['Leak inside the wall', 'bg-red-50 text-danger'] : damp ? ['Damp wall or worn insulation', 'bg-amber-50 text-energy']
+                : f.night_flow_lph ? ['Water flowing at night', 'bg-sky-50 text-water'] : ['Dry and healthy', 'bg-brand-50 text-brand-700'];
+              return (
+                <div key={f.floor} className="flex items-center justify-between rounded-xl border border-ink-300/60 p-3">
+                  <div>
+                    <div className="font-medium text-ink-900">{['Ground', 'First', 'Second'][f.floor]} floor</div>
+                    <div className="text-xs text-ink-500">Earth leakage {num(f.leak_ma, 1)} mA (safe under 10) · night flow {f.night_flow_lph ? `${num(f.night_flow_lph, 0)} L/h` : 'none'}</div>
+                  </div>
+                  <span className={`pill ${verdict[1]}`}>{verdict[0]}</span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
     </div>
+  );
+}
+
+function BuildingSection({ floors }) {
+  const col = (f) => (f.inside_wall ? '#dc2626' : f.leak_ma > 15 ? '#d97706' : f.leak_ma > 8 ? '#fbbf24' : '#a7f3d0');
+  return (
+    <svg viewBox="0 0 300 250" className="w-full max-w-sm" role="img" aria-label="Cross-section of the block, walls coloured by earth leakage">
+      <polygon points="20,40 150,8 280,40" fill="#e2e8f0" />
+      <rect x="250" y="16" width="26" height="22" rx="3" fill="#bae6fd" stroke="#0284c7" />
+      {[2, 1, 0].map((fl, i) => {
+        const f = floors.find((x) => x.floor === fl) || { leak_ma: 0 };
+        const y = 40 + i * 66;
+        return (
+          <g key={fl}>
+            <rect x="20" y={y} width="260" height="66" fill="#fff" stroke="#94a3b8" />
+            <rect x="20" y={y} width="12" height="66" fill={col(f)} />
+            <rect x="268" y={y} width="12" height="66" fill={col(f)} />
+            <line x1="262" y1={y} x2="262" y2={y + 66} stroke="#0284c7" strokeWidth="3" strokeDasharray={f.night_flow_lph ? '0' : '6 4'} />
+            {f.inside_wall && <circle cx="262" cy={y + 40} r="7" fill="#0284c7" opacity="0.8"><animate attributeName="r" values="5;9;5" dur="1.6s" repeatCount="indefinite" /></circle>}
+            <text x="150" y={y + 30} textAnchor="middle" fontSize="13" fill="#0f172a">{['Ground', 'First', 'Second'][fl]} floor</text>
+            <text x="150" y={y + 48} textAnchor="middle" fontSize="11" fill="#64748b">{num(f.leak_ma, 1)} mA</text>
+          </g>
+        );
+      })}
+      <text x="150" y="246" textAnchor="middle" fontSize="10" fill="#64748b">walls coloured by earth leakage · blue line: water riser</text>
+    </svg>
   );
 }
