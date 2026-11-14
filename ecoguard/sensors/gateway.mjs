@@ -38,7 +38,7 @@ export function apply(sim, cmd, log = console.log) {
   const p = cmd.params || {};
   switch (cmd.command) {
     case 'switch_off': sim.switchOff(cmd.target); break;
-    case 'pump_off': sim.lockPump(2); break;
+    case 'pump_off': sim.lockPump(cmd.target === 'TANK' ? 0.5 : 2); sim.enableInterlock(); break;
     case 'close_valve': sim.closeValve(Number(String(cmd.target).replace('F', ''))); break;
     case 'work_order': sim.workOrder(p.rule, cmd.target, p.due); break;
     case 'sim_inject': sim.inject(p.fault, p.target); break;

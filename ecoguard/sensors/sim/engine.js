@@ -62,6 +62,11 @@ export class Campus {
   lockPump(hours = 2) {
     this.water.lockUntil = this.t + hours * 3600000;
   }
+  // Software interlock: ECOGUARD drives the pump relay from the tank and sump
+  // level sensors, so a stuck float switch or a dead sump cut-off stops mattering.
+  enableInterlock() {
+    this.water.interlock = true;
+  }
   // Smart valve on a floor's branch line: stops a leak's water loss right away.
   closeValve(floor) {
     let n = 0;
@@ -261,8 +266,8 @@ export class Campus {
     const tankPct = (W.tank / WATER.tankL) * 100;
     const sumpPct = (W.sump / WATER.sumpL) * 100;
     if (!W.pumpOn && tankPct < WATER.pumpOnPct) W.pumpOn = true;
-    if (W.pumpOn && tankPct >= WATER.pumpOffPct && !floatFail) W.pumpOn = false;
-    if (W.pumpOn && sumpPct < 3 && !sumpFail) W.pumpOn = false;
+    if (W.pumpOn && tankPct >= WATER.pumpOffPct && (!floatFail || W.interlock)) W.pumpOn = false;
+    if (W.pumpOn && sumpPct < 3 && (!sumpFail || W.interlock)) W.pumpOn = false;
     if (floatFail && W.pumpOn && tankPct >= 99) {
       floatFail.overrunMin = (floatFail.overrunMin || 0) + 15;
       if (floatFail.overrunMin > 90) { W.pumpOn = false; floatFail.overrunMin = 0; } // someone notices water pouring off the roof
@@ -271,7 +276,7 @@ export class Campus {
     let pumped = 0, pumpKWh = 0, overflow = 0;
     if (running) {
       // a working float switch stops the pump as soon as the tank reaches the cut-off level
-      const room = floatFail ? Infinity : Math.max(0, (WATER.tankL * WATER.pumpOffPct) / 100 - W.tank);
+      const room = floatFail && !W.interlock ? Infinity : Math.max(0, (WATER.tankL * WATER.pumpOffPct) / 100 - W.tank);
       pumped = Math.min(WATER.pumpLpm * 15, W.sump, room);
       W.sump -= pumped;
       W.tank += pumped;

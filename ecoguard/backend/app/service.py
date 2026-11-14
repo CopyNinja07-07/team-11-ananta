@@ -139,7 +139,8 @@ class Pipeline:
     def _auto_control(self, db: Session, cfg: dict, open_alerts, day: SavingsDaily) -> list[dict]:
         cmds = []
         for a in open_alerts:
-            if a.key in self.actioned:
+            # only act on what is true right now (an alert stays open 30 min after it clears)
+            if a.key in self.actioned or a.last != self.now:
                 continue
             row = db.get(Alert, self.alert_rows[a.key])
             if row.feedback == "dismissed":
@@ -189,9 +190,12 @@ def estimate_avoided(command: str, alert: Alert | None, now: int) -> tuple[float
     t = to_ist(now)
     h = t.hour + t.minute / 60
     if command == "switch_off":
-        to_guard = max(0.0, 22 - h)
-        to_morning = (24 - h) + 9 if h >= 9 else 9 - h
-        hours = 0.5 * (to_guard or to_morning) + 0.5 * to_morning
+        if 9 <= h < 16:
+            hours = 1.0          # daytime: usually someone walks in for the next class within the hour
+        else:
+            to_guard = max(0.0, 22 - h)
+            to_morning = (24 - h) + 9 if h >= 9 else 9 - h
+            hours = 0.5 * (to_guard or to_morning) + 0.5 * to_morning   # half the time the 10 pm guard round catches it
         return info.get("extra_kw", 0) * min(hours, 16), 0.0
     if command == "pump_off" and alert.rule == "overflow":
         return WATER["pumpKW"] * 0.75, WATER["pumpLpm"] * 45
