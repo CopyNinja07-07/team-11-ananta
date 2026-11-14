@@ -10,74 +10,74 @@
  "comfort_violations": 0,
  "totals": {
   "before": {
-   "kwh": 25809,
-   "litres": 1678762,
-   "waste_kwh": 4830,
-   "waste_l": 392527,
-   "overflow_l": 156533,
-   "pump_kwh": 1019,
-   "rupees": 231026,
-   "co2_kg": 18479
+   "kwh": 26000,
+   "litres": 1679841,
+   "waste_kwh": 5022,
+   "waste_l": 393601,
+   "overflow_l": 154377,
+   "pump_kwh": 1140,
+   "rupees": 232395,
+   "co2_kg": 18616
   },
   "after": {
-   "kwh": 21038,
-   "litres": 1299682,
-   "waste_kwh": 475,
-   "waste_l": 13441,
+   "kwh": 21019,
+   "litres": 1300288,
+   "waste_kwh": 462,
+   "waste_l": 14046,
    "overflow_l": 4219,
-   "pump_kwh": 333,
-   "rupees": 186256,
-   "co2_kg": 15063
+   "pump_kwh": 327,
+   "rupees": 186142,
+   "co2_kg": 15050
   }
  },
  "saved": {
-  "kwh": 4771,
-  "litres": 379080,
-  "rupees": 44770,
-  "co2_kg": 3416,
-  "kwh_pct": 18.5,
+  "kwh": 4981,
+  "litres": 379553,
+  "rupees": 46253,
+  "co2_kg": 3566,
+  "kwh_pct": 19.2,
   "litres_pct": 22.6,
-  "per_year_rupees": 44893
+  "per_year_rupees": 46380
  },
  "by_fault": {
   "overcool": {
-   "label": "AC overcooling (door open / 16 deg setpoint)",
-   "count": 17,
-   "before_kwh": 59,
-   "after_kwh": 50.3,
+   "label": "AC set too cold (16-18 deg setpoint)",
+   "count": 14,
+   "before_kwh": 52.4,
+   "after_kwh": 21.2,
    "before_l": 0,
    "after_l": 0
   },
   "lights_left_on": {
    "label": "Lights and fans left on in empty room",
-   "count": 220,
-   "before_kwh": 1368.9,
-   "after_kwh": 144.7,
+   "count": 219,
+   "before_kwh": 1416,
+   "after_kwh": 144.6,
    "before_l": 0,
    "after_l": 0
   },
   "ac_left_on": {
    "label": "AC left running after class",
-   "count": 65,
-   "before_kwh": 1014.2,
-   "after_kwh": 97.6,
+   "count": 66,
+   "before_kwh": 1016.9,
+   "after_kwh": 99.7,
    "before_l": 0,
    "after_l": 0
   },
   "comeback": {
    "label": "Loads restarted in empty room after power cut",
-   "count": 129,
-   "before_kwh": 500.1,
-   "after_kwh": 129.7,
+   "count": 133,
+   "before_kwh": 511.9,
+   "after_kwh": 134.8,
    "before_l": 0,
    "after_l": 0
   },
   "float_fail": {
    "label": "Tank overflow: float switch stuck",
    "count": 14,
-   "before_kwh": 27.2,
+   "before_kwh": 26.7,
    "after_kwh": 0.7,
-   "before_l": 156532,
+   "before_l": 154375,
    "after_l": 4219
   },
   "leak": {
@@ -91,32 +91,40 @@
   "pcs_left_on": {
    "label": "Lab PCs left on overnight",
    "count": 26,
-   "before_kwh": 1487.7,
-   "after_kwh": 49.5,
+   "before_kwh": 1482.3,
+   "after_kwh": 48.7,
    "before_l": 0,
    "after_l": 0
   },
   "dry_run": {
    "label": "Pump running dry (sump empty)",
-   "count": 12,
-   "before_kwh": 299.4,
+   "count": 14,
+   "before_kwh": 422.9,
    "after_kwh": 0,
    "before_l": 0,
    "after_l": 0
   },
   "cistern": {
    "label": "Running toilet cistern",
-   "count": 14,
+   "count": 15,
    "before_kwh": 0,
    "after_kwh": 0,
-   "before_l": 19778,
-   "after_l": 5809
+   "before_l": 23028,
+   "after_l": 6417
+  },
+  "door_open": {
+   "label": "AC fighting an open door or window",
+   "count": 3,
+   "before_kwh": 19.2,
+   "after_kwh": 10.4,
+   "before_l": 0,
+   "after_l": 0
   },
   "loose_joint": {
    "label": "Heat in the wall: loose joint / failing wire",
    "count": 7,
    "before_kwh": 43.2,
-   "after_kwh": 0.8,
+   "after_kwh": 0.7,
    "before_l": 0,
    "after_l": 0
   },
@@ -154,7 +162,7 @@
   {
    "date": "2025-07-10",
    "before_kwh": 57.32,
-   "after_kwh": 55.39,
+   "after_kwh": 49.84,
    "before_l": 1225,
    "after_l": 1225
   },
@@ -237,8 +245,8 @@
   },
   {
    "date": "2025-07-22",
-   "before_kwh": 133.57,
-   "after_kwh": 98.51,
+   "before_kwh": 129.22,
+   "after_kwh": 97.78,
    "before_l": 6210,
    "after_l": 5633
   },
@@ -307,28 +315,28 @@
   },
   {
    "date": "2025-08-01",
-   "before_kwh": 136.05,
-   "after_kwh": 133.38,
+   "before_kwh": 142.8,
+   "after_kwh": 134.11,
    "before_l": 6906,
    "after_l": 6906
   },
   {
    "date": "2025-08-02",
-   "before_kwh": 23.67,
+   "before_kwh": 43.36,
    "after_kwh": 23.67,
    "before_l": 1004,
    "after_l": 1004
   },
   {
    "date": "2025-08-03",
-   "before_kwh": 10.58,
+   "before_kwh": 30.93,
    "after_kwh": 10.58,
    "before_l": 0,
    "after_l": 0
   },
   {
    "date": "2025-08-04",
-   "before_kwh": 147.57,
+   "before_kwh": 155.4,
    "after_kwh": 105.62,
    "before_l": 6005,
    "after_l": 6005
@@ -440,14 +448,14 @@
   },
   {
    "date": "2025-08-20",
-   "before_kwh": 104.04,
-   "after_kwh": 104.04,
+   "before_kwh": 111.06,
+   "after_kwh": 102.4,
    "before_l": 5428,
    "after_l": 5428
   },
   {
    "date": "2025-08-21",
-   "before_kwh": 98.46,
+   "before_kwh": 104.4,
    "after_kwh": 96.59,
    "before_l": 6330,
    "after_l": 6330
@@ -496,8 +504,8 @@
   },
   {
    "date": "2025-08-28",
-   "before_kwh": 97.83,
-   "after_kwh": 97.12,
+   "before_kwh": 99.41,
+   "after_kwh": 97.73,
    "before_l": 5236,
    "after_l": 5236
   },
@@ -524,15 +532,15 @@
   },
   {
    "date": "2025-09-01",
-   "before_kwh": 101.56,
-   "after_kwh": 93.56,
+   "before_kwh": 94.21,
+   "after_kwh": 92.83,
    "before_l": 8171,
    "after_l": 5350
   },
   {
    "date": "2025-09-02",
-   "before_kwh": 140.77,
-   "after_kwh": 120.85,
+   "before_kwh": 138.16,
+   "after_kwh": 125.3,
    "before_l": 8642,
    "after_l": 5821
   },
@@ -580,8 +588,8 @@
   },
   {
    "date": "2025-09-09",
-   "before_kwh": 130.47,
-   "after_kwh": 111.29,
+   "before_kwh": 128.83,
+   "after_kwh": 110.68,
    "before_l": 8013,
    "after_l": 5194
   },
@@ -636,15 +644,15 @@
   },
   {
    "date": "2025-09-17",
-   "before_kwh": 122.02,
-   "after_kwh": 95.01,
+   "before_kwh": 126.27,
+   "after_kwh": 95.75,
    "before_l": 5495,
    "after_l": 5495
   },
   {
    "date": "2025-09-18",
-   "before_kwh": 136.65,
-   "after_kwh": 103.16,
+   "before_kwh": 128.89,
+   "after_kwh": 97.62,
    "before_l": 4567,
    "after_l": 4567
   },
@@ -692,8 +700,8 @@
   },
   {
    "date": "2025-09-25",
-   "before_kwh": 137.49,
-   "after_kwh": 122.24,
+   "before_kwh": 141.67,
+   "after_kwh": 124.04,
    "before_l": 6742,
    "after_l": 6742
   },
@@ -727,8 +735,8 @@
   },
   {
    "date": "2025-09-30",
-   "before_kwh": 123.02,
-   "after_kwh": 116.24,
+   "before_kwh": 121.38,
+   "after_kwh": 115.62,
    "before_l": 6036,
    "after_l": 6036
   },
@@ -1071,7 +1079,7 @@
   {
    "date": "2025-11-18",
    "before_kwh": 86.2,
-   "after_kwh": 63.02,
+   "after_kwh": 63.01,
    "before_l": 11536,
    "after_l": 6441
   },
@@ -2106,8 +2114,8 @@
   },
   {
    "date": "2026-04-15",
-   "before_kwh": 107.05,
-   "after_kwh": 103.51,
+   "before_kwh": 109.18,
+   "after_kwh": 105.1,
    "before_l": 5413,
    "after_l": 5413
   },
@@ -2120,8 +2128,8 @@
   },
   {
    "date": "2026-04-17",
-   "before_kwh": 121.43,
-   "after_kwh": 104.52,
+   "before_kwh": 120.95,
+   "after_kwh": 104.15,
    "before_l": 5743,
    "after_l": 5743
   },
@@ -2141,8 +2149,8 @@
   },
   {
    "date": "2026-04-20",
-   "before_kwh": 168.49,
-   "after_kwh": 121.59,
+   "before_kwh": 175.4,
+   "after_kwh": 124.07,
    "before_l": 5894,
    "after_l": 5894
   },
@@ -2155,8 +2163,8 @@
   },
   {
    "date": "2026-04-22",
-   "before_kwh": 117.37,
-   "after_kwh": 103.41,
+   "before_kwh": 116.4,
+   "after_kwh": 102.68,
    "before_l": 4851,
    "after_l": 4851
   },
@@ -2170,7 +2178,7 @@
   {
    "date": "2026-04-24",
    "before_kwh": 105.91,
-   "after_kwh": 102.01,
+   "after_kwh": 98.39,
    "before_l": 5612,
    "after_l": 5612
   },
@@ -2197,22 +2205,22 @@
   },
   {
    "date": "2026-04-28",
-   "before_kwh": 125.83,
-   "after_kwh": 106.71,
+   "before_kwh": 135.42,
+   "after_kwh": 106.77,
    "before_l": 6344,
    "after_l": 6344
   },
   {
    "date": "2026-04-29",
-   "before_kwh": 135.55,
+   "before_kwh": 160.63,
    "after_kwh": 113.42,
    "before_l": 5931,
    "after_l": 5931
   },
   {
    "date": "2026-04-30",
-   "before_kwh": 112.31,
-   "after_kwh": 102.47,
+   "before_kwh": 128.32,
+   "after_kwh": 102.24,
    "before_l": 5223,
    "after_l": 5223
   },
@@ -2225,8 +2233,8 @@
   },
   {
    "date": "2026-05-02",
-   "before_kwh": 24.77,
-   "after_kwh": 24.77,
+   "before_kwh": 25.89,
+   "after_kwh": 25.85,
    "before_l": 985,
    "after_l": 985
   },
@@ -2239,92 +2247,92 @@
   },
   {
    "date": "2026-05-04",
-   "before_kwh": 125.15,
-   "after_kwh": 124.97,
+   "before_kwh": 132.51,
+   "after_kwh": 124.19,
    "before_l": 6191,
    "after_l": 6191
   },
   {
    "date": "2026-05-05",
-   "before_kwh": 138.43,
-   "after_kwh": 125.41,
-   "before_l": 5772,
-   "after_l": 5772
+   "before_kwh": 163.21,
+   "after_kwh": 124.33,
+   "before_l": 5945,
+   "after_l": 5945
   },
   {
    "date": "2026-05-06",
-   "before_kwh": 161.28,
-   "after_kwh": 144.92,
-   "before_l": 5630,
-   "after_l": 5630
+   "before_kwh": 188.19,
+   "after_kwh": 141.48,
+   "before_l": 6169,
+   "after_l": 6062
   },
   {
    "date": "2026-05-07",
-   "before_kwh": 156.66,
-   "after_kwh": 114.35,
-   "before_l": 5240,
+   "before_kwh": 178.21,
+   "after_kwh": 116.17,
+   "before_l": 5779,
    "after_l": 5240
   },
   {
    "date": "2026-05-08",
-   "before_kwh": 123.62,
-   "after_kwh": 101.11,
-   "before_l": 6038,
+   "before_kwh": 120.63,
+   "after_kwh": 98.12,
+   "before_l": 6577,
    "after_l": 6038
   },
   {
    "date": "2026-05-09",
    "before_kwh": 35.35,
    "after_kwh": 35.35,
-   "before_l": 996,
+   "before_l": 1534,
    "after_l": 996
   },
   {
    "date": "2026-05-10",
-   "before_kwh": 10.14,
-   "after_kwh": 10.14,
-   "before_l": 0,
+   "before_kwh": 11.78,
+   "after_kwh": 11.78,
+   "before_l": 538,
    "after_l": 0
   },
   {
    "date": "2026-05-11",
-   "before_kwh": 152.07,
-   "after_kwh": 117.16,
-   "before_l": 4894,
+   "before_kwh": 148.48,
+   "after_kwh": 118.27,
+   "before_l": 5264,
    "after_l": 4894
   },
   {
    "date": "2026-05-12",
-   "before_kwh": 179.57,
-   "after_kwh": 141.22,
+   "before_kwh": 179.58,
+   "after_kwh": 141.35,
    "before_l": 6527,
    "after_l": 6527
   },
   {
    "date": "2026-05-13",
-   "before_kwh": 181.07,
-   "after_kwh": 172.21,
+   "before_kwh": 178.81,
+   "after_kwh": 170.12,
    "before_l": 7202,
    "after_l": 7202
   },
   {
    "date": "2026-05-14",
-   "before_kwh": 161.06,
-   "after_kwh": 143.45,
-   "before_l": 10681,
+   "before_kwh": 161.34,
+   "after_kwh": 144.6,
+   "before_l": 6754,
    "after_l": 6754
   },
   {
    "date": "2026-05-15",
-   "before_kwh": 142.07,
-   "after_kwh": 123.98,
-   "before_l": 5336,
+   "before_kwh": 143.18,
+   "after_kwh": 125.11,
+   "before_l": 5503,
    "after_l": 5336
   },
   {
    "date": "2026-05-16",
    "before_kwh": 55.03,
-   "after_kwh": 35.89,
+   "after_kwh": 34.83,
    "before_l": 1007,
    "after_l": 1007
   },
@@ -2337,43 +2345,43 @@
   },
   {
    "date": "2026-05-18",
-   "before_kwh": 162.17,
-   "after_kwh": 136.51,
+   "before_kwh": 163.42,
+   "after_kwh": 138.15,
    "before_l": 5096,
    "after_l": 5096
   },
   {
    "date": "2026-05-19",
-   "before_kwh": 151.83,
-   "after_kwh": 123.72,
-   "before_l": 17027,
+   "before_kwh": 150.21,
+   "after_kwh": 123.97,
+   "before_l": 5581,
    "after_l": 5581
   },
   {
    "date": "2026-05-20",
-   "before_kwh": 158.37,
-   "after_kwh": 157.95,
-   "before_l": 9126,
+   "before_kwh": 159.92,
+   "after_kwh": 151.54,
+   "before_l": 17995,
    "after_l": 5648
   },
   {
    "date": "2026-05-21",
-   "before_kwh": 163.15,
-   "after_kwh": 137.96,
-   "before_l": 5392,
+   "before_kwh": 182.03,
+   "after_kwh": 143.54,
+   "before_l": 9573,
    "after_l": 5392
   },
   {
    "date": "2026-05-22",
-   "before_kwh": 111.23,
-   "after_kwh": 95.7,
+   "before_kwh": 109.03,
+   "after_kwh": 94.6,
    "before_l": 5579,
    "after_l": 5579
   },
   {
    "date": "2026-05-23",
    "before_kwh": 47.97,
-   "after_kwh": 40.76,
+   "after_kwh": 41.88,
    "before_l": 1001,
    "after_l": 1001
   },
@@ -2386,36 +2394,36 @@
   },
   {
    "date": "2026-05-25",
-   "before_kwh": 163.66,
-   "after_kwh": 137.66,
+   "before_kwh": 164.9,
+   "after_kwh": 132.48,
    "before_l": 5061,
    "after_l": 5061
   },
   {
    "date": "2026-05-26",
-   "before_kwh": 167.15,
-   "after_kwh": 125.65,
+   "before_kwh": 168.03,
+   "after_kwh": 122.78,
    "before_l": 5542,
    "after_l": 5542
   },
   {
    "date": "2026-05-27",
-   "before_kwh": 150.43,
-   "after_kwh": 129.74,
+   "before_kwh": 149.33,
+   "after_kwh": 133.07,
    "before_l": 5399,
    "after_l": 5399
   },
   {
    "date": "2026-05-28",
-   "before_kwh": 128.43,
-   "after_kwh": 124.19,
+   "before_kwh": 128.85,
+   "after_kwh": 121.48,
    "before_l": 6417,
    "after_l": 6417
   },
   {
    "date": "2026-05-29",
-   "before_kwh": 141.43,
-   "after_kwh": 118.23,
+   "before_kwh": 126.19,
+   "after_kwh": 116.88,
    "before_l": 5558,
    "after_l": 5558
   },
