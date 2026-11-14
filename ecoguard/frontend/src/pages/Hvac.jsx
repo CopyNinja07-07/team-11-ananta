@@ -14,7 +14,9 @@ const STATUS = {
   cooling: { label: 'Cooling', cls: 'bg-brand-50 text-brand-700', icon: AirVent },
   hot: { label: 'Too hot', cls: 'bg-amber-50 text-energy', icon: Sun },
   comfortable: { label: 'Comfortable', cls: 'bg-brand-50 text-brand-700', icon: Thermometer },
-  off: { label: 'AC off', cls: 'bg-ink-100 text-ink-700', icon: Thermometer },
+  warm: { label: 'Warm', cls: 'bg-amber-50 text-energy', icon: Sun },
+  cool: { label: 'Cool', cls: 'bg-sky-50 text-water', icon: Thermometer },
+  off: { label: 'Empty, AC off', cls: 'bg-ink-100 text-ink-700', icon: Thermometer },
 };
 const LINE = ['#d97706', '#0284c7', '#7c3aed', '#047857', '#dc2626', '#0f172a'];
 

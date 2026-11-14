@@ -256,7 +256,8 @@ def hvac(hours: int = 24, db: Session = Depends(get_db)):
         n = latest.get(zid, {})
         t_in, ac = n.get("t_in"), n.get("ac_kw") or 0
         status = ("overcool" if ("overcool", zid) in open_rules else "door_open" if ("door_open", zid) in open_rules
-                  else "cooling" if ac > 0.05 else "hot" if t_in and t_in > 30 and n.get("people") else "comfortable" if t_in and 22 <= t_in <= 27 else "off")
+                  else "cooling" if ac > 0.05 else "off" if not n.get("people") or t_in is None
+                  else "hot" if t_in > 30 else "comfortable" if 22 <= t_in <= 27 else "warm" if t_in > 27 else "cool")
         rooms.append({"id": zid, "name": z["name"], "floor": z["floor"], "ac_units": z["acUnits"], "rated_kw": round(z["acUnits"] * z["acKW"], 2),
                       "people": n.get("people", 0), "t_in": t_in, "rh": n.get("rh"), "ac_kw": ac, "status": status,
                       "series": [{"ts": r.ts, "t_in": r.t_in, "rh": r.rh, "ac_kw": r.ac_kw} for r in rows]})
