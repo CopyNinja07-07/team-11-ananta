@@ -26,7 +26,10 @@ backend/              FastAPI + SQLAlchemy (SQLite by default, PostgreSQL/Timesc
   app/forecast.py     next-24-hour forecast
   app/advice.py       plain-language advice, English and Hindi
 ml/                   training and evaluation scripts
+ml/real/              real-building pipeline (BDG2): data prep, LightGBM baselines, LSTM forecaster, waste audit
+cv/                   camera people counter (YOLO) and its CCTV/webcam node
 models/               trained baseline, detector report card, before-vs-after result
+models/real/          real-building model report cards, audit summary, sandbox bundles
 frontend/             React + Tailwind + Recharts dashboard
 docs/                 design pack and technical explainer
 ```
@@ -57,13 +60,41 @@ fill two weeks of history in a few seconds, then restart with `--speed 2`.
 For a single URL (demo day): `cd frontend && npm run build`, and the backend
 serves the dashboard at http://localhost:8000.
 
+## Optional modules
+
+```bash
+# camera occupancy (YOLO person count on the server)
+pip install -r backend/requirements-cv.txt && ./cv/get_weights.sh
+python cv/camera_node.py --room CR-201 --source 0          # webcam; or an RTSP URL from the CCTV
+
+# MQTT instead of HTTP (any broker, e.g. mosquitto or `pip install amqtt && amqtt`)
+MQTT_URL=mqtt://localhost:1883 uvicorn app.main:app --port 8000
+node gateway.mjs --mqtt mqtt://localhost:1883 --speed 2
+```
+
+If the backend or network goes down, the gateway (and the ESP32 nodes) fall back
+to local safe rules: a room empty for an hour is switched off, the pump follows
+the tank and sump level sensors.
+
+## Real buildings (BDG2)
+
+```bash
+./ml/real/download_bdg2.sh                 # ~310 MB, Building Data Genome 2 (CC BY 4.0)
+cd ml/real
+python prepare_bdg2.py                     # 693 classrooms, labs, offices -> data/real/rooms_hourly.parquet
+python train_global.py electricity         # LightGBM baseline, scored on 2017 with ASHRAE Guideline 14
+python train_global.py chilledwater        # HVAC cooling baseline
+python train_forecaster.py                 # LSTM day-ahead forecaster (CPU ~25 min, uses a GPU if present)
+python waste_audit.py                      # waste checks on every building + dashboard sandbox bundles
+```
+
 ## Retrain and re-test
 
 ```bash
 cd sensors && node generate.mjs 365 11                    # training year
 cd ../ml && python train_baseline.py                      # -> models/baseline.json
 cd ../sensors && DATA_DIR=../data/test node generate.mjs 365 99   # unseen test year
-cd ../ml && python -c "import evaluate; from pathlib import Path; print(evaluate.main(Path('../data/test')))"
+cd ../ml && python evaluate.py ../data/test
 ```
 
 Before vs after (start a backend with an empty database first):

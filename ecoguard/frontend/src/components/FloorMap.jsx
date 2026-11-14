@@ -34,7 +34,7 @@ export default function FloorMap({ rooms, alerts, water }) {
                 <Link key={r.id} to={`/rooms/${r.id}`} className={`rounded-lg border-2 p-2.5 transition hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${STYLE[st]}`}
                   aria-label={`${r.name}: ${LABEL[st]}, ${r.people} people, ${num(r.kw, 2)} kilowatts`}>
                   <div className="flex items-center justify-between text-xs font-semibold">{r.id}<span className="font-medium opacity-80">{LABEL[st]}</span></div>
-                  <div className="mt-1 truncate text-[11px] opacity-80">{r.name}</div>
+                  <div className="mt-1 flex justify-between gap-1 text-[11px] opacity-80"><span className="truncate">{r.name}</span>{r.t_in != null && <span className="shrink-0">{num(r.t_in, 0)}°C</span>}</div>
                   <div className="mt-1.5 flex items-center justify-between text-sm">
                     <span className="flex items-center gap-1"><Users size={13} aria-hidden />{r.people}</span>
                     <span className="font-semibold">{num(r.kw, 2)} kW</span>
