@@ -1,0 +1,48 @@
+{
+ "meter": "chilledwater",
+ "buildings": 340,
+ "train_rows": 2666397,
+ "test_rows": 2825394,
+ "rounds": 1497,
+ "train_seconds": 326,
+ "median_cvrmse": 47.9,
+ "median_nmbe": 4.0,
+ "ashrae_g14_pass_pct": 23.8,
+ "by_kind": {
+  "classroom": {
+   "buildings": 119,
+   "median_cvrmse": 56.1,
+   "pass_pct": 22.7
+  },
+  "lab": {
+   "buildings": 87,
+   "median_cvrmse": 35.6,
+   "pass_pct": 33.3
+  },
+  "office": {
+   "buildings": 134,
+   "median_cvrmse": 58.2,
+   "pass_pct": 18.7
+  }
+ },
+ "feature_importance": {
+  "profile": 55.1,
+  "building_id": 19.8,
+  "site_id": 5.2,
+  "temp_24h": 5.0,
+  "airTemperature": 4.8,
+  "month": 2.8,
+  "hdd": 2.2,
+  "dewTemperature": 1.5,
+  "log_sqm": 1.4,
+  "hour": 0.6,
+  "kind": 0.4,
+  "yearbuilt": 0.2,
+  "dow": 0.2,
+  "cdd": 0.2,
+  "cloudCoverage": 0.2,
+  "floors": 0.1,
+  "windSpeed": 0.1,
+  "off_day": 0.1
+ }
+}

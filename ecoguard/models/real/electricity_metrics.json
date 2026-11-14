@@ -1,0 +1,48 @@
+{
+ "meter": "electricity",
+ "buildings": 687,
+ "train_rows": 5517376,
+ "test_rows": 5706707,
+ "rounds": 195,
+ "train_seconds": 68,
+ "median_cvrmse": 20.8,
+ "median_nmbe": -0.6,
+ "ashrae_g14_pass_pct": 57.1,
+ "by_kind": {
+  "classroom": {
+   "buildings": 253,
+   "median_cvrmse": 31.3,
+   "pass_pct": 41.5
+  },
+  "lab": {
+   "buildings": 144,
+   "median_cvrmse": 11.6,
+   "pass_pct": 73.6
+  },
+  "office": {
+   "buildings": 290,
+   "median_cvrmse": 20.1,
+   "pass_pct": 62.4
+  }
+ },
+ "feature_importance": {
+  "profile": 82.1,
+  "building_id": 8.4,
+  "log_sqm": 6.2,
+  "month": 0.8,
+  "temp_24h": 0.5,
+  "site_id": 0.5,
+  "hour": 0.3,
+  "floors": 0.3,
+  "yearbuilt": 0.1,
+  "dewTemperature": 0.1,
+  "kind": 0.1,
+  "off_day": 0.1,
+  "airTemperature": 0.1,
+  "dow": 0.1,
+  "cloudCoverage": 0.1,
+  "windSpeed": 0.0,
+  "cdd": 0.0,
+  "hdd": 0.0
+ }
+}

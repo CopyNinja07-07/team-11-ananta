@@ -1,6 +1,7 @@
 __pycache__/
 *.pyc
 *.db
+*.db-journal
 node_modules/
 frontend/dist/
 data/
@@ -8,3 +9,10 @@ data/
 .env
 .DS_Store
 data/test/
+
+# large model files are rebuilt by ml/real/*.py
+models/real/*_lgbm.txt
+models/real/*_profile.parquet
+
+# downloaded by cv/get_weights.sh
+models/*.pt
