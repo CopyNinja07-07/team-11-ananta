@@ -1,0 +1,125 @@
+{
+ "faults_with_waste": 549,
+ "alerts": 70,
+ "recall": 0.993,
+ "precision": 0.971,
+ "by_fault": {
+  "ac_left_on": {
+   "n": 66,
+   "caught": 66,
+   "recall": 1.0,
+   "median_delay_h": 0.0,
+   "waste_kwh": 1287,
+   "waste_l": 0
+  },
+  "cistern": {
+   "n": 22,
+   "caught": 22,
+   "recall": 1.0,
+   "median_delay_h": 0.0,
+   "waste_kwh": 0,
+   "waste_l": 39134
+  },
+  "comeback": {
+   "n": 123,
+   "caught": 123,
+   "recall": 1.0,
+   "median_delay_h": 0.0,
+   "waste_kwh": 625,
+   "waste_l": 0
+  },
+  "dry_run": {
+   "n": 5,
+   "caught": 5,
+   "recall": 1.0,
+   "median_delay_h": 0.01,
+   "waste_kwh": 199,
+   "waste_l": 0
+  },
+  "float_fail": {
+   "n": 9,
+   "caught": 9,
+   "recall": 1.0,
+   "median_delay_h": 0.0,
+   "waste_kwh": 23,
+   "waste_l": 130456
+  },
+  "leak": {
+   "n": 15,
+   "caught": 15,
+   "recall": 1.0,
+   "median_delay_h": 0.0,
+   "waste_kwh": 0,
+   "waste_l": 432225
+  },
+  "lights_left_on": {
+   "n": 239,
+   "caught": 239,
+   "recall": 1.0,
+   "median_delay_h": 0.0,
+   "waste_kwh": 1812,
+   "waste_l": 0
+  },
+  "loose_joint": {
+   "n": 8,
+   "caught": 8,
+   "recall": 1.0,
+   "median_delay_h": 0.21,
+   "waste_kwh": 63,
+   "waste_l": 0
+  },
+  "overcool": {
+   "n": 31,
+   "caught": 27,
+   "recall": 0.87,
+   "median_delay_h": 0.0,
+   "waste_kwh": 141,
+   "waste_l": 0
+  },
+  "pcs_left_on": {
+   "n": 31,
+   "caught": 31,
+   "recall": 1.0,
+   "median_delay_h": 0.0,
+   "waste_kwh": 1895,
+   "waste_l": 0
+  }
+ },
+ "by_rule": {
+  "dry_run": {
+   "alerts": 4,
+   "correct": 4,
+   "precision": 1.0
+  },
+  "earth_leak": {
+   "alerts": 10,
+   "correct": 10,
+   "precision": 1.0
+  },
+  "empty_room": {
+   "alerts": 15,
+   "correct": 15,
+   "precision": 1.0
+  },
+  "night_flow": {
+   "alerts": 15,
+   "correct": 15,
+   "precision": 1.0
+  },
+  "over_use": {
+   "alerts": 14,
+   "correct": 12,
+   "precision": 0.86
+  },
+  "overflow": {
+   "alerts": 4,
+   "correct": 4,
+   "precision": 1.0
+  },
+  "wall_heat": {
+   "alerts": 8,
+   "correct": 8,
+   "precision": 1.0
+  }
+ }
+}
