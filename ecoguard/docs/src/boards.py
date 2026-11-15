@@ -667,7 +667,7 @@ RATIONALE = [
     ("Hindi and voice", "The caretaker is the person who switches things off. He gets the fix read aloud in Hindi on his phone."),
     ("Numbers in code, words from templates", "Rupees, kWh and CO2 are computed by fixed formulas and dropped into fixed English and Hindi sentences, so the advice can never invent a number."),
     ("Real and simulated side by side", "Every page says where its numbers come from: the simulated Jammu block or the 659 real BDG2 buildings."),
-    ("Tools", "Figma for the design file, components and prototype. React and Tailwind use the same tokens, so the build matches the file."),
+    ("Tools", "Figma for the design file, components and prototype. Colour, spacing and type are named tokens, so the build can match the file exactly."),
 ]
 
 

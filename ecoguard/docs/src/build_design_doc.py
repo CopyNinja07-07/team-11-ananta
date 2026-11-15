@@ -165,17 +165,17 @@ def contents():
 
 def system():
     parts = [
-        ("1", "Sensors (IoT)", "ESP32 node per room: voltage at board and room, current, earth leakage, temperature, humidity, people count. One water node at the pump.", "sensors/ · gateway.mjs plays the ESP32s today; a real board sends the same JSON."),
-        ("2", "Simulation", "A full Academic Block A in code: timetable, Jammu weather, power cuts, the pump and tank, and 12 kinds of waste injected at random.", "sensors/sim/ · 35,040 readings a year, 558 faults"),
-        ("3", "Backend", "FastAPI. Cleans each reading, runs 9 checks (they cover all 12 kinds of waste) on top of the trained room models, counts people with YOLO, prices waste in ₹ and kg CO₂, sends back commands.", "backend/app/ · /api/ingest, /api/live, /api/alerts"),
-        ("4", "Dashboard", "React app on desktop and phone. The same screens you see in Figma, fed live every 15 minutes over a WebSocket, in English or Hindi.", "frontend/ · 18 screens"),
-        ("5", "Design", "This Figma file. Its colours, spacing and type are the dashboard's Tailwind tokens, so design and code cannot drift apart.", "Figma pages 01–04"),
+        ("1", "Sensors (IoT)", "ESP32 node per room: voltage at board and room, current, earth leakage, temperature, humidity, people count. One water node at the pump.", "one reading every 15 minutes"),
+        ("2", "Simulation", "A simulated Academic Block A: timetable, Jammu weather, power cuts, the pump and tank, and 12 kinds of waste. It gives every screen realistic data.", "35,040 readings a year, 558 faults"),
+        ("3", "Server", "Cleans each reading, runs 9 checks (they cover all 12 kinds of waste) on top of the room models, counts people, prices waste in ₹ and kg CO₂, sends back commands.", "9 checks · 12 kinds of waste"),
+        ("4", "Dashboard", "Desktop and phone screens from this design, refreshed every 15 minutes, in English or Hindi.", "18 screens"),
+        ("5", "Design", "This Figma file. Colours, spacing and type are named variables, ready to hand to the developers as tokens.", "Figma pages 01–04"),
     ]
     cards = "".join(f'<div class="part"><div class="num">{n}</div><h3>{t}</h3><p>{d}</p><code>{c}</code></div>' + ('<div class="arrow">→</div>' if n != "5" else "") for n, t, d, c in parts)
     return f'''<section class="page plain">
-{head("How it fits together", "One system, five parts", "Every part reads the same building file (config/campus.json), so a new block means editing one file, not code.")}
+{head("How it fits together", "One system, five parts", "Every part reads the same building description, so a new block means describing it once, not redesigning.")}
 <div class="parts">{cards}</div>
-<div class="card note"><b>Plugging in real hardware.</b> An ESP32 posts one JSON reading every 15 minutes to <code>/api/ingest</code> (or publishes it on MQTT topic <code>ecoguard/block-a/readings</code>). The reply carries any command: switch a room off, stop the pump, close a valve. The simulated gateway uses exactly this path, so swapping it for real boards changes nothing else.</div>
+<div class="card note"><b>Plugging in real hardware.</b> Each ESP32 sends one reading every 15 minutes over HTTP or MQTT. The reply carries any command: switch a room off, stop the pump, close a valve. The simulated block uses the same message, so real boards can take its place without changing any screen.</div>
 </section>'''
 
 
@@ -184,11 +184,11 @@ def tools():
         ("Frames", "One frame per screen: Desktop 1440 × 900 and Phone 390 × 844. Long screens scroll inside the frame; the sidebar and top bar are fixed children, so they stay put like in the app."),
         ("Components", "Variables for 64 colours plus spacing and radius, nine text styles, and nine components (Button, Pill, Data source, Nav item, KPI card, Room tile, Alert card, Sidebar, Top bar). Each has variants for its states and is built in auto-layout, so it grows with its text."),
         ("Prototyping", "Two flows: Estate officer on desktop, Caretaker on phone. Links use Navigate with Smart animate (200 ms, ease out). Every button, tab and slider dissolves into its after-click copy and keeps the scroll position. The phone menu is an overlay that slides in; the 3D view is an animated GIF."),
-        ("Handoff", "The Figma variables are the same tokens as the app's Tailwind config, and every hi-fi screen is the real React screen with simulated data. A developer reads spacing, colour and type straight from the variables; nothing is re-drawn by hand."),
+        ("Handoff", "Colour, spacing and type live in Figma variables with developer-friendly names, and every hi-fi screen carries realistic data from the simulated block. A developer reads spacing, colour and type straight from the variables; nothing is re-drawn by hand."),
     ]
     why = [
         ("Figma", "Components, variants, auto-layout, variables and a clickable prototype in one file, shared with the jury by one link, free on the education plan."),
-        ("React + Tailwind", "Utility classes map one to one onto the Figma variables, so design and code use the same names."),
+        ("Design tokens", "One set of names for colour, spacing and type, so design and the future front end use the same values."),
         ("Python + SVG", "DFDs, flows and sitemap are drawn from one script, so they stay consistent with each other and stay editable in Figma."),
         ("Simulated block", "Every number on every screen comes from the simulated Academic Block A, so the prototype shows realistic data, not lorem ipsum."),
     ]
