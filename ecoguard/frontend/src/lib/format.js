@@ -11,10 +11,19 @@ export const since = (from, to) => {
 };
 
 export const KIND = {
-  energy: { label: 'Energy', color: 'text-energy', bg: 'bg-amber-50', ring: 'ring-amber-200' },
-  water: { label: 'Water', color: 'text-water', bg: 'bg-sky-50', ring: 'ring-sky-200' },
-  hidden: { label: 'Hidden', color: 'text-hidden', bg: 'bg-violet-50', ring: 'ring-violet-200' },
+  energy: { label: 'Power', color: 'text-energy', bg: 'bg-volt-50', ring: 'ring-volt-200' },
+  water: { label: 'Water', color: 'text-water', bg: 'bg-river-50', ring: 'ring-river-200' },
+  hidden: { label: 'Inside walls', color: 'text-hidden', bg: 'bg-ember-50', ring: 'ring-ember-200' },
 };
 
-export const FLOOR = ['Ground floor', 'First floor', 'Second floor'];
-export const targetName = (t, rooms) => rooms?.find((r) => r.id === t)?.name || ({ F0: 'Ground floor', F1: 'First floor', F2: 'Second floor', TANK: 'Overhead tank', PUMP: 'Water pump' }[t] ?? t);
+export const ORDINAL = ['Ground', 'First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh', 'Eighth', 'Ninth'];
+// floor names come from the building config when it is loaded; this is only the fallback
+export const floorName = (f, building) => building?.building?.floors?.find((x) => x.id === f)?.name || `${ORDINAL[f] ?? `Floor ${f}`} floor`;
+export const floorShort = (f, building) => floorName(f, building).replace(/ floor$/i, '');
+export const floorIds = (building, rooms) => {
+  const ids = building?.building?.floors?.map((x) => x.id) ?? [...new Set((rooms || []).map((r) => r.floor))];
+  return [...ids].sort((a, b) => b - a);   // top floor first, like looking at the building
+};
+export const FLOOR = ORDINAL.map((o) => `${o} floor`);
+export const targetName = (t, rooms, building) => rooms?.find((r) => r.id === t)?.name
+  || (/^F\d+$/.test(t) ? floorName(Number(t.slice(1)), building) : ({ TANK: 'Overhead tank', PUMP: 'Water pump' }[t] ?? t));

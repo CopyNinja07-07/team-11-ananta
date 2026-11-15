@@ -3,6 +3,7 @@ import { Camera as CamIcon, ImageUp, ShieldCheck, Users, Video, VideoOff } from 
 import { useApp } from '../App';
 import { api } from '../lib/api';
 import { num } from '../lib/format';
+import About from '../components/About';
 
 export default function Camera() {
   const { live } = useApp();
@@ -46,9 +47,38 @@ export default function Camera() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="h-title">Camera Occupancy</h1>
+        <h1 className="h-title">People count</h1>
         <p className="h-sub max-w-3xl">Counts people in a room from a CCTV frame or a phone photo with a YOLO person detector, running on the ECOGUARD server. The count tells the system whether a room is really empty before it switches anything off.</p>
       </div>
+      <About id="camera" points={[
+        ["ECOGUARD never switches off a room that has people in it. The camera count is how it knows.", "ECOGUARD कभी लोगों वाला कमरा बंद नहीं करता। कैमरे की गिनती से उसे यह पता चलता है।"],
+        ["A YOLO person detector runs on the ECOGUARD server and counts the people in one frame.", "ECOGUARD सर्वर पर YOLO मॉडल एक फ्रेम में लोगों को गिनता है।"],
+        ["Only the number is saved. The picture is deleted straight away and never leaves the server.", "सिर्फ़ गिनती रखी जाती है। तस्वीर तुरंत मिटा दी जाती है और सर्वर से बाहर नहीं जाती।"],
+        ["Rooms without a camera use a cheap motion (PIR) sensor instead.", "जिन कमरों में कैमरा नहीं, वहाँ सस्ता मोशन (PIR) सेंसर इस्तेमाल होता है।"],
+      ]} />
+
+      <section className="card card-pad">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="font-semibold text-ink-900">Every room right now</h2>
+          <span className="text-xs text-ink-500">Tap a room to count it from a photo below</span>
+        </div>
+        <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          {rooms.map((r) => {
+            const full = Math.min(100, (r.people / Math.max(1, r.cap)) * 100);
+            return (
+              <button key={r.id} onClick={() => setZone(r.id)} aria-pressed={zone === r.id}
+                className={`rounded-xl border p-3 text-left transition hover:border-leaf-500 ${zone === r.id ? 'border-leaf-500 bg-leaf-50' : 'border-ink-200 bg-white'}`}>
+                <div className="flex items-baseline justify-between gap-2">
+                  <span className="font-medium text-ink-900">{r.name}</span>
+                  <span className="readout text-sm text-ink-700">{r.people}<span className="text-ink-400">/{r.cap}</span></span>
+                </div>
+                <div className="mt-2 h-1.5 rounded bg-ink-100"><div className="h-1.5 rounded bg-leaf-500" style={{ width: `${full}%` }} /></div>
+                <div className={`mt-2 text-xs ${r.people > 0 ? 'text-leaf-700' : 'text-ink-500'}`}>{r.people > 0 ? 'In use: never switched off' : 'Empty: safe to switch off'}</div>
+              </button>
+            );
+          })}
+        </div>
+      </section>
 
       <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
         <section className="card card-pad space-y-3">

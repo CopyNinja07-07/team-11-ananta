@@ -8,23 +8,28 @@ export function Loading({ what = 'data' }) {
   );
 }
 
-export function Empty({ title, hint }) {
+export function Empty({ title, hint, children }) {
   return (
     <div className="flex flex-col items-center justify-center gap-2 rounded-card border border-dashed border-ink-300 bg-white p-8 text-center">
       <Inbox className="text-ink-300" size={28} aria-hidden />
       <div className="font-medium text-ink-700">{title}</div>
       {hint && <div className="max-w-md text-sm text-ink-500">{hint}</div>}
+      {children && <div className="mt-2">{children}</div>}
     </div>
   );
 }
 
+// A 4xx answer means the server is up and said no; only a network failure or 5xx means it is down.
 export function ErrorState({ message, onRetry }) {
+  const code = Number(String(message).slice(0, 3));
+  const serverDown = !(code >= 400 && code < 500);
+  const detail = serverDown ? `${message}. Check that the backend is running, then retry.` : String(message).replace(/^\d{3}\s*/, '').replace(/^\{"detail":"(.*)"\}$/, '$1');
   return (
     <div className="card card-pad flex flex-wrap items-center gap-3 border-red-200 bg-red-50 text-danger" role="alert">
       <AlertTriangle size={18} />
       <div className="flex-1 text-sm">
-        <div className="font-medium">Could not reach the ECOGUARD server.</div>
-        <div className="text-red-700/80">{message}. Check that the backend is running, then retry.</div>
+        <div className="font-medium">{serverDown ? 'Could not reach the ECOGUARD server.' : 'The server could not do that.'}</div>
+        <div className="text-red-700/80">{detail}</div>
       </div>
       {onRetry && <button className="btn-ghost bg-white" onClick={onRetry}>Retry</button>}
     </div>

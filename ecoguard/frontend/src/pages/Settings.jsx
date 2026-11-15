@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useApp } from '../App';
 import { ErrorState, Loading } from '../components/States';
 import { api } from '../lib/api';
+import About from '../components/About';
 
 export default function Settings() {
   const { lang, setLang } = useApp();
@@ -15,7 +16,12 @@ export default function Settings() {
   }, []);
   if (err) return <ErrorState message={err} />;
   if (!s) return <Loading what="settings" />;
-  const save = async (patch) => { const n = await api.saveSettings(patch); setS(n); setSaved(true); setTimeout(() => setSaved(false), 1500); };
+  const save = async (patch) => {
+    setS((prev) => ({ ...prev, ...patch }));          // show the change at once
+    const n = await api.saveSettings(patch);
+    if (n && 'auto_mode' in n) setS(n);               // then trust what the server stored
+    setSaved(true); setTimeout(() => setSaved(false), 2500);
+  };
 
   return (
     <div className="space-y-5">
@@ -23,6 +29,11 @@ export default function Settings() {
         <h1 className="h-title">Settings</h1>
         <p className="h-sub">How much ECOGUARD is allowed to do on its own: automatic, scheduled or manual only. Every action can be undone from the dashboard, and the room nodes fall back to safe local rules if the server or network is down.</p>
       </div>
+      <About id="settings" points={[
+        ["Choose how much ECOGUARD may do by itself: act automatically, act only in set hours, or only suggest.", "चुनें ECOGUARD ख़ुद कितना करे: अपने आप, तय घंटों में, या सिर्फ़ सुझाव दे।"],
+        ["It never switches off a room with people inside, whatever the setting.", "सेटिंग कुछ भी हो, लोगों वाला कमरा कभी बंद नहीं होता।"],
+        ["If the server or network is down, each room box falls back to simple safe rules on its own.", "सर्वर या नेटवर्क बंद हो तो हर कमरे का बॉक्स ख़ुद आसान सुरक्षित नियमों पर चलता है।"],
+      ]} />
       <section className="card card-pad space-y-4">
         <Toggle label="Automatic mode" hint="Switch off empty rooms, stop the pump and close a leaking floor's valve on its own, after the grace period." value={s.auto_mode} onChange={(v) => save({ auto_mode: v })} />
         <Toggle label="Raise maintenance tickets automatically" hint="Wiring heat, earth leakage, leaks and pump faults go straight to the electrician or plumber." value={s.auto_work_orders} onChange={(v) => save({ auto_work_orders: v })} />
@@ -35,7 +46,7 @@ export default function Settings() {
         </label>
         <label className="block text-sm">
           <span className="font-medium text-ink-900">Grace period before auto action</span>
-          <span className="block text-ink-500">Time a manager has to press "Not waste" before ECOGUARD acts.</span>
+          <span className="block text-ink-500">Time a manager has to answer "No, not waste" before ECOGUARD acts.</span>
           <select className="mt-1 rounded-lg border border-ink-300 px-2 py-1.5" value={s.grace_min} onChange={(e) => save({ grace_min: Number(e.target.value) })}>
             {[15, 30, 60].map((m) => <option key={m} value={m}>{m} minutes</option>)}
           </select>

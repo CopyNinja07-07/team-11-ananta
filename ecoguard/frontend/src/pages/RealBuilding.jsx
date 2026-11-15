@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, ChevronLeft, ChevronRight, Droplets, Leaf, PiggyBank, Snowflake, Zap } from 'lucide-react';
+import { ArrowLeft, Brain, ChevronLeft, ChevronRight, Droplets, Leaf, PiggyBank, Snowflake, Zap } from 'lucide-react';
 import { Area, CartesianGrid, ComposedChart, Legend, Line, ReferenceArea, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import Kpi from '../components/Kpi';
+import DataSource from '../components/DataSource';
 import { ErrorState, Loading } from '../components/States';
 import { api } from '../lib/api';
 import { num, rs } from '../lib/format';
@@ -74,6 +75,7 @@ export default function RealBuilding() {
           <h1 className="h-title">{d.name} <span className="text-ink-500 font-normal">· {d.use}</span></h1>
           <p className="h-sub">Real building, site {d.site} · {num(d.sqm, 0)} m²{d.yearbuilt ? ` · built ${d.yearbuilt}` : ''} · hourly meters for 2017</p>
         </div>
+        <div className="ml-auto"><DataSource kind="real" /></div>
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -95,20 +97,22 @@ export default function RealBuilding() {
         <div className="mt-3 h-72">
           <ResponsiveContainer>
             <ComposedChart data={rows}>
-              <CartesianGrid stroke="#e2e8f0" vertical={false} />
-              {closedRuns.map(([a, b]) => <ReferenceArea key={a} x1={rows[a].ts} x2={rows[Math.min(b, rows.length - 1)].ts} fill="#f1f5f9" fillOpacity={0.9} ifOverflow="hidden" />)}
-              {weekEvents.map((e) => <ReferenceArea key={e.i} x1={t0 + e.i * 3600000} x2={t0 + (e.i + e.hours) * 3600000} fill="#fee2e2" fillOpacity={0.8} ifOverflow="hidden" />)}
+              <CartesianGrid stroke="#E4E1D8" vertical={false} />
+              {closedRuns.map(([a, b]) => <ReferenceArea key={a} x1={rows[a].ts} x2={rows[Math.min(b, rows.length - 1)].ts} fill="#ECEEE8" fillOpacity={0.9} ifOverflow="hidden" />)}
+              {weekEvents.map((e) => <ReferenceArea key={e.i} x1={t0 + e.i * 3600000} x2={t0 + (e.i + e.hours) * 3600000} fill="#F6DEDA" fillOpacity={0.8} ifOverflow="hidden" />)}
               <XAxis dataKey="ts" type="number" domain={['dataMin', 'dataMax']} tickFormatter={tick} ticks={rows.filter((r) => r.i % 24 === 0).map((r) => r.ts)} fontSize={11} />
               <YAxis fontSize={11} width={66} tickFormatter={(v) => `${num(v, 0)} kW`} />
               <Tooltip labelFormatter={(v) => new Date(v).toUTCString().slice(0, 22)} formatter={(v, n) => [`${num(v, 1)} kW`, n]} />
               <Legend />
-              <Area dataKey="actual" name="Actual" stroke="#d97706" fill="#fde68a" fillOpacity={0.5} isAnimationActive={false} />
-              <Line dataKey="expected" name="Expected (model)" stroke="#047857" dot={false} strokeDasharray="5 3" isAnimationActive={false} />
+              <Area dataKey="actual" name="Actual" stroke="#C98A00" fill="#F7DD95" fillOpacity={0.5} isAnimationActive={false} />
+              <Line dataKey="expected" name="Expected (model)" stroke="#2F7549" dot={false} strokeDasharray="5 3" isAnimationActive={false} />
             </ComposedChart>
           </ResponsiveContainer>
         </div>
         <p className="mt-2 text-xs text-ink-500">Grey: building closed (nights, weekends, holidays). Red: a waste event, at least 3 hours far above what the model expects for that hour and weather.</p>
       </section>
+
+      <DayAhead id={id} t0={t0} days={Math.floor(d.hours / 24)} week={week} />
 
       <div className="grid gap-5 lg:grid-cols-[1.1fr_1fr]">
         <section className="card card-pad">
@@ -148,16 +152,16 @@ export default function RealBuilding() {
               <div className="mt-3 h-56">
                 <ResponsiveContainer>
                   <ComposedChart data={rows}>
-                    <CartesianGrid stroke="#e2e8f0" vertical={false} />
-                    {closedRuns.map(([a, b]) => <ReferenceArea key={a} x1={rows[a].ts} x2={rows[Math.min(b, rows.length - 1)].ts} fill="#f1f5f9" ifOverflow="hidden" />)}
+                    <CartesianGrid stroke="#E4E1D8" vertical={false} />
+                    {closedRuns.map(([a, b]) => <ReferenceArea key={a} x1={rows[a].ts} x2={rows[Math.min(b, rows.length - 1)].ts} fill="#ECEEE8" ifOverflow="hidden" />)}
                     <XAxis dataKey="ts" type="number" domain={['dataMin', 'dataMax']} tickFormatter={tick} ticks={rows.filter((r) => r.i % 24 === 0).map((r) => r.ts)} fontSize={11} />
                     <YAxis yAxisId="c" fontSize={11} width={66} tickFormatter={(v) => `${num(v, 0)} kW`} />
                     <YAxis yAxisId="t" orientation="right" fontSize={11} width={36} unit="°" />
                     <Tooltip labelFormatter={(v) => new Date(v).toUTCString().slice(0, 22)} />
                     <Legend />
-                    <Area yAxisId="c" dataKey="chw" name="Cooling (chilled water)" stroke="#0284c7" fill="#bae6fd" isAnimationActive={false} />
-                    <Line yAxisId="c" dataKey="chw_exp" name="Expected" stroke="#047857" dot={false} strokeDasharray="5 3" isAnimationActive={false} />
-                    <Line yAxisId="t" dataKey="temp" name="Outside °C" stroke="#94a3b8" dot={false} isAnimationActive={false} />
+                    <Area yAxisId="c" dataKey="chw" name="Cooling (chilled water)" stroke="#147A9E" fill="#BFE0EA" isAnimationActive={false} />
+                    <Line yAxisId="c" dataKey="chw_exp" name="Expected" stroke="#2F7549" dot={false} strokeDasharray="5 3" isAnimationActive={false} />
+                    <Line yAxisId="t" dataKey="temp" name="Outside °C" stroke="#9AA59E" dot={false} isAnimationActive={false} />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
@@ -217,12 +221,12 @@ function YearHeatmap({ d }) {
     const cw = 2, ch = 6;
     c.width = days * cw; c.height = 24 * ch;
     const ctx = c.getContext('2d');
-    ctx.fillStyle = '#f8fafc'; ctx.fillRect(0, 0, c.width, c.height);
+    ctx.fillStyle = '#F7F6F1'; ctx.fillRect(0, 0, c.width, c.height);
     const ex = d.elec.map((e, i) => (e != null && d.exp[i] != null ? Math.max(0, e - d.exp[i]) : 0));
     const top = pct(ex.filter((x) => x > 0), 98) || 1;
     for (let i = 0; i < days * 24; i++) {
       const v = Math.min(1, ex[i] / top);
-      if (d.elec[i] == null) { ctx.fillStyle = '#e2e8f0'; } else if (v < 0.03) { ctx.fillStyle = d.closed[i] ? '#f1f5f9' : '#ecfdf5'; } else {
+      if (d.elec[i] == null) { ctx.fillStyle = '#E4E1D8'; } else if (v < 0.03) { ctx.fillStyle = d.closed[i] ? '#ECEEE8' : '#EEF5EE'; } else {
         ctx.fillStyle = `rgba(220, 38, 38, ${0.15 + 0.85 * v})`;
       }
       ctx.fillRect(Math.floor(i / 24) * cw, (i % 24) * ch, cw, ch);
@@ -242,12 +246,12 @@ function MnfChart({ w }) {
     <div className="mt-3 h-48">
       <ResponsiveContainer>
         <ComposedChart data={data}>
-          <CartesianGrid stroke="#e2e8f0" vertical={false} />
+          <CartesianGrid stroke="#E4E1D8" vertical={false} />
           <XAxis dataKey="i" fontSize={11} tickFormatter={(i) => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][Math.min(11, Math.floor(i / 30.5))]} interval={30} />
           <YAxis fontSize={11} width={40} />
           <Tooltip formatter={(v) => num(v, 2)} labelFormatter={(i) => `Night ${i + 1}`} />
-          <Area dataKey="v" name="Minimum night flow" stroke="#0284c7" fill="#bae6fd" isAnimationActive={false} />
-          <Line dataKey="base" name="Normal night floor" stroke="#047857" dot={false} strokeDasharray="5 3" isAnimationActive={false} />
+          <Area dataKey="v" name="Minimum night flow" stroke="#147A9E" fill="#BFE0EA" isAnimationActive={false} />
+          <Line dataKey="base" name="Normal night floor" stroke="#2F7549" dot={false} strokeDasharray="5 3" isAnimationActive={false} />
         </ComposedChart>
       </ResponsiveContainer>
     </div>
@@ -269,4 +273,57 @@ function runs(flags) {
   });
   if (a != null) out.push([a, flags.length - 1]);
   return out;
+}
+
+// The day-ahead LSTM (models/real/forecaster.pt) forecasting one day of this building,
+// next to the two forecasts people use without a model.
+function DayAhead({ id, t0, days, week }) {
+  const [day, setDay] = useState(() => Math.max(8, week * 7 + 2));
+  const [f, setF] = useState(null);
+  const [err, setErr] = useState(null);
+  useEffect(() => { setDay(Math.max(8, week * 7 + 2)); }, [week]);
+  useEffect(() => { setErr(null); api.realForecast(id, day).then(setF).catch((e) => setErr(e.message)); }, [id, day]);
+  const date = new Date(t0 + day * 86400000);
+  const rows = (f?.actual || []).map((a, h) => ({ h, actual: a, lstm: f.lstm?.[h], yesterday: f.yesterday?.[h] }));
+  const e = f?.error_pct || {};
+  return (
+    <section className="card card-pad">
+      <div className="flex flex-wrap items-center gap-2">
+        <Brain size={18} className="text-brand-700" aria-hidden />
+        <h2 className="font-semibold text-ink-900">Forecast for {DAY[date.getUTCDay()]} {date.getUTCDate()}/{date.getUTCMonth() + 1}, made the night before</h2>
+        <div className="ml-auto flex items-center gap-2">
+          <button className="btn-ghost" onClick={() => setDay(Math.max(8, day - 1))} aria-label="Previous day"><ChevronLeft size={14} /></button>
+          <input type="range" min={8} max={days - 1} value={day} onChange={(ev) => setDay(+ev.target.value)} className="w-40 accent-emerald-700" aria-label="Day of the year" />
+          <button className="btn-ghost" onClick={() => setDay(Math.min(days - 1, day + 1))} aria-label="Next day"><ChevronRight size={14} /></button>
+        </div>
+      </div>
+      <p className="h-sub">Our deep model (an LSTM trained on 582 other real buildings) reads this building's last 7 days and the weather, and predicts the next 24 hours. It never saw 2017.</p>
+      {err ? <p className="mt-3 text-sm text-danger">{err}</p> : !f ? <p className="mt-3 text-sm text-ink-500">Forecasting…</p> : !f.model_ready ? (
+        <p className="mt-3 text-sm text-ink-500">The deep model is not installed on this server (it needs PyTorch). The simple forecasts are shown instead.</p>
+      ) : null}
+      <div className="mt-3 grid gap-4 lg:grid-cols-[1fr_220px]">
+        <div className="h-64">
+          <ResponsiveContainer>
+            <ComposedChart data={rows}>
+              <CartesianGrid stroke="#E4E1D8" vertical={false} />
+              <XAxis dataKey="h" fontSize={11} tickFormatter={(h) => `${h}:00`} interval={3} />
+              <YAxis fontSize={11} width={66} tickFormatter={(v) => `${num(v, 0)} kW`} />
+              <Tooltip labelFormatter={(h) => `${h}:00`} formatter={(v, n) => [`${num(v, 1)} kW`, n]} />
+              <Legend />
+              <Area dataKey="actual" name="What really happened" stroke="#C98A00" fill="#F7DD95" fillOpacity={0.5} isAnimationActive={false} />
+              <Line dataKey="lstm" name="Deep model forecast" stroke="#245C3A" strokeWidth={2} dot={false} isAnimationActive={false} />
+              <Line dataKey="yesterday" name="Same as yesterday" stroke="#8A958E" dot={false} strokeDasharray="4 3" isAnimationActive={false} />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+        <dl className="space-y-2 self-center text-sm">
+          <div className="label">Error on this day</div>
+          {[['Deep model', e.lstm, 'text-brand-700'], ['Same as yesterday', e.yesterday, 'text-ink-700'], ['Same day last week', e.last_week, 'text-ink-700']].map(([l, v, c]) => (
+            <div key={l} className="flex items-baseline justify-between gap-2"><dt className="text-ink-700">{l}</dt><dd className={`readout text-lg font-medium ${c}`}>{v == null ? '–' : `${num(v, 0)}%`}</dd></div>
+          ))}
+          <p className="text-xs leading-relaxed text-ink-500">Lower is better. Error = hour-by-hour miss as a share of the day's use. One day can go either way. Over the whole 2017 test on 582 buildings, the deep model's typical hourly error was 14% against 22% for "same as yesterday" (CV(RMSE)).</p>
+        </dl>
+      </div>
+    </section>
+  );
 }

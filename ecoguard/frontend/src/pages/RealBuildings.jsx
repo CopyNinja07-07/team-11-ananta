@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Brain, Building2, Droplets, Flame, Snowflake, Zap } from 'lucide-react';
 import Kpi from '../components/Kpi';
+import DataSource from '../components/DataSource';
 import { ErrorState, Loading } from '../components/States';
 import { api } from '../lib/api';
 import { num } from '../lib/format';
@@ -27,6 +28,7 @@ export default function RealBuildings() {
   return (
     <div className="space-y-5">
       <div>
+        <div className="mb-2"><DataSource kind="real" /></div>
         <h1 className="h-title">Real Buildings</h1>
         <p className="h-sub max-w-3xl">
           ECOGUARD's models trained and tested on <b>{num(p.buildings, 0)} real classrooms, labs and offices</b> from the open

@@ -3,7 +3,7 @@
 // water node to the backend, then carries out whatever commands come back
 // (switch a room's relay off, stop the pump, close a valve, ...).
 //
-//   node gateway.mjs --api http://localhost:8000 --speed 2 --start 2026-04-14
+//   node gateway.mjs --api http://localhost:8000 --speed 2 --start 2026-04-14T09:00
 //
 // --speed: real seconds per 15-minute step (0 = as fast as possible)
 import { Campus } from './sim/engine.js';
@@ -12,9 +12,13 @@ import { istDate, fmtIst } from './sim/clock.js';
 const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => a.startsWith('--') ? [a.slice(2), all[i + 1]] : null).filter(Boolean));
 const API = args.api || process.env.API_URL || 'http://localhost:8000';
 let speed = Number(args.speed ?? 2);
-const [y, m, d] = (args.start || '2026-04-13').split('-').map(Number);
+// --start takes a date (2026-04-13) or a date and IST time (2026-04-13T09:00)
+const [datePart, timePart = '00:00'] = (args.start || '2026-04-13').split('T');
+const [y, m, d] = datePart.split('-').map(Number);
+const [hh, mm] = timePart.split(':').map(Number);
+if (![y, m, d, hh, mm].every(Number.isFinite)) { console.error('--start must look like 2026-04-13 or 2026-04-13T09:00'); process.exit(1); }
 const days = args.days ? Number(args.days) : Infinity;
-const sim = new Campus({ seed: Number(args.seed || 7), start: istDate(y, m, d) });
+const sim = new Campus({ seed: Number(args.seed || 7), start: istDate(y, m, d, hh, mm) });
 
 export function toPayload(r) {
   return {

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { api, wsUrl } from './api';
+import { api, wsUrl, DEMO } from './api';
 
 // Live building state: one fetch, then updates pushed over the websocket.
 // Falls back to polling every 5 s if the websocket can't connect.
@@ -13,6 +13,7 @@ export function useLive() {
     let closed = false;
     const load = () => api.live().then((d) => { setLive(d); setError(null); }).catch((e) => setError(e.message));
     load();
+    if (DEMO) return undefined;   // the online demo is a frozen snapshot: no live updates
     const connect = () => {
       try {
         ws = new WebSocket(wsUrl());

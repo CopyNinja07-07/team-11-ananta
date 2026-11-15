@@ -1,4 +1,5 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { api } from './lib/api';
 import { Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout';
 import { useLive } from './lib/useLive';
@@ -16,6 +17,9 @@ import Hvac from './pages/Hvac';
 import Camera from './pages/Camera';
 import RealBuildings from './pages/RealBuildings';
 import RealBuilding from './pages/RealBuilding';
+import Models from './pages/Models';
+import Plans from './pages/Plans';
+import Setup from './pages/Setup';
 
 export const AppCtx = createContext(null);
 export const useApp = () => useContext(AppCtx);
@@ -25,10 +29,14 @@ export default function App() {
   const [lang, setLang] = useState(() => {
     try { return localStorage.getItem('lang') || 'en'; } catch { return 'en'; }
   });
+  // building layout (floors, rooms, tariff) comes from config/campus.json through the API,
+  // so a new block is a config change, not a code change
+  const [building, setBuilding] = useState(null);
+  useEffect(() => { api.building().then(setBuilding).catch(() => {}); }, []);
   const changeLang = (l) => { setLang(l); try { localStorage.setItem('lang', l); } catch { /* private mode */ } };
 
   return (
-    <AppCtx.Provider value={{ live, error, lang, setLang: changeLang }}>
+    <AppCtx.Provider value={{ live, error, lang, setLang: changeLang, building }}>
       <Layout>
         <Routes>
           <Route path="/" element={<Overview />} />
@@ -45,6 +53,9 @@ export default function App() {
           <Route path="/settings" element={<Settings />} />
           <Route path="/real" element={<RealBuildings />} />
           <Route path="/real/:id" element={<RealBuilding />} />
+          <Route path="/models" element={<Models />} />
+          <Route path="/plans" element={<Plans />} />
+          <Route path="/setup" element={<Setup />} />
           <Route path="*" element={<div className="card card-pad">Page not found.</div>} />
         </Routes>
       </Layout>

@@ -7,6 +7,7 @@ import Kpi from '../components/Kpi';
 import { ErrorState, Loading, NotStarted } from '../components/States';
 import { api } from '../lib/api';
 import { fmtTime, num } from '../lib/format';
+import About, { ChartNote } from '../components/About';
 
 const STATUS = {
   overcool: { label: 'Too cold', cls: 'bg-sky-100 text-sky-800', icon: Snowflake },
@@ -18,13 +19,14 @@ const STATUS = {
   cool: { label: 'Cool', cls: 'bg-sky-50 text-water', icon: Thermometer },
   off: { label: 'Empty, AC off', cls: 'bg-ink-100 text-ink-700', icon: Thermometer },
 };
-const LINE = ['#d97706', '#0284c7', '#7c3aed', '#047857', '#dc2626', '#0f172a'];
+const LINE = ['#C98A00', '#147A9E', '#B4532A', '#2F7549', '#C0392B', '#10231C'];
 
 export default function Hvac() {
   const { live } = useApp();
   const [d, setD] = useState(null);
   const [err, setErr] = useState(null);
   const [busy, setBusy] = useState(null);
+  const [done, setDone] = useState({});
   const load = () => api.hvac().then(setD).catch((e) => setErr(e.message));
   useEffect(() => { load(); }, [live?.ts]);
   if (err) return <ErrorState message={err} onRetry={load} />;
@@ -35,7 +37,10 @@ export default function Hvac() {
   const cooling = acRooms.filter((r) => r.ac_kw > 0.05).length;
   const tooCold = acRooms.filter((r) => r.status === 'overcool').length;
   const door = acRooms.filter((r) => r.status === 'door_open').length;
-  const reset = async (id) => { setBusy(id); try { await api.control('ac_setpoint', id); } finally { setBusy(null); load(); } };
+  const reset = async (id) => {
+    setBusy(id);
+    try { await api.control('ac_setpoint', id); setDone((d0) => ({ ...d0, [id]: true })); } catch (e) { setErr(e.message); } finally { setBusy(null); load(); }
+  };
 
   // one row per timestamp with each AC room's indoor temperature
   const byTs = {};
@@ -45,9 +50,15 @@ export default function Hvac() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="h-title">HVAC & Comfort</h1>
+        <h1 className="h-title">Cooling & AC</h1>
         <p className="h-sub max-w-3xl">Every AC room has a wall sensor (temperature, humidity) and a current clamp on the AC circuit. ECOGUARD keeps rooms at the BEE default of 24 °C, catches ACs set far too cold, and spots an AC fighting an open door.</p>
       </div>
+      <About id="hvac" points={[
+        ["HVAC means heating, ventilation and air conditioning. In this block it is the split ACs in the offices, the lab and the seminar room.", "HVAC यानी हीटिंग, वेंटिलेशन और एयर कंडीशनिंग। इस ब्लॉक में ऑफिस, लैब और सेमिनार रूम के स्प्लिट एसी।"],
+        ["Each AC room has a wall sensor for temperature and humidity, and a clamp that measures the AC's own power.", "हर एसी कमरे में तापमान-नमी का सेंसर और एसी की बिजली मापने वाला क्लैम्प है।"],
+        ["The Bureau of Energy Efficiency (BEE) default is 24 °C. Each degree colder costs about 6% more AC power.", "BEE का डिफ़ॉल्ट 24 °C है। हर डिग्री ठंडा करने पर लगभग 6% ज़्यादा बिजली।"],
+        ["Too cold: room below 21.5 °C with people inside. Door open: AC at full power but the room stays above 27 °C on a hot day.", "बहुत ठंडा: लोग हों और कमरा 21.5 °C से नीचे। दरवाज़ा खुला: एसी पूरी ताक़त पर, फिर भी गर्म दिन में कमरा 27 °C से ऊपर।"],
+      ]} />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Kpi label="Outside" value={num(d.outside_c, 1)} unit="°C" icon={Sun} tone="energy" />
         <Kpi label="ACs running" value={`${cooling} / ${acRooms.length}`} sub="rooms with AC" icon={AirVent} tone="brand" />
@@ -79,7 +90,9 @@ export default function Hvac() {
                   <div className={`h-2 rounded-full ${load > 0.95 ? 'bg-danger' : 'bg-water'}`} style={{ width: `${load * 100}%` }} />
                 </div>
               </div>
-              {r.status === 'overcool' && (
+              {done[r.id] ? (
+                <p className="mt-3 rounded-lg bg-leaf-50 px-3 py-2 text-xs font-medium text-leaf-700" role="status">AC set to 24 °C. The room drifts back to a comfortable temperature within the next reading or two.</p>
+              ) : r.status === 'overcool' && (
                 <button className="btn-primary mt-3 w-full justify-center" disabled={busy === r.id} onClick={() => reset(r.id)}>
                   <Thermometer size={14} />{busy === r.id ? 'Sending…' : 'Reset AC to 24 °C'}
                 </button>
@@ -95,8 +108,8 @@ export default function Hvac() {
         <div className="mt-3 h-72">
           <ResponsiveContainer>
             <LineChart data={rows}>
-              <CartesianGrid stroke="#e2e8f0" vertical={false} />
-              <ReferenceArea y1={23} y2={27} fill="#d1fae5" fillOpacity={0.5} />
+              <CartesianGrid stroke="#E4E1D8" vertical={false} />
+              <ReferenceArea y1={23} y2={27} fill="#D6E9D8" fillOpacity={0.5} />
               <XAxis dataKey="ts" tickFormatter={fmtTime} minTickGap={40} fontSize={11} />
               <YAxis fontSize={11} width={36} unit="°" domain={[14, 'auto']} />
               <Tooltip labelFormatter={fmtTime} formatter={(v, n) => [`${num(v, 1)} °C`, acRooms.find((r) => r.id === n)?.name || n]} />
@@ -105,6 +118,7 @@ export default function Hvac() {
             </LineChart>
           </ResponsiveContainer>
         </div>
+        <ChartNote en="One line per AC room. The green band (23 to 27 °C) is comfortable. A line far below the band while people are inside is an AC set too cold." hi="हर एसी कमरे की एक लाइन। हरी पट्टी (23 से 27 °C) आरामदायक है। लोग हों और लाइन पट्टी से बहुत नीचे हो, तो एसी ज़्यादा ठंडा है।" />
         <p className="mt-2 text-xs text-ink-500">Green band: 23 to 27 °C, comfortable for Indian classrooms (ISHRAE adaptive comfort). Rooms without people drift with the weather; that is fine and costs nothing.</p>
       </section>
 
@@ -125,7 +139,7 @@ function TempScale({ t }) {
   const at = (v) => `${((v - 14) / 26) * 100}%`;
   return (
     <div className="mt-3" aria-hidden>
-      <div className="relative h-2 rounded-full" style={{ background: 'linear-gradient(90deg,#0284c7 0%,#7dd3fc 25%,#34d399 35%,#34d399 50%,#fbbf24 62%,#dc2626 100%)' }}>
+      <div className="relative h-2 rounded-full" style={{ background: 'linear-gradient(90deg,#147A9E 0%,#8CC6D8 25%,#6DB283 35%,#6DB283 50%,#E8B030 62%,#C0392B 100%)' }}>
         {t != null && <div className="absolute -top-1 h-4 w-1.5 -translate-x-1/2 rounded bg-ink-900 ring-2 ring-white" style={{ left: at(Math.max(14, Math.min(40, t))) }} />}
       </div>
       <div className="relative mt-1 h-3 text-[10px] text-ink-500">

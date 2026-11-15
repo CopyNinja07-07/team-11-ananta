@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Droplets, Leaf, PiggyBank, Zap } from 'lucide-react';
 import Kpi from '../components/Kpi';
+import DataSource from '../components/DataSource';
 import { Empty, ErrorState, Loading } from '../components/States';
 import { api } from '../lib/api';
 import { num, rs } from '../lib/format';
+import About, { ChartNote } from '../components/About';
 
 export default function Savings() {
   const [s, setS] = useState(null);
@@ -20,10 +22,19 @@ export default function Savings() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="h-title">Savings & Carbon</h1>
-        <p className="h-sub">What ECOGUARD has avoided since it started, and a full-year before-vs-after test of the same block.</p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="h-title">Savings & Carbon</h1>
+          <p className="h-sub">What ECOGUARD has avoided since it started, and a full-year before-vs-after test of the same block.</p>
+        </div>
+        <DataSource kind="sim" />
       </div>
+      <About id="savings" points={[
+        ["Waste caught: what the detector found being wasted. Avoided: what was saved because someone, or ECOGUARD, acted on it.", "पकड़ी गई बर्बादी: जो डिटेक्टर को मिली। बचाई गई: जो किसी के, या ECOGUARD के, कदम उठाने से बची।"],
+        ["Money uses the block's tariff: ₹7 per kWh of electricity and ₹50 per 1,000 litres of water.", "पैसा ब्लॉक के टैरिफ़ से: बिजली ₹7 प्रति kWh, पानी ₹50 प्रति 1,000 लीटर।"],
+        ["Carbon: every kWh not used avoids 0.716 kg of CO₂, the Central Electricity Authority's figure for India's grid.", "कार्बन: हर बची kWh से 0.716 kg CO₂ बचता है, यह भारत के ग्रिड के लिए केंद्रीय विद्युत प्राधिकरण (CEA) का आँकड़ा है।"],
+        ["The before-vs-after test runs the same simulated year twice, once without ECOGUARD and once with it, so the saving is a fair comparison.", "पहले-बनाम-बाद टेस्ट एक ही सिम्युलेटेड साल दो बार चलाता है, एक बार ECOGUARD के बिना, एक बार उसके साथ।"],
+      ]} />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Kpi label="Money saved" value={rs(t.rupees_saved)} tone="brand" icon={PiggyBank} sub="estimated from actions taken" />
@@ -34,20 +45,21 @@ export default function Savings() {
 
       {s.days.length > 0 && (
         <section className="card card-pad">
-          <h2 className="font-semibold text-ink-900">Waste caught vs avoided, per day</h2>
+          <h2 className="font-semibold text-ink-900">Waste caught vs avoided, per day <span className="font-normal text-ink-500">(kWh)</span></h2>
           <div className="mt-3 h-60">
             <ResponsiveContainer>
               <BarChart data={s.days}>
-                <CartesianGrid stroke="#e2e8f0" vertical={false} />
+                <CartesianGrid stroke="#E4E1D8" vertical={false} />
                 <XAxis dataKey="date" fontSize={11} tickFormatter={(d) => d.slice(5)} />
-                <YAxis fontSize={11} width={40} unit=" kWh" />
+                <YAxis fontSize={11} width={36} />
                 <Tooltip formatter={(v) => `${num(v, 1)} kWh`} />
                 <Legend />
-                <Bar dataKey="kwh_wasted" name="Waste caught" fill="#fcd34d" isAnimationActive={false} />
-                <Bar dataKey="kwh_avoided" name="Avoided by action" fill="#059669" isAnimationActive={false} />
+                <Bar dataKey="kwh_wasted" name="Waste caught" fill="#F2C14E" isAnimationActive={false} />
+                <Bar dataKey="kwh_avoided" name="Avoided by action" fill="#2F7549" isAnimationActive={false} />
               </BarChart>
             </ResponsiveContainer>
           </div>
+          <ChartNote en="Yellow bars: energy found being wasted that day. Green bars: energy saved because the waste was stopped. The closer green is to yellow, the more of the waste was fixed." hi="पीली पट्टी: उस दिन मिली बर्बादी। हरी पट्टी: रोकने से बची बिजली। हरी पीली के जितनी पास, उतनी ज़्यादा बर्बादी ठीक हुई।" />
         </section>
       )}
 
@@ -78,20 +90,21 @@ function BeforeAfter({ exp }) {
         <Compare label="Bill (electricity + water)" unit="" money b={before.rupees} a={after.rupees} pct={+((exp.saved.rupees / before.rupees) * 100).toFixed(1)} tone="text-brand-700" />
       </div>
       <div className="card card-pad">
-        <h3 className="font-semibold text-ink-900">Monthly electricity</h3>
+        <h3 className="font-semibold text-ink-900">Monthly electricity <span className="font-normal text-ink-500">(kWh)</span></h3>
         <div className="mt-3 h-60">
           <ResponsiveContainer>
             <LineChart data={monthly}>
-              <CartesianGrid stroke="#e2e8f0" vertical={false} />
+              <CartesianGrid stroke="#E4E1D8" vertical={false} />
               <XAxis dataKey="month" fontSize={11} />
               <YAxis fontSize={11} width={50} />
               <Tooltip formatter={(v) => `${num(v, 0)} kWh`} />
               <Legend />
-              <Line dataKey="before" name="Without ECOGUARD" stroke="#94a3b8" strokeWidth={2} isAnimationActive={false} />
-              <Line dataKey="after" name="With ECOGUARD" stroke="#059669" strokeWidth={2} isAnimationActive={false} />
+              <Line dataKey="before" name="Without ECOGUARD" stroke="#9AA59E" strokeWidth={2} isAnimationActive={false} />
+              <Line dataKey="after" name="With ECOGUARD" stroke="#2F7549" strokeWidth={2} isAnimationActive={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>
+        <ChartNote en="Grey line: the block's monthly electricity with nobody watching. Green line: the same months with ECOGUARD. The gap between them is the saving." hi="धूसर लाइन: बिना निगरानी के हर महीने की बिजली। हरी लाइन: ECOGUARD के साथ। दोनों के बीच का अंतर बचत है।" />
       </div>
       <div className="card overflow-x-auto">
         <table className="w-full min-w-[640px] text-sm">

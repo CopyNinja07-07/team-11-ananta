@@ -1,8 +1,18 @@
 // Small API client. VITE_API_URL lets the dashboard talk to a backend on
 // another host; by default it uses the same origin (FastAPI serves the build).
 const BASE = import.meta.env.VITE_API_URL || '';
+// Demo build (VITE_DEMO=1): no server. Every GET reads a saved JSON snapshot from /demo,
+// and buttons answer "ok" without changing anything. Used for the public website.
+export const DEMO = !!import.meta.env.VITE_DEMO;
+const demoFile = (path) => `${import.meta.env.BASE_URL}demo/${path.replace(/^\/api\//, '').replace(/[^a-zA-Z0-9]+/g, '_')}.json`;
 
 async function req(path, opts = {}) {
+  if (DEMO) {
+    if (opts.method && opts.method !== 'GET') return { ok: true, demo: true };
+    const res = await fetch(demoFile(path));
+    if (!res.ok) throw new Error('404 {"detail":"not in the demo snapshot"}');
+    return res.json();
+  }
   const res = await fetch(`${BASE}${path}`, { headers: { 'content-type': 'application/json' }, ...opts });
   if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
   const type = res.headers.get('content-type') || '';
@@ -29,6 +39,7 @@ export const api = {
   hvac: () => req('/api/hvac'),
   cvStatus: () => req('/api/cv/status'),
   cvCount: async (blob, zone) => {
+    if (DEMO) throw new Error('400 {"detail":"Camera counting needs the ECOGUARD server; this is the online demo"}');
     const fd = new FormData();
     fd.append('image', blob, 'frame.jpg');
     if (zone) fd.append('zone', zone);
@@ -39,6 +50,7 @@ export const api = {
   realPortfolio: () => req('/api/real/portfolio'),
   realModels: () => req('/api/real/models'),
   realBuilding: (id) => req(`/api/real/buildings/${encodeURIComponent(id)}`),
+  realForecast: (id, day) => req(`/api/real/buildings/${encodeURIComponent(id)}/forecast?day=${day}`),
 };
 
 export function wsUrl() {

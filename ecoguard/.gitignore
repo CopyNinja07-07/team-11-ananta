@@ -16,3 +16,7 @@ models/real/*_profile.parquet
 
 # downloaded by cv/get_weights.sh
 models/*.pt
+docs/figma-plugin/cap/
+docs/figma-plugin/data.js
+docs/figma-plugin/code.js
+frontend/dist-demo/

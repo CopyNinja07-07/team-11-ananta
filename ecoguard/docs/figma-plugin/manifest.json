@@ -1,0 +1,9 @@
+{
+  "name": "ECOGUARD finish Round 2",
+  "id": "ecoguard-finish-round2",
+  "api": "1.0.0",
+  "main": "code.js",
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page",
+  "networkAccess": { "allowedDomains": ["none"] }
+}
