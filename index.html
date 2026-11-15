@@ -528,8 +528,24 @@ Resistance of the path = (voltage at board − voltage at load) / current <span>
 
 <section id="view-prototype" hidden>
   <h2 style="margin-top:0">Prototype</h2>
-  <div class="next"><div class="t">To be added</div><p class="status">Simulation of an office building</p><p>This tab will hold the working demo and its results:</p>
-  <ul><li>The datasets used and how the simulation is built</li><li>Test results for each gap</li><li>The live demo and how to run it</li></ul></div>
+  <p>ECOGUARD watches one academic block in Jammu, room by room: power, water and the heat hidden in the walls. It says what is wasted, what it costs and how to fix it, and it can switch a room off on its own.</p>
+  <div class="next" style="max-width:none">
+    <div class="t">Try it</div>
+    <ul>
+      <li><a href="app/"><b>Open the online demo</b></a>: the real dashboard, frozen at one moment of the simulated block (Monday 25 May, 5:15 pm). Works on a phone too.</li>
+      <li><a href="https://www.figma.com/design/kabn1QXWM5ErOoPpBOfjqr"><b>Figma design file</b></a>: product screens, clickable prototype (press Present), components and style guide.</li>
+      <li><a href="docs/round2/ECOGUARD-Round2-Design-Document.pdf"><b>Round 2 design document (PDF)</b></a>: personas, sitemap, user flows, DFD level 0 and 1, wireframes, style guide, states, rationale and every screen.</li>
+    </ul>
+  </div>
+  <h3>How the parts fit together</h3>
+  <ol>
+    <li><b>Sensors (IoT):</b> one ESP32 node per room and one at the pump send a reading every 15 minutes. Until the boards are installed, a gateway program plays their part with the same messages.</li>
+    <li><b>Simulation:</b> a full year of Academic Block A with its timetable, Jammu weather, power cuts and 12 kinds of waste.</li>
+    <li><b>Backend:</b> checks every reading, finds the waste, prices it in rupees and CO<sub>2</sub>, and sends back commands.</li>
+    <li><b>Dashboard:</b> the screens in the demo, on desktop and phone.</li>
+    <li><b>Design:</b> the Figma file uses the same colours, type and spacing as the dashboard code.</li>
+  </ol>
+  <p class="status">Results on the simulated year: 19.2% less electricity and 22.6% less water, with no room switched off while people were inside. Models also tested on 659 real buildings from the open BDG2 data set.</p>
 </section>
 </main>
 </div>
